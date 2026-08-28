@@ -1,0 +1,12 @@
+node_modules/
+dist/
+output/
+tmp/
+项目素材/
+public/media/
+dev-server.log
+*.tsbuildinfo
+*.log
+*.pdf
+.DS_Store
+Thumbs.db
