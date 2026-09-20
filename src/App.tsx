@@ -570,7 +570,6 @@ function SiteLoader() {
       </div>
       <div className="site-loader-meta" aria-hidden="true">
         <span className="site-loader-meta-top">陈兴 / CHEN XING / 2026</span>
-        <span className="site-loader-meta-left">UI DESIGN<br />AI PRODUCTS<br />VISUAL SYSTEMS</span>
         <span className="site-loader-meta-right">SELECTED WORK<br />04 PROJECTS</span>
         <span className="site-loader-meta-bottom">SHENZHEN / SYSTEMS</span>
       </div>
