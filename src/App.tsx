@@ -18,7 +18,7 @@ import {
 import { Link, useLocation } from 'react-router-dom'
 
 const BILUS_URL = 'https://www.aigcacs.com/inspiration'
-const RESUME_URL = '/media/Chen-Xing-UI-Designer-Resume-2026.docx'
+const RESUME_URL = '/media/Chen-Xing-UI-Designer-Resume-2026.pdf'
 const LOADING_VIDEO_URL = '/media/loading-animation.mp4'
 
 type Project = {
