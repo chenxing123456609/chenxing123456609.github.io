@@ -278,7 +278,7 @@ h2 em, .inner-hero h1 em { color: var(--signal); font-style: normal; }
 .experience-field-role { grid-column: 1; grid-row: 1; padding-bottom: 15px; }
 .experience-field-company { grid-column: 1; grid-row: 2; padding-top: 8px; }
 .experience-field-content { grid-column: 2; grid-row: 1 / -1; }
-.experience-field-label { display: block; margin-bottom: 20px; color: rgba(243,246,247,.44); font-family: var(--font-display); font-size: 8px; font-weight: 500; letter-spacing: .14em; line-height: 1.35; text-transform: uppercase; }
+.experience-field-label { display: block; margin-bottom: 14px; color: rgba(243,246,247,.58); font-family: var(--font-display); font-size: 12px; font-weight: 500; letter-spacing: .1em; line-height: 1.4; text-transform: uppercase; }
 .experience-field-role .experience-field-label { color: var(--signal); }
 .experience-field h3 { max-width: 14ch; margin: 0; color: var(--text); font-family: var(--font-display); font-size: clamp(21px, 1.75vw, 29px); font-weight: 450; line-height: 1.28; letter-spacing: .015em; transition: transform .32s var(--ease-out), color .32s ease; }
 .experience-column:hover .experience-field-role h3, .experience-column:focus-within .experience-field-role h3 { color: var(--signal); transform: translateX(6px); }
@@ -673,7 +673,8 @@ body:not(.language-en) .work-page .inner-hero h1 { font-family: var(--font-chine
   .experience-field { grid-column: auto; grid-row: auto; padding: 18px 0; border-right: 0; border-bottom: 1px solid var(--silver-soft); }
   .experience-field-role { padding-bottom: 18px; }
   .experience-field-company { padding-top: 18px; }
-  .experience-field h3 { max-width: 18ch; font-size: clamp(22px, 7vw, 28px); }
+  .experience-field-label { margin-bottom: 12px; font-size: 12px; letter-spacing: .08em; }
+  .experience-field h3 { max-width: 18ch; font-size: clamp(21px, 6vw, 25px); line-height: 1.22; }
   .experience-field-company p { max-width: 28ch; font-size: 14px; }
   .experience-field-content > p { max-width: 42ch; font-size: 15px; line-height: 1.8; }
   .experience-field-content { padding-bottom: 21px; border-bottom: 0; }
