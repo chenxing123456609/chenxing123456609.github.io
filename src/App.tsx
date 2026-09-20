@@ -564,7 +564,7 @@ function SiteLoader() {
       <svg className="site-loader-filter-defs" aria-hidden="true" focusable="false"><defs><filter id="site-loader-water-filter" x="-20%" y="-35%" width="140%" height="170%"><feTurbulence type="fractalNoise" baseFrequency=".008 .032" numOctaves="2" seed="7" result="water-noise"><animate attributeName="baseFrequency" dur="15s" values=".008 .032;.015 .048;.008 .032" repeatCount="indefinite" /></feTurbulence><feDisplacementMap in="SourceGraphic" in2="water-noise" scale="54" xChannelSelector="R" yChannelSelector="B" /></filter></defs></svg>
       <canvas ref={fluidCanvasRef} className="site-loader-fluid-canvas" aria-hidden="true" />
       <div className="site-loader-word" aria-hidden="true">
-        <div className="site-loader-kicker">UI DESIGN</div>
+        <div className="site-loader-kicker">CHEN XING UI DESIGN</div>
         <div className="site-loader-portfolio site-loader-portfolio-base">PORTFOLIO</div>
         <div className="site-loader-portfolio site-loader-portfolio-water">PORTFOLIO</div>
         <div className="site-loader-subtitle">个人作品集</div>
