@@ -310,7 +310,7 @@ function SiteLoader() {
       }
     `
     const fragmentSource = `
-      precision mediump float;
+      precision highp float;
       uniform vec2 u_resolution;
       uniform float u_time;
       uniform vec2 u_pointer;
@@ -336,25 +336,39 @@ function SiteLoader() {
         return value;
       }
 
+      float surfaceHeight(vec2 uv, float time, vec2 aspect) {
+        float terrain = fbm(uv * vec2(3.2, 2.4) + vec2(time * 0.04, -time * 0.028));
+        vec2 pointerDelta = (uv - u_pointer) * aspect;
+        float pointerDistance = length(pointerDelta);
+        float ripple = sin(pointerDistance * 46.0 - time * 4.2) * exp(-pointerDistance * 5.0) * u_pointer_active * 0.08;
+        float broadRipple = sin(pointerDistance * 12.0 - time * 2.2) * exp(-pointerDistance * 2.8) * u_pointer_active * 0.035;
+        float current = sin(uv.x * 8.0 + uv.y * 4.0 + terrain * 5.0 + time * 0.35) * 0.018;
+        return terrain * 0.09 + ripple + broadRipple + current;
+      }
+
       void main() {
         vec2 uv = v_uv;
         vec2 aspect = vec2(u_resolution.x / max(u_resolution.y, 1.0), 1.0);
         float time = u_time * 0.001;
-        float cloud = fbm(uv * vec2(4.0, 3.0) + vec2(time * 0.16, -time * 0.1));
-        float currentA = sin((uv.x * 7.0 + uv.y * 4.0 + cloud * 4.0 + time * 0.85)) * 0.5 + 0.5;
-        float currentB = sin((uv.y * 11.0 - uv.x * 3.0 + cloud * 3.0 - time * 0.54)) * 0.5 + 0.5;
-        float filamentA = abs(sin(uv.x * 18.0 + uv.y * 5.0 + cloud * 8.0 + time * 0.72));
-        float filamentB = abs(sin(uv.y * 16.0 - uv.x * 6.0 + cloud * 6.0 - time * 0.46));
-        float flow = smoothstep(0.44, 0.92, currentA) * 0.22 + smoothstep(0.56, 0.96, currentB) * 0.14 + smoothstep(0.9, 0.995, filamentA) * 0.13 + smoothstep(0.93, 0.998, filamentB) * 0.09;
-
-        vec2 delta = (uv - u_pointer) * aspect;
-        float distanceToPointer = length(delta);
-        float wave = sin(distanceToPointer * 72.0 - time * 5.2);
-        float rippleMask = exp(-distanceToPointer * 4.2) * u_pointer_active;
-        float ripple = smoothstep(0.25, 0.95, abs(wave)) * rippleMask * 0.58;
-        float contact = exp(-distanceToPointer * 15.0) * u_pointer_active * 0.22;
-        float alpha = clamp(flow + ripple + contact, 0.0, 0.52);
-        gl_FragColor = vec4(vec3(0.92, 0.98, 1.0), alpha);
+        float epsilon = 0.0025;
+        float height = surfaceHeight(uv, time, aspect);
+        float heightX = surfaceHeight(uv + vec2(epsilon, 0.0), time, aspect);
+        float heightY = surfaceHeight(uv + vec2(0.0, epsilon), time, aspect);
+        vec3 normal = normalize(vec3((height - heightX) * 85.0, (height - heightY) * 85.0, 1.0));
+        vec2 movingLight = vec2(0.34 + sin(time * 0.23) * 0.18, 0.3 + cos(time * 0.19) * 0.16);
+        vec2 lightUv = mix(movingLight, u_pointer, u_pointer_active * 0.72);
+        vec3 lightDirection = normalize(vec3((lightUv.x - uv.x) * aspect.x, lightUv.y - uv.y, 0.72));
+        vec2 ambientLightUv = vec2(0.76 + sin(time * 0.14) * 0.14, 0.7 + cos(time * 0.17) * 0.12);
+        vec3 ambientLightDirection = normalize(vec3((ambientLightUv.x - uv.x) * aspect.x, ambientLightUv.y - uv.y, 0.9));
+        vec3 viewDirection = vec3(0.0, 0.0, 1.0);
+        float diffuse = max(dot(normal, lightDirection), 0.0);
+        float specular = pow(max(dot(reflect(-lightDirection, normal), viewDirection), 0.0), 24.0);
+        float ambientSpecular = pow(max(dot(reflect(-ambientLightDirection, normal), viewDirection), 0.0), 16.0);
+        float fresnel = pow(1.0 - max(dot(normal, viewDirection), 0.0), 2.0);
+        float pointerGlow = exp(-length((uv - u_pointer) * aspect) * 4.0) * u_pointer_active;
+        float alpha = clamp(diffuse * 0.2 + specular * 0.42 + ambientSpecular * 0.24 + fresnel * 0.14 + pointerGlow * 0.18, 0.0, 0.78);
+        vec3 color = mix(vec3(0.32, 0.42, 0.45), vec3(0.98, 1.0, 1.0), clamp(specular * 1.1 + ambientSpecular * 0.45 + fresnel, 0.0, 1.0));
+        gl_FragColor = vec4(color, alpha);
       }
     `
 
