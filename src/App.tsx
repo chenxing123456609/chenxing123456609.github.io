@@ -53,10 +53,10 @@ const projects: Project[] = [
     year: '2025—2026',
     role: 'UI 设计师 / 项目负责人',
     roleEn: 'UI Designer & Project Lead',
-    intro: '围绕工具首页、工作台、AI 能力和组件系统完成一次全面更新，让复杂的 AI 工作流变得更清晰、更可控，也真正落地到线上产品。',
-    introEn: 'A full product-system update across the tool home, workspace, AI capabilities, component system, interaction flows, and visual rules.',
-    scope: ['首页与工作台', 'AI 功能', '组件系统', '交互流程', '视觉规范'],
-    scopeEn: ['Home & workspace', 'AI capabilities', 'Component system', 'Interaction flows', 'Visual rules'],
+    intro: '大型 C 端项目改版优化，通过真实用户反馈和上线数据持续迭代，推动体验提升与用户量实际增长。',
+    introEn: 'A large consumer product redesign validated through real user feedback and launch data, improving the experience and driving measurable user growth.',
+    scope: ['官网改版', '核心体验优化', '用户路径', '视觉系统', '上线数据'],
+    scopeEn: ['Website redesign', 'Core experience', 'User journeys', 'Visual system', 'Launch data'],
     cover: '/media/bilus-cover.png',
     external: BILUS_URL,
     tone: 'silver',
@@ -70,10 +70,10 @@ const projects: Project[] = [
     year: '2025—2026',
     role: 'UI 设计师 / 项目负责人',
     roleEn: 'UI Designer & Project Lead',
-    intro: '将装修业务中复杂的配置、生成与沟通节点组织成更容易理解的 AI 工作流，完成从框架到高保真界面的独立设计。',
-    introEn: 'An AI workflow for interior design, turning complex configuration, generation, and communication into a clear B2B product experience.',
-    scope: ['业务流程', '生成式体验', 'B 端工作台', '交互细节'],
-    scopeEn: ['Business workflow', 'Generative experience', 'B2B workspace', 'Interaction details'],
+    intro: '一个简洁而闭环的装修 AI 项目，重点完成前端视觉优化，让核心流程更清晰、统一、易用。',
+    introEn: 'A focused interior-design AI product with a simple closed loop, refined through front-end visual optimization for a clearer and more consistent experience.',
+    scope: ['前端视觉优化', '装修 AI 闭环', '界面层级', '组件统一', '状态反馈'],
+    scopeEn: ['Front-end visual polish', 'Interior AI loop', 'Interface hierarchy', 'Component consistency', 'State feedback'],
     cover: '/media/aojin-cover.png',
     video: '/media/aojin-demo.mp4',
     poster: '/media/aojin-poster.jpg',
@@ -90,10 +90,10 @@ const projects: Project[] = [
     year: '2025—2026',
     role: 'UI 设计师 / 项目负责人',
     roleEn: 'UI Designer & Project Lead',
-    intro: '从任务结构、AI 反馈到工作台信息层级，独立完成内部 B 端 AI 产品的界面设计与交互流程梳理。',
-    introEn: 'An internal B2B AI product shaped around task structure, feedback states, and a more legible workspace information hierarchy.',
-    scope: ['产品结构', 'AI 任务流', '工作台', '视觉系统'],
-    scopeEn: ['Product structure', 'AI task flow', 'Workspace', 'Visual system'],
+    intro: '面向 B 端 AI 场景，围绕工作台、任务流和反馈状态建立清晰的产品结构与视觉系统。',
+    introEn: 'A B2B AI product structured around a clear workspace, task flow, feedback states, and a coherent visual system.',
+    scope: ['B 端产品结构', '工作台', 'AI 任务流', '反馈状态', '视觉系统'],
+    scopeEn: ['B2B product structure', 'Workspace', 'AI task flow', 'Feedback states', 'Visual system'],
     cover: '/media/qiaxu-cover.png',
     video: '/media/qiaxu-demo.mp4',
     poster: '/media/qiaxu-poster.jpg',
@@ -110,10 +110,10 @@ const projects: Project[] = [
     year: '2025—2026',
     role: '视觉设计负责人',
     roleEn: 'Visual Design Lead',
-    intro: '负责项目的整体视觉设计，从品牌气质、产品界面到展示物料建立一套更有辨识度的视觉语言。',
-    introEn: 'A visual system spanning brand character, product surfaces, and presentation materials for a more distinctive project identity.',
-    scope: ['品牌视觉', '产品界面', '展示物料', '视觉规范'],
-    scopeEn: ['Brand visual identity', 'Product interface', 'Presentation materials', 'Visual rules'],
+    intro: '从模糊需求出发，完成大型 C 端项目从产品定位、视觉设计到最终落地的全流程推进。',
+    introEn: 'A large consumer product taken from an unclear brief through positioning, visual design, and full delivery.',
+    scope: ['需求澄清', '产品定位', 'C 端项目结构', '品牌视觉', '产品界面', '全流程落地'],
+    scopeEn: ['Brief clarification', 'Product positioning', 'Consumer product structure', 'Brand visuals', 'Product interface', 'End-to-end delivery'],
     cover: '/media/wowo-cover.png',
     video: '/media/wowo-demo.mp4',
     poster: '/media/wowo-poster.jpg',
@@ -142,6 +142,103 @@ function localized<T>(language: Language, zh: T, en: T): T {
 }
 
 type Language = 'zh' | 'en'
+
+type CaseStudy = {
+  overviewTitle: string
+  overviewTitleAccent: string
+  overviewTitleEn: string
+  overviewTitleAccentEn: string
+  overview: string
+  overviewEn: string
+  process: Array<[string, string]>
+  processEn: Array<[string, string]>
+  note: string
+  noteEn: string
+}
+
+const caseStudies: Record<string, CaseStudy> = {
+  'bilus-3': {
+    overviewTitle: '从体验改版，',
+    overviewTitleAccent: '到真实增长。',
+    overviewTitleEn: 'FROM REDESIGN',
+    overviewTitleAccentEn: 'TO REAL GROWTH.',
+    overview: '这不是一次单纯的视觉换新，而是围绕大型 C 端产品进行的系统性改版。项目从用户使用反馈出发，重新梳理页面结构、内容层级和核心操作路径，再通过视觉优化提升产品的清晰度与吸引力。设计上线后结合真实数据持续观察和迭代，用户量获得了实际提升。',
+    overviewEn: 'This was not a surface-level visual refresh, but a system-level redesign for a large consumer product. Starting from user feedback, I reworked page structure, content hierarchy, and core journeys, then used visual refinement to make the product clearer and more compelling. The design was observed and iterated against real launch data, leading to actual user growth.',
+    process: [
+      ['分析真实问题', '结合用户反馈和产品使用数据，定位页面结构、信息层级和核心路径中的体验问题。'],
+      ['重构产品体验', '围绕大型 C 端产品的核心场景，完成页面改版、用户路径优化和视觉系统升级。'],
+      ['上线验证增长', '与产品和开发协作完成上线，并根据真实数据持续验证和优化设计方案。'],
+    ],
+    processEn: [
+      ['Read the real signals', 'Used user feedback and product data to identify issues in structure, hierarchy, and core journeys.'],
+      ['Rebuild the experience', 'Redesigned the core consumer product experience through page updates, journey refinement, and a visual system upgrade.'],
+      ['Validate growth after launch', 'Worked with product and engineering through launch, then iterated against real data.'],
+    ],
+    note: '这个项目体现了我不仅能做界面，还能把设计放进真实产品环境中，用用户反馈和业务数据验证设计结果。',
+    noteEn: 'This project shows that I can place design inside a real product environment and validate its value through user feedback and business data.',
+  },
+  'aojin-ai': {
+    overviewTitle: '简洁流程，',
+    overviewTitleAccent: '精确视觉。',
+    overviewTitleEn: 'A SIMPLE FLOW,',
+    overviewTitleAccentEn: 'A PRECISE VISUAL LANGUAGE.',
+    overview: '奥锦装修 AI 的核心流程相对简洁，项目重点并不是增加复杂功能，而是把已有流程通过更准确的视觉语言表达出来。设计工作围绕界面层级、色彩、组件、信息反馈和关键状态展开，在不增加使用负担的前提下，让产品看起来更清晰、更统一，也更具产品完成度。',
+    overviewEn: 'AOJIN AI has a focused, closed-loop workflow. The work was not about adding complexity, but about expressing the existing product more accurately through visual language. I refined hierarchy, color, components, feedback, and key states so the product became clearer, more consistent, and more complete without adding friction.',
+    process: [
+      ['理解产品闭环', '先明确装修 AI 的核心任务和使用路径，确认每个页面在完整流程中的作用。'],
+      ['提炼视觉语言', '围绕界面层级、组件关系、状态反馈和视觉细节建立统一的前端表达。'],
+      ['完善落地细节', '与开发配合完成界面还原和细节走查，让视觉优化真正进入产品。'],
+    ],
+    processEn: [
+      ['Understand the loop', 'Mapped the core interior-design AI task and clarified the role of each screen in the full flow.'],
+      ['Refine the visual language', 'Built a consistent front-end expression through hierarchy, component relationships, feedback, and detail.'],
+      ['Polish the delivery', 'Worked with engineering on visual fidelity and detail review so the refinement reached the product.'],
+    ],
+    note: '这个项目体现了我在明确产品边界下进行视觉优化的能力，能够用较少的设计变化，明显提升产品的专业度和使用感受。',
+    noteEn: 'This project shows my ability to improve a focused product with restraint, using a small number of precise changes to raise its polish and usability.',
+  },
+  'qiaxu-ai': {
+    overviewTitle: '让复杂任务，',
+    overviewTitleAccent: '变得可理解。',
+    overviewTitleEn: 'MAKE COMPLEX TASKS',
+    overviewTitleAccentEn: 'EASIER TO UNDERSTAND.',
+    overview: '恰序 AI 是一个以工作台和任务流程为核心的 B 端产品。设计重点不只是制作页面，而是先理解用户角色、工作目标和任务关系，再将复杂操作整理成清晰的界面层级。项目围绕任务结构、AI 反馈、工作台信息组织和视觉系统展开，让产品在复杂业务场景下依然保持可理解、可操作和可持续扩展。',
+    overviewEn: 'QIA XU AI is a B2B product centered on a workspace and task flows. The work went beyond producing screens: I first understood user roles, goals, and task relationships, then organized complex operations into clear interface hierarchy. The result connects task structure, AI feedback, workspace organization, and a scalable visual system.',
+    process: [
+      ['梳理业务关系', '理解 B 端业务目标、用户角色和任务关系，建立可以讨论的产品结构。'],
+      ['搭建任务工作台', '围绕核心任务设计工作台层级、AI 任务流和输入到反馈的连续体验。'],
+      ['建立系统交付', '完善组件、视觉规范和关键状态，让复杂产品具备持续扩展和协作落地的基础。'],
+    ],
+    processEn: [
+      ['Map the business', 'Understood B2B goals, user roles, and task relationships to create a shared product structure.'],
+      ['Build the task workspace', 'Designed the workspace hierarchy, AI task flow, and continuous experience from input to feedback.'],
+      ['Deliver a system', 'Defined components, visual rules, and key states to support future scale and team delivery.'],
+    ],
+    note: '这个项目体现了我处理复杂 B 端产品的能力：先理解业务，再组织结构，最后通过系统化设计完成界面落地。',
+    noteEn: 'This project shows how I handle complex B2B products: understand the business first, organize the structure, and deliver the interface through a coherent system.',
+  },
+  wowo: {
+    overviewTitle: '从模糊需求，',
+    overviewTitleAccent: '到完整落地。',
+    overviewTitleEn: 'FROM AN UNCLEAR BRIEF',
+    overviewTitleAccentEn: 'TO FULL DELIVERY.',
+    overview: '窝喔项目开始时需求还处于探索阶段，设计工作首先不是制作界面，而是帮助项目逐步明确方向。通过梳理目标、用户、产品定位和视觉气质，将模糊的想法转化为可讨论、可执行的产品结构，再继续推进品牌表达、核心界面、展示物料和最终交付，完成大型 C 端项目的全流程落地。',
+    overviewEn: 'WOWO began with an evolving brief. The first design task was not to make screens, but to help the project find a clear direction. By clarifying goals, users, positioning, and visual character, I turned an unclear idea into an actionable product structure, then carried it through brand expression, core interfaces, presentation materials, and final delivery.',
+    process: [
+      ['澄清项目方向', '从目标、用户和产品定位出发，把模糊需求整理成可以讨论和决策的问题。'],
+      ['建立产品与视觉', '搭建大型 C 端项目的结构，同时建立品牌气质、产品界面和展示语言。'],
+      ['推动全流程落地', '协作推进设计交付、展示物料和项目落地，让想法变成完整可用的产品体验。'],
+    ],
+    processEn: [
+      ['Clarify the direction', 'Turned an unclear brief into concrete questions around goals, users, and product positioning.'],
+      ['Build product and visual identity', 'Structured the consumer product while defining its brand character, interface, and presentation language.'],
+      ['Drive end-to-end delivery', 'Moved design delivery, presentation materials, and project implementation forward until the idea became a complete experience.'],
+    ],
+    note: '这个项目体现了我从模糊需求中建立方向、从概念推进到落地的能力，也体现了我对大型 C 端项目的整体负责意识。',
+    noteEn: 'This project shows my ability to create direction from ambiguity and carry a large consumer project from concept to delivery with full ownership.',
+  },
+}
+
 const LanguageContext = createContext<{ language: Language; toggleLanguage: () => void }>({ language: 'zh', toggleLanguage: () => undefined })
 
 function useLanguage() {
@@ -1015,30 +1112,10 @@ function ProjectDetail({ project }: { project: Project }) {
   usePageTitle(project.title)
   const { language } = useLanguage()
   const nextProject = projects[(projects.findIndex((item) => item.slug === project.slug) + 1) % projects.length]
+  const study = caseStudies[project.slug]
   const scope = language === 'en' ? (project.scopeEn ?? project.scope) : project.scope
-  const process = language === 'en'
-    ? [
-        ['Frame the problem', 'Start from business goals, user roles, and key tasks to create a shared design question.'],
-        ['Build the system', 'Connect pages, states, and components into a reusable structure instead of a single mockup.'],
-        ['Ship with the team', 'Work with product and engineering through reviews and detail checks until the design goes live.'],
-      ]
-    : [
-        ['拆解问题', '从业务目标、用户角色和关键任务开始，建立可讨论的设计问题。'],
-        ['建立系统', '把页面、状态和组件连成一套可复用的结构，而不是单张效果图。'],
-        ['推动落地', '与产品、开发协作，在走查和细节校验中让设计真正上线。'],
-      ]
-  const note = language === 'en'
-    ? project.slug === 'wowo'
-      ? 'WOWO spans brand identity, product surfaces, and presentation materials, held together by a restrained but human visual voice.'
-      : project.slug === 'bilus-3'
-        ? 'BILUS 3.0 is live. The external product link is kept as a useful continuation, while the design rationale and process remain documented here.'
-        : 'These internal projects do not expose business data. The case study uses approved demos and method notes to make the design decisions legible.'
-    : project.slug === 'wowo'
-      ? '窝喔的视觉工作围绕品牌识别、产品界面与项目展示展开，保持同一套克制而有温度的视觉语气。'
-      : project.slug === 'bilus-3'
-        ? '毕鲁斯 3.0 已经落地，线上入口作为外部延伸保留，完整设计判断与工作过程在本站独立呈现。'
-        : '内部项目不公开业务数据，页面以经确认的演示片段和方法说明呈现。'
-  return <><main className="case-page"><section className={`case-hero case-hero-${project.tone} page-padding`}><Reveal><Link className="back-link" to="/work"><ArrowLeft size={16} />{localized(language, '返回作品目录', 'Back to work')}</Link><span className="eyebrow">{project.english}</span><h1>{language === 'en' ? project.titleEn : project.title}<span className="title-dot">.</span></h1><div className="case-meta"><span>{project.year}</span><span>{project.roleEn ?? project.role}</span></div><p className="case-lead">{localized(language, project.intro, project.introEn)}</p><div className="case-actions">{project.external && <ButtonLink to={project.external} external variant="primary">{localized(language, '访问线上产品', 'Open live product')}</ButtonLink>}<ButtonLink to="/contact" variant="glass">{localized(language, '聊聊这个项目', 'Discuss this project')}</ButtonLink></div></Reveal></section><section className="case-media page-padding"><Reveal><ProjectVisual project={project} detail /></Reveal></section><section className="case-content page-padding"><div className="case-sidebar"><span className="eyebrow">THE WORK</span><span className="case-sidebar-line" /><span className="case-sidebar-label">{project.number} / 04</span></div><div className="case-body"><Reveal><div className="case-block case-overview"><span className="eyebrow">OVERVIEW</span><h2>MAKE ONE UPDATE,<br /><em>A SUSTAINABLE SYSTEM.</em></h2><p>{localized(language, project.intro, project.introEn)}</p></div></Reveal><Reveal delay={80}><div className="case-block"><span className="eyebrow">ROLE & SCOPE</span><div className="scope-grid">{scope.map((item) => <div key={item}><span className="scope-line" />{item}</div>)}</div></div></Reveal><Reveal delay={140}><div className="case-block case-process"><span className="eyebrow">PROCESS</span><div className="process-steps">{process.map(([title, copy], index) => <div key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{copy}</p></div>)}</div></div></Reveal><Reveal delay={200}><div className="case-block case-note"><span className="eyebrow">A NOTE FROM THE PROJECT</span><p>{note}</p></div></Reveal></div></section><section className="next-project page-padding"><Link to={`/work/${nextProject.slug}`}><span className="eyebrow">NEXT PROJECT</span><strong>{language === 'en' ? nextProject.titleEn : nextProject.title}</strong><ArrowUpRight size={24} /></Link></section></main><SiteFooter /></>
+  const process = language === 'en' ? study.processEn : study.process
+  return <><main className="case-page"><section className={`case-hero case-hero-${project.tone} page-padding`}><Reveal><Link className="back-link" to="/work"><ArrowLeft size={16} />{localized(language, '返回作品目录', 'Back to work')}</Link><span className="eyebrow">{project.english}</span><h1>{language === 'en' ? project.titleEn : project.title}<span className="title-dot">.</span></h1><div className="case-meta"><span>{project.year}</span><span>{project.roleEn ?? project.role}</span></div><p className="case-lead">{localized(language, project.intro, project.introEn)}</p><div className="case-actions">{project.external && <ButtonLink to={project.external} external variant="primary">{localized(language, '访问线上产品', 'Open live product')}</ButtonLink>}<ButtonLink to="/contact" variant="glass">{localized(language, '聊聊这个项目', 'Discuss this project')}</ButtonLink></div></Reveal></section><section className="case-media page-padding"><Reveal><ProjectVisual project={project} detail /></Reveal></section><section className="case-content page-padding"><div className="case-sidebar"><span className="eyebrow">THE WORK</span><span className="case-sidebar-line" /><span className="case-sidebar-label">{project.number} / 04</span></div><div className="case-body"><Reveal><div className="case-block case-overview"><span className="eyebrow">OVERVIEW</span><h2>{language === 'en' ? study.overviewTitleEn : study.overviewTitle}<br /><em>{language === 'en' ? study.overviewTitleAccentEn : study.overviewTitleAccent}</em></h2><p>{language === 'en' ? study.overviewEn : study.overview}</p></div></Reveal><Reveal delay={80}><div className="case-block"><span className="eyebrow">ROLE & SCOPE</span><div className="scope-grid">{scope.map((item) => <div key={item}><span className="scope-line" />{item}</div>)}</div></div></Reveal><Reveal delay={140}><div className="case-block case-process"><span className="eyebrow">PROCESS</span><div className="process-steps">{process.map(([title, copy], index) => <div key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{copy}</p></div>)}</div></div></Reveal><Reveal delay={200}><div className="case-block case-note"><span className="eyebrow">A NOTE FROM THE PROJECT</span><p>{language === 'en' ? study.noteEn : study.note}</p></div></Reveal></div></section><section className="next-project page-padding"><Link to={`/work/${nextProject.slug}`}><span className="eyebrow">NEXT PROJECT</span><strong>{language === 'en' ? nextProject.titleEn : nextProject.title}</strong><ArrowUpRight size={24} /></Link></section></main><SiteFooter /></>
 }
 
 function AboutPage() {
@@ -1091,7 +1168,7 @@ function ContactPage() {
   async function copyEmail() {
     try { await navigator.clipboard.writeText(email); setCopied(true); window.setTimeout(() => setCopied(false), 1800) } catch { window.location.href = `mailto:${email}` }
   }
-  return <><main className="inner-page contact-page"><section className="inner-hero page-padding"><Reveal><span className="eyebrow">CONTACT / SHENZHEN</span><h1>HAVE A PRODUCT?<br /><em>LET'S TALK.</em></h1><p>{localized(language, '如果你正在做 AI 工具、复杂工作台或需要重新整理视觉系统，欢迎通过邮件、电话或微信联系我。', 'If you are building an AI tool, complex workspace, or visual system that needs clarity, I would love to hear from you.')}</p></Reveal></section><section className="contact-grid page-padding"><Reveal className="contact-primary"><span className="eyebrow">EMAIL</span><a href={`mailto:${email}`} className="contact-email">{email}</a><button className="copy-button" onClick={copyEmail}>{copied ? <><Check size={16} />{localized(language, '已复制', 'Copied')}</> : <><Copy size={16} />{localized(language, '复制邮箱', 'Copy email')}</>}</button></Reveal><div className="contact-list"><Reveal delay={80}><a href="tel:17363679491" className="contact-row"><span><Phone size={19} />{localized(language, '电话', 'Phone')}</span><strong>173 6367 9491</strong><ArrowUpRight size={18} /></a></Reveal><Reveal delay={140}><div className="contact-row contact-wechat-row" tabIndex={0} aria-label={localized(language, '微信 xx030428，悬停查看二维码', 'WeChat xx030428, hover to view QR code')}><span><span className="wechat-icon">微</span>{localized(language, '微信', 'WeChat')}</span><strong>xx030428</strong><span className="contact-row-muted">{localized(language, '可添加沟通', 'Available to chat')}</span><WechatQr /></div></Reveal><Reveal delay={200}><a href={RESUME_URL} download className="contact-row"><span><Download size={19} />{localized(language, '简历', 'Resume')}</span><strong>{localized(language, '下载 Word 简历', 'Download Word resume')}</strong><ArrowUpRight size={18} /></a></Reveal></div></section></main><SiteFooter /></>
+  return <><main className="inner-page contact-page"><section className="inner-hero page-padding"><Reveal><span className="eyebrow">CONTACT / SHENZHEN</span><h1>HAVE A PRODUCT?<br /><em>LET'S TALK.</em></h1><p>{localized(language, '如果你正在做 AI 工具、复杂工作台或需要重新整理视觉系统，欢迎通过邮件、电话或微信联系我。', 'If you are building an AI tool, complex workspace, or visual system that needs clarity, I would love to hear from you.')}</p></Reveal></section><section className="contact-grid page-padding"><Reveal className="contact-primary"><span className="eyebrow">EMAIL</span><a href={`mailto:${email}`} className="contact-email">{email}</a><button className="copy-button" onClick={copyEmail}>{copied ? <><Check size={16} />{localized(language, '已复制', 'Copied')}</> : <><Copy size={16} />{localized(language, '复制邮箱', 'Copy email')}</>}</button></Reveal><div className="contact-list"><Reveal delay={80}><a href="tel:17363679491" className="contact-row"><span><Phone size={19} />{localized(language, '电话', 'Phone')}</span><strong>173 6367 9491</strong><ArrowUpRight size={18} /></a></Reveal><Reveal delay={140}><div className="contact-row contact-wechat-row" tabIndex={0} aria-label={localized(language, '微信 xx030428，悬停查看二维码', 'WeChat xx030428, hover to view QR code')}><span><span className="wechat-icon">微</span>{localized(language, '微信', 'WeChat')}</span><strong>xx030428</strong><span className="contact-row-muted">{localized(language, '可添加沟通', 'Available to chat')}</span><WechatQr /></div></Reveal><Reveal delay={200}><a href={RESUME_URL} download className="contact-row"><span><Download size={19} />{localized(language, '简历', 'Resume')}</span><strong>{localized(language, '下载 PDF 简历', 'Download PDF resume')}</strong><ArrowUpRight size={18} /></a></Reveal></div></section></main><SiteFooter /></>
 }
 
 function useEnglishTitles(path: string) {
