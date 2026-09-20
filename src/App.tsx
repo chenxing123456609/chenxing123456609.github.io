@@ -291,22 +291,157 @@ function SignalMark({ className = '' }: { className?: string }) {
 function SiteLoader() {
   const loaderPlaybackDuration = 4
   const loaderExitDuration = 1450
-  const loaderRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const fluidCanvasRef = useRef<HTMLCanvasElement>(null)
   const [progress, setProgress] = useState(0)
   const [phase, setPhase] = useState<'loading' | 'exiting' | 'done'>('loading')
 
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType !== 'mouse') return
-    const rect = event.currentTarget.getBoundingClientRect()
-    event.currentTarget.style.setProperty('--loader-pointer-x', `${event.clientX - rect.left}px`)
-    event.currentTarget.style.setProperty('--loader-pointer-y', `${event.clientY - rect.top}px`)
-    event.currentTarget.style.setProperty('--loader-pointer-opacity', '1')
-  }
+  useEffect(() => {
+    const canvas = fluidCanvasRef.current
+    const gl = canvas?.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: false })
+    if (!canvas || !gl) return
 
-  const handlePointerLeave = () => {
-    loaderRef.current?.style.setProperty('--loader-pointer-opacity', '0')
-  }
+    const vertexSource = `
+      attribute vec2 a_position;
+      varying vec2 v_uv;
+      void main() {
+        v_uv = a_position * 0.5 + 0.5;
+        gl_Position = vec4(a_position, 0.0, 1.0);
+      }
+    `
+    const fragmentSource = `
+      precision mediump float;
+      uniform vec2 u_resolution;
+      uniform float u_time;
+      uniform vec2 u_pointer;
+      uniform float u_pointer_active;
+      varying vec2 v_uv;
+
+      float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+      }
+
+      float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        f = f * f * (3.0 - 2.0 * f);
+        return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+      }
+
+      float fbm(vec2 p) {
+        float value = 0.0;
+        value += noise(p) * 0.5;
+        value += noise(p * 2.03) * 0.25;
+        value += noise(p * 4.07) * 0.125;
+        return value;
+      }
+
+      void main() {
+        vec2 uv = v_uv;
+        vec2 aspect = vec2(u_resolution.x / max(u_resolution.y, 1.0), 1.0);
+        float time = u_time * 0.001;
+        float cloud = fbm(uv * vec2(4.0, 3.0) + vec2(time * 0.16, -time * 0.1));
+        float currentA = sin((uv.x * 7.0 + uv.y * 4.0 + cloud * 4.0 + time * 0.85)) * 0.5 + 0.5;
+        float currentB = sin((uv.y * 11.0 - uv.x * 3.0 + cloud * 3.0 - time * 0.54)) * 0.5 + 0.5;
+        float filamentA = abs(sin(uv.x * 18.0 + uv.y * 5.0 + cloud * 8.0 + time * 0.72));
+        float filamentB = abs(sin(uv.y * 16.0 - uv.x * 6.0 + cloud * 6.0 - time * 0.46));
+        float flow = smoothstep(0.44, 0.92, currentA) * 0.22 + smoothstep(0.56, 0.96, currentB) * 0.14 + smoothstep(0.9, 0.995, filamentA) * 0.13 + smoothstep(0.93, 0.998, filamentB) * 0.09;
+
+        vec2 delta = (uv - u_pointer) * aspect;
+        float distanceToPointer = length(delta);
+        float wave = sin(distanceToPointer * 72.0 - time * 5.2);
+        float rippleMask = exp(-distanceToPointer * 4.2) * u_pointer_active;
+        float ripple = smoothstep(0.25, 0.95, abs(wave)) * rippleMask * 0.58;
+        float contact = exp(-distanceToPointer * 15.0) * u_pointer_active * 0.22;
+        float alpha = clamp(flow + ripple + contact, 0.0, 0.52);
+        gl_FragColor = vec4(vec3(0.92, 0.98, 1.0), alpha);
+      }
+    `
+
+    const compileShader = (type: number, source: string) => {
+      const shader = gl.createShader(type)
+      if (!shader) throw new Error('Unable to create loader shader')
+      gl.shaderSource(shader, source)
+      gl.compileShader(shader)
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader) ?? 'Unable to compile loader shader')
+      return shader
+    }
+
+    let program: WebGLProgram
+    try {
+      const vertexShader = compileShader(gl.VERTEX_SHADER, vertexSource)
+      const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentSource)
+      const nextProgram = gl.createProgram()
+      if (!nextProgram) throw new Error('Unable to create loader program')
+      gl.attachShader(nextProgram, vertexShader)
+      gl.attachShader(nextProgram, fragmentShader)
+      gl.linkProgram(nextProgram)
+      if (!gl.getProgramParameter(nextProgram, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(nextProgram) ?? 'Unable to link loader program')
+      program = nextProgram
+    } catch {
+      return
+    }
+
+    const positionBuffer = gl.createBuffer()
+    if (!positionBuffer) return
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW)
+    gl.useProgram(program)
+    const positionLocation = gl.getAttribLocation(program, 'a_position')
+    gl.enableVertexAttribArray(positionLocation)
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0)
+    const resolutionLocation = gl.getUniformLocation(program, 'u_resolution')
+    const timeLocation = gl.getUniformLocation(program, 'u_time')
+    const pointerLocation = gl.getUniformLocation(program, 'u_pointer')
+    const pointerActiveLocation = gl.getUniformLocation(program, 'u_pointer_active')
+    gl.enable(gl.BLEND)
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+    gl.clearColor(0, 0, 0, 0)
+
+    const pointer = { x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5, active: 0, targetActive: 0 }
+    let frame = 0
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect()
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+      canvas.width = Math.max(1, Math.floor(rect.width * dpr))
+      canvas.height = Math.max(1, Math.floor(rect.height * dpr))
+      gl.viewport(0, 0, canvas.width, canvas.height)
+    }
+    const movePointer = (event: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect()
+      const inside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom
+      if (event.pointerType !== 'mouse' || !inside) {
+        pointer.targetActive = 0
+        return
+      }
+      pointer.targetX = (event.clientX - rect.left) / Math.max(rect.width, 1)
+      pointer.targetY = 1 - (event.clientY - rect.top) / Math.max(rect.height, 1)
+      pointer.targetActive = 1
+    }
+    const draw = (time: number) => {
+      pointer.x += (pointer.targetX - pointer.x) * 0.08
+      pointer.y += (pointer.targetY - pointer.y) * 0.08
+      pointer.active += (pointer.targetActive - pointer.active) * 0.12
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.uniform2f(resolutionLocation, canvas.width, canvas.height)
+      gl.uniform1f(timeLocation, time)
+      gl.uniform2f(pointerLocation, pointer.x, pointer.y)
+      gl.uniform1f(pointerActiveLocation, pointer.active)
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+      frame = window.requestAnimationFrame(draw)
+    }
+    resize()
+    window.addEventListener('resize', resize)
+    window.addEventListener('pointermove', movePointer, { passive: true })
+    frame = window.requestAnimationFrame(draw)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('resize', resize)
+      window.removeEventListener('pointermove', movePointer)
+      gl.deleteBuffer(positionBuffer)
+      gl.deleteProgram(program)
+    }
+  }, [])
 
   useEffect(() => {
     document.body.classList.add('is-loading')
@@ -432,11 +567,11 @@ function SiteLoader() {
 
   if (phase === 'done') return null
   return (
-    <div ref={loaderRef} className={`site-loader ${phase === 'exiting' ? 'is-exiting' : ''}`} role="status" aria-live="polite" aria-label={`页面加载 ${progress}%`} onPointerMove={handlePointerMove} onPointerLeave={handlePointerLeave}>
+    <div className={`site-loader ${phase === 'exiting' ? 'is-exiting' : ''}`} role="status" aria-live="polite" aria-label={`页面加载 ${progress}%`}>
       <video ref={videoRef} className="site-loader-video" src={LOADING_VIDEO_URL} autoPlay muted playsInline preload="auto" aria-hidden="true" />
       <div className="site-loader-shade" aria-hidden="true" />
       <svg className="site-loader-filter-defs" aria-hidden="true" focusable="false"><defs><filter id="site-loader-water-filter" x="-15%" y="-25%" width="130%" height="150%"><feTurbulence type="fractalNoise" baseFrequency=".012 .055" numOctaves="2" seed="7" result="water-noise"><animate attributeName="baseFrequency" dur="7s" values=".012 .055;.02 .075;.012 .055" repeatCount="indefinite" /></feTurbulence><feDisplacementMap in="SourceGraphic" in2="water-noise" scale="15" xChannelSelector="R" yChannelSelector="B" /></filter></defs></svg>
-      <div className="site-loader-water-surface" aria-hidden="true"><span className="site-loader-pointer-ripple" /><span className="site-loader-water-line" /></div>
+      <canvas ref={fluidCanvasRef} className="site-loader-fluid-canvas" aria-hidden="true" />
       <div className="site-loader-glass-top" aria-hidden="true">
         <div className="site-loader-portfolio site-loader-portfolio-base">PORTFOLIO</div>
         <div className="site-loader-portfolio site-loader-portfolio-water">PORTFOLIO</div>

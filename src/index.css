@@ -68,7 +68,7 @@ h1, h2, h3 { text-wrap: balance; }
 .app-shell { min-height: 100vh; overflow: visible; background: var(--canvas); }
 .page-padding { padding-left: max(20px, calc((100vw - 1280px) / 2)); padding-right: max(20px, calc((100vw - 1280px) / 2)); }
 
-.site-loader { --loader-pointer-x: 50%; --loader-pointer-y: 50%; --loader-pointer-opacity: 0; position: fixed; z-index: 1000; inset: 0; overflow: hidden; color: var(--text); background: #020304; opacity: 1; visibility: visible; transition: opacity 1.45s cubic-bezier(.4,0,.2,1), visibility 1.45s step-end; }
+.site-loader { position: fixed; z-index: 1000; inset: 0; overflow: hidden; color: var(--text); background: #020304; opacity: 1; visibility: visible; transition: opacity 1.45s cubic-bezier(.4,0,.2,1), visibility 1.45s step-end; }
 .site-loader.is-exiting { opacity: 0; visibility: hidden; pointer-events: none; }
 .site-loader::before { content: ''; position: absolute; z-index: 1; inset: 0; pointer-events: none; background: radial-gradient(ellipse 42% 54% at 54% 45%, transparent 0%, rgba(0,0,0,.08) 45%, rgba(0,0,0,.58) 100%), linear-gradient(180deg, rgba(0,0,0,.18), transparent 35%, rgba(0,0,0,.35)); mix-blend-mode: multiply; }
 .site-loader-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 30% 48%; opacity: 1; filter: saturate(.78) contrast(1.14) brightness(.92); transform: translate3d(8vw, 0, 0) scale(1.1); transition: opacity 1.45s ease, filter 1.45s ease; }
@@ -80,10 +80,8 @@ h1, h2, h3 { text-wrap: balance; }
 .site-loader-glass-top::before { left: max(36px, calc((100vw - 1280px) / 2)); }
 .site-loader-glass-top::after { right: max(36px, calc((100vw - 1280px) / 2)); }
 .site-loader-filter-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
-.site-loader-water-surface { position: absolute; z-index: 3; inset: -8%; overflow: hidden; pointer-events: none; opacity: .5; mix-blend-mode: screen; background: radial-gradient(circle 150px at var(--loader-pointer-x) var(--loader-pointer-y), rgba(243,246,247,.32), transparent 68%), repeating-radial-gradient(ellipse at 48% 52%, transparent 0 14px, rgba(243,246,247,.045) 15px 16px, transparent 18px 38px), repeating-linear-gradient(112deg, transparent 0 39px, rgba(243,246,247,.016) 40px 41px, transparent 42px 84px); background-size: auto, 1150px 720px, 480px 360px; filter: blur(.9px) contrast(1.02); animation: loader-water-flow 9s ease-in-out infinite; transition: opacity 1.45s ease; }
-.site-loader.is-exiting .site-loader-water-surface { opacity: .4; }
-.site-loader-water-line { position: absolute; top: 43%; right: -8%; left: -8%; height: 22%; opacity: .28; border-top: 1px solid rgba(243,246,247,.3); border-bottom: 1px solid rgba(243,246,247,.12); background: repeating-radial-gradient(ellipse at 50% 100%, transparent 0 14px, rgba(243,246,247,.09) 15px 16px, transparent 17px 32px); transform: rotate(-2deg) translateX(-4%); animation: loader-water-line-flow 8s ease-in-out infinite; }
-.site-loader-pointer-ripple { position: absolute; top: var(--loader-pointer-y); left: var(--loader-pointer-x); width: clamp(150px, 22vw, 320px); aspect-ratio: 1; border: 1px solid rgba(243,246,247,.62); border-radius: 50%; box-shadow: 0 0 0 8px rgba(243,246,247,.08), 0 0 0 18px rgba(243,246,247,.045), inset 0 0 24px rgba(243,246,247,.12); opacity: var(--loader-pointer-opacity); transform: translate(-50%, -50%) scale(.68); animation: loader-pointer-ripple 2.8s ease-out infinite; transition: left .22s var(--ease-out), top .22s var(--ease-out), opacity .25s ease; }
+.site-loader-fluid-canvas { position: absolute; z-index: 3; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; opacity: .92; mix-blend-mode: screen; transition: opacity 1.45s ease; }
+.site-loader.is-exiting .site-loader-fluid-canvas { opacity: .38; }
 .site-loader-portfolio { position: absolute; right: 0; bottom: -.54em; left: 0; color: rgba(243,246,247,.98); font-family: var(--font-hero); font-size: clamp(100px, 16.5vw, 256px); font-weight: 400; line-height: .74; letter-spacing: .075em; text-align: center; text-indent: .075em; text-shadow: 0 8px 34px rgba(0,0,0,.34), 0 0 1px rgba(255,255,255,.76); white-space: nowrap; animation: loader-type-in 1.05s var(--ease-out) .08s both; }
 .site-loader-portfolio-water { opacity: .58; filter: url(#site-loader-water-filter); mix-blend-mode: screen; animation: loader-type-in 1.05s var(--ease-out) .08s both, loader-water-text-shift 8s ease-in-out infinite 1.2s; }
 .site-loader-top-meta { position: absolute; top: 35px; right: max(52px, calc((100vw - 1280px) / 2 + 52px)); left: auto; display: flex; justify-content: flex-end; gap: 28px; color: rgba(243,246,247,.78); font-family: var(--font-display); font-size: 10px; font-weight: 500; letter-spacing: .16em; white-space: nowrap; animation: loader-fade-up .7s var(--ease-out) .18s both; }
@@ -99,9 +97,6 @@ h1, h2, h3 { text-wrap: balance; }
 
 @keyframes loader-type-in { from { opacity: 0; transform: translateY(18px) scale(.965); filter: blur(7px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
 @keyframes loader-fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes loader-water-flow { 0%, 100% { background-position: 0 0, 0 0, 0 0; transform: translate3d(0, 0, 0) rotate(.01deg); } 50% { background-position: 0 0, 72px -34px, -58px 24px; transform: translate3d(1.5%, -1%, 0) rotate(-.25deg); } }
-@keyframes loader-water-line-flow { 0%, 100% { transform: rotate(-2deg) translate3d(-4%, 0, 0); } 50% { transform: rotate(-1deg) translate3d(4%, 8px, 0); } }
-@keyframes loader-pointer-ripple { 0% { opacity: var(--loader-pointer-opacity); transform: translate(-50%, -50%) scale(.68); } 70% { opacity: var(--loader-pointer-opacity); transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.12); } }
 @keyframes loader-water-text-shift { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(3px, -2px, 0); } }
 
 .english-title { font-family: var(--font-hero) !important; font-weight: 400 !important; letter-spacing: .07em !important; text-transform: uppercase; }
