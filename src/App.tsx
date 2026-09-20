@@ -1121,6 +1121,8 @@ const designTools = [
   { icon: '/icons/jianying.ico', name: '剪映', detail: 'VIDEO / EDITING' },
 ]
 
+const experienceIndexWords = ['ONE', 'TWO', 'THREE']
+
 function ExperienceSection() {
   const { language } = useLanguage()
   const cards = experienceCards[language]
@@ -1149,11 +1151,12 @@ function ExperienceSection() {
           {cards.map((item, index) => (
             <Reveal className="experience-column-reveal" delay={index * 320} key={item.date}>
               <article className="experience-column" style={{ '--experience-index': index } as React.CSSProperties}>
-                <div className="experience-column-top"><span>0{index + 1}</span><span>{item.date}</span></div>
+                <div className="experience-column-top"><span>0{index + 1}</span><span>{experienceIndexWords[index]}</span></div>
                 <div className="experience-column-main">
                   <div className="experience-field experience-field-role">
                     <span className="experience-field-label">{localized(language, '01 / 担任职务', '01 / ROLE')}</span>
                     <h3>{item.role}</h3>
+                    <span className="experience-field-date">{item.date}</span>
                   </div>
                   <div className="experience-field experience-field-company">
                     <span className="experience-field-label">{localized(language, '02 / 公司', '02 / COMPANY')}</span>
