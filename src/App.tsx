@@ -569,17 +569,21 @@ function SiteLoader() {
         <div className="site-loader-portfolio site-loader-portfolio-water">PORTFOLIO</div>
         <div className="site-loader-subtitle">个人作品集</div>
       </div>
+      <div className="site-loader-contact" role="button" tabIndex={0} aria-label="联系我，悬停查看微信二维码">
+        <span className="site-loader-contact-trigger">联系我</span>
+        <WechatQr prompt="添加我" />
+      </div>
       <div className="site-loader-meta" aria-hidden="true">
         <span className="site-loader-meta-top">陈兴 / CHEN XING / 2026</span>
         <span className="site-loader-meta-right">SELECTED WORK<br />04 PROJECTS</span>
         <span className="site-loader-meta-bottom">SHENZHEN / SYSTEMS</span>
       </div>
       <nav className="site-loader-directory" aria-label="Portfolio navigation">
-        <Link to="/">HOME</Link>
-        <Link to="/work">WORK</Link>
-        <Link to="/about">ABOUT</Link>
-        <Link to="/contact">CONTACT</Link>
-        <Link to="/work">PROJECTS</Link>
+        <Link to="/"><span className="site-loader-directory-number">01</span><span className="site-loader-directory-copy"><strong>HOME</strong><small>首页</small></span></Link>
+        <Link to="/work"><span className="site-loader-directory-number">02</span><span className="site-loader-directory-copy"><strong>WORK</strong><small>作品</small></span></Link>
+        <Link to="/about"><span className="site-loader-directory-number">03</span><span className="site-loader-directory-copy"><strong>ABOUT</strong><small>关于我</small></span></Link>
+        <Link to="/contact"><span className="site-loader-directory-number">04</span><span className="site-loader-directory-copy"><strong>CONTACT</strong><small>联系</small></span></Link>
+        <Link to="/work"><span className="site-loader-directory-number">05</span><span className="site-loader-directory-copy"><strong>PROJECTS</strong><small>项目</small></span></Link>
       </nav>
     </div>
   )
@@ -1305,14 +1309,14 @@ const wechatQrModules = Array.from({ length: 21 * 21 }, (_, index) => {
   return ((row * 17 + col * 31 + row * col * 7) % 11) < 5
 })
 
-function WechatQr() {
+function WechatQr({ prompt = '扫码添加微信' }: { prompt?: string }) {
   return (
     <div className="wechat-qr-popover" role="tooltip">
       <div className="wechat-qr-grid" aria-hidden="true">
         {wechatQrModules.map((filled, index) => <span key={index} className={filled ? 'is-filled' : ''} />)}
       </div>
       <strong>WECHAT / XX030428</strong>
-      <small>扫码添加微信</small>
+      <small>{prompt}</small>
     </div>
   )
 }
