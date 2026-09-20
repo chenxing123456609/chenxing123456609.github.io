@@ -7,7 +7,6 @@ import {
   Copy,
   Download,
   ExternalLink,
-  ImagePlus,
   Languages,
   Mail,
   Menu,
@@ -666,6 +665,7 @@ function ProjectVisual({ project, detail = false }: { project: Project; detail?:
   const { language } = useLanguage()
   if (project.video) return <VideoPanel src={project.video} poster={project.poster} cover={project.cover} label={localized(language, project.videoLabel ?? `${project.title} 项目演示片段`, project.videoLabelEn ?? `${project.titleEn} product demo`)} compact={!detail} />
   if (!detail && project.cover) return <div className="video-panel is-compact static-cover"><img className="video-cover" src={project.cover} alt="" loading="lazy" decoding="async" /><div className="video-panel-bar"><span><span className="video-dot" />{localized(language, `${project.title} 项目封面`, `${project.titleEn} project cover`)}</span></div></div>
+  if (project.slug === 'bilus-3' && detail) return <div className="bilus-detail-media"><img src="/media/bilus-detail.png" alt={localized(language, '毕鲁斯 3.0 产品界面', 'BILUS 3.0 product interface')} loading="eager" decoding="async" /></div>
   if (project.slug === 'bilus-3') {
     return (
       <div className={`bilus-visual ${detail ? 'is-detail' : ''}`}>
@@ -972,7 +972,7 @@ const designTools = [
   { icon: '/icons/illustrator.svg', name: 'Illustrator', detail: 'VECTOR / BRAND' },
   { icon: '/icons/codex.svg', name: 'Codex', detail: 'CODE / SHIP' },
   { icon: '/icons/gemini.svg', name: 'Gemini', detail: 'RESEARCH / IDEAS' },
-  { icon: null, name: 'Image-2', detail: 'IMAGE / GENERATE' },
+  { icon: '/icons/jianying.ico', name: '剪映', detail: 'VIDEO / EDITING' },
 ]
 
 function ExperienceSection() {
@@ -992,7 +992,7 @@ function ExperienceSection() {
             <div className="experience-tool-grid">
               {designTools.map((tool, index) => (
                 <div className="experience-tool" key={tool.name} style={{ '--tool-index': index } as React.CSSProperties}>
-                  <span className="experience-tool-mark" aria-hidden="true">{tool.icon ? <img src={tool.icon} alt="" /> : <ImagePlus size={19} strokeWidth={1.8} />}</span>
+                  <span className="experience-tool-mark" aria-hidden="true"><img src={tool.icon} alt="" /></span>
                   <span className="experience-tool-copy"><strong>{tool.name}</strong><small>{tool.detail}</small></span>
                 </div>
               ))}

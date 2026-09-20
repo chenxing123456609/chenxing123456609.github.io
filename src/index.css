@@ -404,6 +404,8 @@ body:not(.language-en) .work-page .inner-hero h1 { font-family: var(--font-chine
 .project-visual-silver { background: #181b1d; }
 .bilus-visual { position: relative; min-height: 260px; overflow: hidden; background: #11191b; }
 .bilus-visual.is-detail { min-height: min(72vh, 860px); }
+.bilus-detail-media { overflow: hidden; border-radius: 8px; background: #11191b; }
+.bilus-detail-media img { display: block; width: 100%; height: auto; }
 .bilus-app-shell { position: absolute; inset: 8% 6% 7%; display: grid; grid-template-columns: 16% 1fr; overflow: hidden; border: 1px solid rgba(255,255,255,.2); border-radius: 5px; background: #e9eeee; box-shadow: 20px 28px 65px rgba(0,0,0,.35); transform: perspective(1000px) rotateX(2deg) rotateY(-3deg); transform-origin: center; }
 .bilus-sidebar { display: flex; flex-direction: column; gap: 15px; padding: 18px 13px; color: #282b20; background: #dfe2dd; border-right: 1px solid rgba(44,47,37,.14); }
 .bilus-sidebar strong { margin-bottom: 14px; color: #292d19; font-family: var(--font-latin); font-size: 13px; font-weight: 600; letter-spacing: 0; }
