@@ -19,7 +19,6 @@ import { Link, useLocation } from 'react-router-dom'
 
 const BILUS_URL = 'https://www.aigcacs.com/inspiration'
 const RESUME_URL = '/media/Chen-Xing-UI-Designer-Resume-2026.pdf'
-const LOADING_VIDEO_URL = '/media/loading-animation.mp4'
 
 type Project = {
   slug: string
@@ -313,9 +312,6 @@ function SiteLoader() {
       precision highp float;
       uniform vec2 u_resolution;
       uniform float u_time;
-      uniform vec2 u_pointer;
-      uniform vec2 u_pointer_velocity;
-      uniform float u_pointer_active;
       varying vec2 v_uv;
 
       float hash(vec2 p) {
@@ -338,19 +334,15 @@ function SiteLoader() {
       }
 
       float surfaceHeight(vec2 uv, float time, vec2 aspect) {
-        vec2 pointerDelta = (uv - u_pointer) * aspect;
-        float pointerDistance = length(pointerDelta);
-        vec2 push = u_pointer_velocity * exp(-pointerDistance * 3.5) * u_pointer_active * 0.22;
-        vec2 pushedUv = uv - push;
         vec2 warp = vec2(
-          fbm(pushedUv * 2.2 + vec2(time * 0.045, -time * 0.03)),
-          fbm(pushedUv * 2.2 + vec2(-time * 0.035, time * 0.05))
+          fbm(uv * 2.2 + vec2(time * 0.018, -time * 0.012)),
+          fbm(uv * 2.2 + vec2(-time * 0.014, time * 0.02))
         ) - 0.5;
-        vec2 fluidUv = pushedUv + warp * 0.24;
-        float largeBlobs = fbm(fluidUv * 2.1 + vec2(time * 0.035, -time * 0.02));
-        float mediumBlobs = fbm(fluidUv * 5.2 - vec2(time * 0.05, time * 0.035));
-        float smallBlobs = fbm(fluidUv * 10.0 + vec2(time * 0.08, -time * 0.06));
-        return largeBlobs * 0.11 + mediumBlobs * 0.045 + smallBlobs * 0.015;
+        vec2 fluidUv = uv + warp * 0.24;
+        float largeBlobs = fbm(fluidUv * 2.1 + vec2(time * 0.014, -time * 0.01));
+        float mediumBlobs = fbm(fluidUv * 5.2 - vec2(time * 0.018, time * 0.013));
+        float smallBlobs = fbm(fluidUv * 10.0 + vec2(time * 0.028, -time * 0.02));
+        return largeBlobs * 0.13 + mediumBlobs * 0.055 + smallBlobs * 0.02;
       }
 
       void main() {
@@ -362,19 +354,17 @@ function SiteLoader() {
         float heightX = surfaceHeight(uv + vec2(epsilon, 0.0), time, aspect);
         float heightY = surfaceHeight(uv + vec2(0.0, epsilon), time, aspect);
         vec3 normal = normalize(vec3((height - heightX) * 85.0, (height - heightY) * 85.0, 1.0));
-        vec2 movingLight = vec2(0.34 + sin(time * 0.23) * 0.18, 0.3 + cos(time * 0.19) * 0.16);
-        vec2 lightUv = mix(movingLight, u_pointer, u_pointer_active * 0.72);
+        vec2 lightUv = vec2(0.34 + sin(time * 0.08) * 0.18, 0.3 + cos(time * 0.065) * 0.16);
         vec3 lightDirection = normalize(vec3((lightUv.x - uv.x) * aspect.x, lightUv.y - uv.y, 0.72));
-        vec2 ambientLightUv = vec2(0.76 + sin(time * 0.14) * 0.14, 0.7 + cos(time * 0.17) * 0.12);
+        vec2 ambientLightUv = vec2(0.76 + sin(time * 0.05) * 0.14, 0.7 + cos(time * 0.06) * 0.12);
         vec3 ambientLightDirection = normalize(vec3((ambientLightUv.x - uv.x) * aspect.x, ambientLightUv.y - uv.y, 0.9));
         vec3 viewDirection = vec3(0.0, 0.0, 1.0);
         float diffuse = max(dot(normal, lightDirection), 0.0);
         float specular = pow(max(dot(reflect(-lightDirection, normal), viewDirection), 0.0), 24.0);
         float ambientSpecular = pow(max(dot(reflect(-ambientLightDirection, normal), viewDirection), 0.0), 16.0);
         float fresnel = pow(1.0 - max(dot(normal, viewDirection), 0.0), 2.0);
-        float pushedLight = smoothstep(0.0, 0.65, length(u_pointer_velocity)) * u_pointer_active;
         float blobMask = smoothstep(0.035, 0.078, height);
-        float alpha = clamp(blobMask * 0.16 + diffuse * 0.18 + specular * 0.42 + ambientSpecular * 0.24 + fresnel * 0.14 + pushedLight * specular * 0.3, 0.0, 0.82);
+        float alpha = clamp(blobMask * 0.16 + diffuse * 0.18 + specular * 0.42 + ambientSpecular * 0.24 + fresnel * 0.14, 0.0, 0.82);
         vec3 waterBase = vec3(0.035, 0.055, 0.06);
         vec3 waterHighlight = vec3(0.98, 1.0, 1.0);
         vec3 color = mix(waterBase, waterHighlight, clamp(specular * 1.1 + ambientSpecular * 0.45 + fresnel, 0.0, 1.0));
@@ -416,14 +406,10 @@ function SiteLoader() {
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0)
     const resolutionLocation = gl.getUniformLocation(program, 'u_resolution')
     const timeLocation = gl.getUniformLocation(program, 'u_time')
-    const pointerLocation = gl.getUniformLocation(program, 'u_pointer')
-    const pointerVelocityLocation = gl.getUniformLocation(program, 'u_pointer_velocity')
-    const pointerActiveLocation = gl.getUniformLocation(program, 'u_pointer_active')
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
     gl.clearColor(0, 0, 0, 0)
 
-    const pointer = { x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5, velocityX: 0, velocityY: 0, targetVelocityX: 0, targetVelocityY: 0, active: 0, targetActive: 0 }
     let frame = 0
     const resize = () => {
       const rect = canvas.getBoundingClientRect()
@@ -432,48 +418,19 @@ function SiteLoader() {
       canvas.height = Math.max(1, Math.floor(rect.height * dpr))
       gl.viewport(0, 0, canvas.width, canvas.height)
     }
-    const movePointer = (event: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect()
-      const inside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom
-      if (event.pointerType !== 'mouse' || !inside) {
-        pointer.targetActive = 0
-        pointer.targetVelocityX = 0
-        pointer.targetVelocityY = 0
-        return
-      }
-      const nextX = (event.clientX - rect.left) / Math.max(rect.width, 1)
-      const nextY = 1 - (event.clientY - rect.top) / Math.max(rect.height, 1)
-      pointer.targetVelocityX = Math.max(-1, Math.min(1, (nextX - pointer.targetX) * 12))
-      pointer.targetVelocityY = Math.max(-1, Math.min(1, (nextY - pointer.targetY) * 12))
-      pointer.targetX = nextX
-      pointer.targetY = nextY
-      pointer.targetActive = 1
-    }
     const draw = (time: number) => {
-      pointer.x += (pointer.targetX - pointer.x) * 0.08
-      pointer.y += (pointer.targetY - pointer.y) * 0.08
-      pointer.velocityX += (pointer.targetVelocityX - pointer.velocityX) * 0.18
-      pointer.velocityY += (pointer.targetVelocityY - pointer.velocityY) * 0.18
-      pointer.targetVelocityX *= 0.88
-      pointer.targetVelocityY *= 0.88
-      pointer.active += (pointer.targetActive - pointer.active) * 0.12
       gl.clear(gl.COLOR_BUFFER_BIT)
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height)
       gl.uniform1f(timeLocation, time)
-      gl.uniform2f(pointerLocation, pointer.x, pointer.y)
-      gl.uniform2f(pointerVelocityLocation, pointer.velocityX, pointer.velocityY)
-      gl.uniform1f(pointerActiveLocation, pointer.active)
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
       frame = window.requestAnimationFrame(draw)
     }
     resize()
     window.addEventListener('resize', resize)
-    window.addEventListener('pointermove', movePointer, { passive: true })
     frame = window.requestAnimationFrame(draw)
     return () => {
       window.cancelAnimationFrame(frame)
       window.removeEventListener('resize', resize)
-      window.removeEventListener('pointermove', movePointer)
       gl.deleteBuffer(positionBuffer)
       gl.deleteProgram(program)
     }
@@ -603,18 +560,19 @@ function SiteLoader() {
 
   if (phase === 'done') return null
   return (
-    <div className={`site-loader ${phase === 'exiting' ? 'is-exiting' : ''}`} role="status" aria-live="polite" aria-label={`页面加载 ${progress}%`}>
-      <video ref={videoRef} className="site-loader-video" src={LOADING_VIDEO_URL} autoPlay muted playsInline preload="auto" aria-hidden="true" />
-      <div className="site-loader-shade" aria-hidden="true" />
-      <svg className="site-loader-filter-defs" aria-hidden="true" focusable="false"><defs><filter id="site-loader-water-filter" x="-15%" y="-25%" width="130%" height="150%"><feTurbulence type="fractalNoise" baseFrequency=".012 .055" numOctaves="2" seed="7" result="water-noise"><animate attributeName="baseFrequency" dur="7s" values=".012 .055;.02 .075;.012 .055" repeatCount="indefinite" /></feTurbulence><feDisplacementMap in="SourceGraphic" in2="water-noise" scale="28" xChannelSelector="R" yChannelSelector="B" /></filter></defs></svg>
+    <div className={`site-loader ${phase === 'exiting' ? 'is-exiting' : ''}`} role="status" aria-live="polite" aria-label="作品集加载中">
+      <svg className="site-loader-filter-defs" aria-hidden="true" focusable="false"><defs><filter id="site-loader-water-filter" x="-20%" y="-35%" width="140%" height="170%"><feTurbulence type="fractalNoise" baseFrequency=".008 .032" numOctaves="2" seed="7" result="water-noise"><animate attributeName="baseFrequency" dur="15s" values=".008 .032;.015 .048;.008 .032" repeatCount="indefinite" /></feTurbulence><feDisplacementMap in="SourceGraphic" in2="water-noise" scale="54" xChannelSelector="R" yChannelSelector="B" /></filter></defs></svg>
       <canvas ref={fluidCanvasRef} className="site-loader-fluid-canvas" aria-hidden="true" />
-      <div className="site-loader-glass-top" aria-hidden="true">
+      <div className="site-loader-word" aria-hidden="true">
         <div className="site-loader-portfolio site-loader-portfolio-base">PORTFOLIO</div>
         <div className="site-loader-portfolio site-loader-portfolio-water">PORTFOLIO</div>
-        <div className="site-loader-top-meta"><span>CHEN XING</span><span>SELECTED WORK / 2026</span></div>
       </div>
-      <span className="site-loader-label">LOADING / CHEN XING PORTFOLIO</span>
-      <div className="site-loader-progress"><span className="site-loader-progress-kicker">LOADING INDEX</span><div className="site-loader-progress-number"><strong>{String(progress).padStart(2, '0')}</strong><span>%</span></div></div>
+      <div className="site-loader-meta" aria-hidden="true">
+        <span className="site-loader-meta-top">CHEN XING / 2026</span>
+        <span className="site-loader-meta-left">UI DESIGN<br />AI PRODUCTS<br />VISUAL SYSTEMS</span>
+        <span className="site-loader-meta-right">SELECTED WORK<br />04 PROJECTS</span>
+        <span className="site-loader-meta-bottom">SHENZHEN / SYSTEMS</span>
+      </div>
     </div>
   )
 }
