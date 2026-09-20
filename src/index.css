@@ -257,7 +257,8 @@ h2 em, .inner-hero h1 em { color: var(--signal); font-style: normal; }
 .experience-tool { display: flex; min-width: 0; align-items: center; gap: 8px; padding: 10px 0 12px; color: var(--text); border-bottom: 1px solid rgba(243,246,247,.16); opacity: 0; transform: translateY(-58px) rotate(-3deg); transition: transform .28s var(--ease-out), border-color .24s ease; }
 .experience-tool:hover { transform: translateX(5px); border-bottom-color: rgba(199,205,209,.46); }
 .experience-tool-stack-reveal.is-visible .experience-tool { animation: experience-tool-drop .76s var(--ease-out) forwards; animation-delay: calc(var(--tool-index) * 75ms); }
-.experience-tool-mark { display: grid; flex: 0 0 29px; place-items: center; width: 29px; height: 29px; color: var(--canvas); border: 1px solid var(--signal); background: var(--signal); font-family: var(--font-display); font-size: 11px; font-weight: 700; line-height: 1; letter-spacing: -.04em; }
+.experience-tool-mark { display: grid; flex: 0 0 29px; place-items: center; width: 29px; height: 29px; padding: 4px; color: var(--canvas); border: 1px solid rgba(199,205,209,.72); border-radius: 4px; background: rgba(243,246,247,.96); font-family: var(--font-display); font-size: 11px; font-weight: 700; line-height: 1; letter-spacing: -.04em; }
+.experience-tool-mark img { display: block; width: 20px; height: 20px; object-fit: contain; }
 .experience-tool-copy { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
 .experience-tool-copy strong { overflow: hidden; color: var(--text); font-family: var(--font-display); font-size: 10px; font-weight: 500; line-height: 1.2; letter-spacing: .02em; text-overflow: ellipsis; white-space: nowrap; }
 .experience-tool-copy small { overflow: hidden; color: rgba(243,246,247,.44); font-family: var(--font-condensed); font-size: 8px; letter-spacing: .06em; text-overflow: ellipsis; white-space: nowrap; }

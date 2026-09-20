@@ -7,6 +7,7 @@ import {
   Copy,
   Download,
   ExternalLink,
+  ImagePlus,
   Languages,
   Mail,
   Menu,
@@ -966,12 +967,12 @@ const experienceCards: Record<Language, ExperienceCardData[]> = {
 }
 
 const designTools = [
-  { mark: 'Fg', name: 'Figma', detail: 'UI / PROTOTYPE' },
-  { mark: 'Ps', name: 'Photoshop', detail: 'IMAGE / RETOUCH' },
-  { mark: 'Ai', name: 'Illustrator', detail: 'VECTOR / BRAND' },
-  { mark: 'Cx', name: 'Codex', detail: 'CODE / SHIP' },
-  { mark: 'Gm', name: 'Gemini', detail: 'RESEARCH / IDEAS' },
-  { mark: 'I2', name: 'Image-2', detail: 'IMAGE / GENERATE' },
+  { icon: '/icons/figma.svg', name: 'Figma', detail: 'UI / PROTOTYPE' },
+  { icon: '/icons/photoshop.svg', name: 'Photoshop', detail: 'IMAGE / RETOUCH' },
+  { icon: '/icons/illustrator.svg', name: 'Illustrator', detail: 'VECTOR / BRAND' },
+  { icon: '/icons/codex.svg', name: 'Codex', detail: 'CODE / SHIP' },
+  { icon: '/icons/gemini.svg', name: 'Gemini', detail: 'RESEARCH / IDEAS' },
+  { icon: null, name: 'Image-2', detail: 'IMAGE / GENERATE' },
 ]
 
 function ExperienceSection() {
@@ -991,7 +992,7 @@ function ExperienceSection() {
             <div className="experience-tool-grid">
               {designTools.map((tool, index) => (
                 <div className="experience-tool" key={tool.name} style={{ '--tool-index': index } as React.CSSProperties}>
-                  <span className="experience-tool-mark" aria-hidden="true">{tool.mark}</span>
+                  <span className="experience-tool-mark" aria-hidden="true">{tool.icon ? <img src={tool.icon} alt="" /> : <ImagePlus size={19} strokeWidth={1.8} />}</span>
                   <span className="experience-tool-copy"><strong>{tool.name}</strong><small>{tool.detail}</small></span>
                 </div>
               ))}
