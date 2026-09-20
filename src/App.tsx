@@ -828,7 +828,7 @@ function ProjectVisual({ project, detail = false }: { project: Project; detail?:
   const { language } = useLanguage()
   if (project.video) return <VideoPanel src={project.video} poster={project.poster} cover={project.cover} label={localized(language, project.videoLabel ?? `${project.title} 项目演示片段`, project.videoLabelEn ?? `${project.titleEn} product demo`)} compact={!detail} />
   if (!detail && project.cover) return <div className="video-panel is-compact static-cover"><img className="video-cover" src={project.cover} alt="" loading="lazy" decoding="async" /><div className="video-panel-bar"><span><span className="video-dot" />{localized(language, `${project.title} 项目封面`, `${project.titleEn} project cover`)}</span></div></div>
-  if (project.slug === 'bilus-3' && detail) return <div className="bilus-detail-media"><img src="/media/bilus-detail.png" alt={localized(language, '毕鲁斯 3.0 产品界面', 'BILUS 3.0 product interface')} loading="eager" decoding="async" /></div>
+  if (project.slug === 'bilus-3' && detail) return <div className="bilus-detail-media"><img src="/media/bilus-cover.png" alt={localized(language, '毕鲁斯 3.0 产品展示图', 'BILUS 3.0 product showcase')} loading="eager" decoding="async" /></div>
   if (project.slug === 'bilus-3') {
     return (
       <div className={`bilus-visual ${detail ? 'is-detail' : ''}`}>
