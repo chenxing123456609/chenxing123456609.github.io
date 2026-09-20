@@ -585,11 +585,11 @@ function SiteLoader() {
       </div>
       <button className="site-loader-enter" type="button" onClick={enterNow}>立即进入 <ArrowUpRight size={14} strokeWidth={1.8} /></button>
       <nav className="site-loader-directory" aria-label="Portfolio navigation">
-        <Link to="/"><span className="site-loader-directory-number">01</span><span className="site-loader-directory-copy"><strong>HOME</strong><small>首页</small></span></Link>
-        <Link to="/work"><span className="site-loader-directory-number">02</span><span className="site-loader-directory-copy"><strong>WORK</strong><small>作品</small></span></Link>
-        <Link to="/about"><span className="site-loader-directory-number">03</span><span className="site-loader-directory-copy"><strong>ABOUT</strong><small>关于我</small></span></Link>
-        <Link to="/contact"><span className="site-loader-directory-number">04</span><span className="site-loader-directory-copy"><strong>CONTACT</strong><small>联系</small></span></Link>
-        <Link to="/work"><span className="site-loader-directory-number">05</span><span className="site-loader-directory-copy"><strong>PROJECTS</strong><small>项目</small></span></Link>
+        <Link to="/"><span className="site-loader-directory-number">01</span><span className="site-loader-directory-copy"><strong>首页</strong></span></Link>
+        <Link to="/work"><span className="site-loader-directory-number">02</span><span className="site-loader-directory-copy"><strong>作品</strong></span></Link>
+        <Link to="/about"><span className="site-loader-directory-number">03</span><span className="site-loader-directory-copy"><strong>关于我</strong></span></Link>
+        <Link to="/contact"><span className="site-loader-directory-number">04</span><span className="site-loader-directory-copy"><strong>联系</strong></span></Link>
+        <Link to="/work"><span className="site-loader-directory-number">05</span><span className="site-loader-directory-copy"><strong>项目</strong></span></Link>
       </nav>
     </div>
   )
@@ -756,7 +756,7 @@ function SiteFooter() {
           <h2>MAKE COMPLEX<br /><em>PRODUCTS CLEAR.</em></h2>
         </div>
         <div className="footer-actions">
-          <a className="button button-primary" href="mailto:3068332110@qq.com">{localized(language, '联系我', 'Contact me')} <ArrowUpRight size={17} /></a>
+          <Link className="button button-primary" to="/contact">{localized(language, '联系我', 'Contact me')} <ArrowUpRight size={17} /></Link>
           <a className="button button-glass" href={RESUME_URL} download><Download size={16} />{localized(language, '下载简历', 'Download resume')}</a>
         </div>
       </div>
