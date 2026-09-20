@@ -373,8 +373,11 @@ function SiteLoader() {
         float ambientSpecular = pow(max(dot(reflect(-ambientLightDirection, normal), viewDirection), 0.0), 16.0);
         float fresnel = pow(1.0 - max(dot(normal, viewDirection), 0.0), 2.0);
         float pushedLight = smoothstep(0.0, 0.65, length(u_pointer_velocity)) * u_pointer_active;
-        float alpha = clamp(diffuse * 0.2 + specular * 0.42 + ambientSpecular * 0.24 + fresnel * 0.14 + pushedLight * specular * 0.3, 0.0, 0.78);
-        vec3 color = mix(vec3(0.32, 0.42, 0.45), vec3(0.98, 1.0, 1.0), clamp(specular * 1.1 + ambientSpecular * 0.45 + fresnel, 0.0, 1.0));
+        float blobMask = smoothstep(0.035, 0.078, height);
+        float alpha = clamp(blobMask * 0.16 + diffuse * 0.18 + specular * 0.42 + ambientSpecular * 0.24 + fresnel * 0.14 + pushedLight * specular * 0.3, 0.0, 0.82);
+        vec3 waterBase = vec3(0.035, 0.055, 0.06);
+        vec3 waterHighlight = vec3(0.98, 1.0, 1.0);
+        vec3 color = mix(waterBase, waterHighlight, clamp(specular * 1.1 + ambientSpecular * 0.45 + fresnel, 0.0, 1.0));
         gl_FragColor = vec4(color, alpha);
       }
     `
@@ -603,7 +606,7 @@ function SiteLoader() {
     <div className={`site-loader ${phase === 'exiting' ? 'is-exiting' : ''}`} role="status" aria-live="polite" aria-label={`页面加载 ${progress}%`}>
       <video ref={videoRef} className="site-loader-video" src={LOADING_VIDEO_URL} autoPlay muted playsInline preload="auto" aria-hidden="true" />
       <div className="site-loader-shade" aria-hidden="true" />
-      <svg className="site-loader-filter-defs" aria-hidden="true" focusable="false"><defs><filter id="site-loader-water-filter" x="-15%" y="-25%" width="130%" height="150%"><feTurbulence type="fractalNoise" baseFrequency=".012 .055" numOctaves="2" seed="7" result="water-noise"><animate attributeName="baseFrequency" dur="7s" values=".012 .055;.02 .075;.012 .055" repeatCount="indefinite" /></feTurbulence><feDisplacementMap in="SourceGraphic" in2="water-noise" scale="15" xChannelSelector="R" yChannelSelector="B" /></filter></defs></svg>
+      <svg className="site-loader-filter-defs" aria-hidden="true" focusable="false"><defs><filter id="site-loader-water-filter" x="-15%" y="-25%" width="130%" height="150%"><feTurbulence type="fractalNoise" baseFrequency=".012 .055" numOctaves="2" seed="7" result="water-noise"><animate attributeName="baseFrequency" dur="7s" values=".012 .055;.02 .075;.012 .055" repeatCount="indefinite" /></feTurbulence><feDisplacementMap in="SourceGraphic" in2="water-noise" scale="28" xChannelSelector="R" yChannelSelector="B" /></filter></defs></svg>
       <canvas ref={fluidCanvasRef} className="site-loader-fluid-canvas" aria-hidden="true" />
       <div className="site-loader-glass-top" aria-hidden="true">
         <div className="site-loader-portfolio site-loader-portfolio-base">PORTFOLIO</div>
