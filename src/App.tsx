@@ -314,6 +314,7 @@ function SiteLoader() {
       uniform vec2 u_resolution;
       uniform float u_time;
       uniform vec2 u_pointer;
+      uniform vec2 u_pointer_velocity;
       uniform float u_pointer_active;
       varying vec2 v_uv;
 
@@ -337,13 +338,19 @@ function SiteLoader() {
       }
 
       float surfaceHeight(vec2 uv, float time, vec2 aspect) {
-        float terrain = fbm(uv * vec2(3.2, 2.4) + vec2(time * 0.04, -time * 0.028));
         vec2 pointerDelta = (uv - u_pointer) * aspect;
         float pointerDistance = length(pointerDelta);
-        float ripple = sin(pointerDistance * 46.0 - time * 4.2) * exp(-pointerDistance * 5.0) * u_pointer_active * 0.08;
-        float broadRipple = sin(pointerDistance * 12.0 - time * 2.2) * exp(-pointerDistance * 2.8) * u_pointer_active * 0.035;
-        float current = sin(uv.x * 8.0 + uv.y * 4.0 + terrain * 5.0 + time * 0.35) * 0.018;
-        return terrain * 0.09 + ripple + broadRipple + current;
+        vec2 push = u_pointer_velocity * exp(-pointerDistance * 3.5) * u_pointer_active * 0.22;
+        vec2 pushedUv = uv - push;
+        vec2 warp = vec2(
+          fbm(pushedUv * 2.2 + vec2(time * 0.045, -time * 0.03)),
+          fbm(pushedUv * 2.2 + vec2(-time * 0.035, time * 0.05))
+        ) - 0.5;
+        vec2 fluidUv = pushedUv + warp * 0.24;
+        float largeBlobs = fbm(fluidUv * 2.1 + vec2(time * 0.035, -time * 0.02));
+        float mediumBlobs = fbm(fluidUv * 5.2 - vec2(time * 0.05, time * 0.035));
+        float smallBlobs = fbm(fluidUv * 10.0 + vec2(time * 0.08, -time * 0.06));
+        return largeBlobs * 0.11 + mediumBlobs * 0.045 + smallBlobs * 0.015;
       }
 
       void main() {
@@ -365,8 +372,8 @@ function SiteLoader() {
         float specular = pow(max(dot(reflect(-lightDirection, normal), viewDirection), 0.0), 24.0);
         float ambientSpecular = pow(max(dot(reflect(-ambientLightDirection, normal), viewDirection), 0.0), 16.0);
         float fresnel = pow(1.0 - max(dot(normal, viewDirection), 0.0), 2.0);
-        float pointerGlow = exp(-length((uv - u_pointer) * aspect) * 4.0) * u_pointer_active;
-        float alpha = clamp(diffuse * 0.2 + specular * 0.42 + ambientSpecular * 0.24 + fresnel * 0.14 + pointerGlow * 0.18, 0.0, 0.78);
+        float pushedLight = smoothstep(0.0, 0.65, length(u_pointer_velocity)) * u_pointer_active;
+        float alpha = clamp(diffuse * 0.2 + specular * 0.42 + ambientSpecular * 0.24 + fresnel * 0.14 + pushedLight * specular * 0.3, 0.0, 0.78);
         vec3 color = mix(vec3(0.32, 0.42, 0.45), vec3(0.98, 1.0, 1.0), clamp(specular * 1.1 + ambientSpecular * 0.45 + fresnel, 0.0, 1.0));
         gl_FragColor = vec4(color, alpha);
       }
@@ -407,12 +414,13 @@ function SiteLoader() {
     const resolutionLocation = gl.getUniformLocation(program, 'u_resolution')
     const timeLocation = gl.getUniformLocation(program, 'u_time')
     const pointerLocation = gl.getUniformLocation(program, 'u_pointer')
+    const pointerVelocityLocation = gl.getUniformLocation(program, 'u_pointer_velocity')
     const pointerActiveLocation = gl.getUniformLocation(program, 'u_pointer_active')
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
     gl.clearColor(0, 0, 0, 0)
 
-    const pointer = { x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5, active: 0, targetActive: 0 }
+    const pointer = { x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5, velocityX: 0, velocityY: 0, targetVelocityX: 0, targetVelocityY: 0, active: 0, targetActive: 0 }
     let frame = 0
     const resize = () => {
       const rect = canvas.getBoundingClientRect()
@@ -426,20 +434,31 @@ function SiteLoader() {
       const inside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom
       if (event.pointerType !== 'mouse' || !inside) {
         pointer.targetActive = 0
+        pointer.targetVelocityX = 0
+        pointer.targetVelocityY = 0
         return
       }
-      pointer.targetX = (event.clientX - rect.left) / Math.max(rect.width, 1)
-      pointer.targetY = 1 - (event.clientY - rect.top) / Math.max(rect.height, 1)
+      const nextX = (event.clientX - rect.left) / Math.max(rect.width, 1)
+      const nextY = 1 - (event.clientY - rect.top) / Math.max(rect.height, 1)
+      pointer.targetVelocityX = Math.max(-1, Math.min(1, (nextX - pointer.targetX) * 12))
+      pointer.targetVelocityY = Math.max(-1, Math.min(1, (nextY - pointer.targetY) * 12))
+      pointer.targetX = nextX
+      pointer.targetY = nextY
       pointer.targetActive = 1
     }
     const draw = (time: number) => {
       pointer.x += (pointer.targetX - pointer.x) * 0.08
       pointer.y += (pointer.targetY - pointer.y) * 0.08
+      pointer.velocityX += (pointer.targetVelocityX - pointer.velocityX) * 0.18
+      pointer.velocityY += (pointer.targetVelocityY - pointer.velocityY) * 0.18
+      pointer.targetVelocityX *= 0.88
+      pointer.targetVelocityY *= 0.88
       pointer.active += (pointer.targetActive - pointer.active) * 0.12
       gl.clear(gl.COLOR_BUFFER_BIT)
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height)
       gl.uniform1f(timeLocation, time)
       gl.uniform2f(pointerLocation, pointer.x, pointer.y)
+      gl.uniform2f(pointerVelocityLocation, pointer.velocityX, pointer.velocityY)
       gl.uniform1f(pointerActiveLocation, pointer.active)
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
       frame = window.requestAnimationFrame(draw)
