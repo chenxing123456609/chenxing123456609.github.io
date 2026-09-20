@@ -295,6 +295,12 @@ function SiteLoader() {
   const [progress, setProgress] = useState(0)
   const [phase, setPhase] = useState<'loading' | 'exiting' | 'done'>('loading')
 
+  const enterNow = () => {
+    document.body.classList.remove('is-loading')
+    window.dispatchEvent(new Event('portfolio-loader-complete'))
+    setPhase('done')
+  }
+
   useEffect(() => {
     const canvas = fluidCanvasRef.current
     const gl = canvas?.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: false })
@@ -576,8 +582,8 @@ function SiteLoader() {
       <div className="site-loader-meta" aria-hidden="true">
         <span className="site-loader-meta-top">陈兴 / CHEN XING / 2026</span>
         <span className="site-loader-meta-right">SELECTED WORK<br />04 PROJECTS</span>
-        <span className="site-loader-meta-bottom">SHENZHEN / SYSTEMS</span>
       </div>
+      <button className="site-loader-enter" type="button" onClick={enterNow}>立即进入 <ArrowUpRight size={14} strokeWidth={1.8} /></button>
       <nav className="site-loader-directory" aria-label="Portfolio navigation">
         <Link to="/"><span className="site-loader-directory-number">01</span><span className="site-loader-directory-copy"><strong>HOME</strong><small>首页</small></span></Link>
         <Link to="/work"><span className="site-loader-directory-number">02</span><span className="site-loader-directory-copy"><strong>WORK</strong><small>作品</small></span></Link>

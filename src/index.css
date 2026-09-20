@@ -98,6 +98,8 @@ h1, h2, h3 { text-wrap: balance; }
 .site-loader-meta-left { position: absolute; bottom: 30px; left: max(24px, calc((100vw - 1280px) / 2)); }
 .site-loader-meta-right { position: absolute; top: 30px; right: max(24px, calc((100vw - 1280px) / 2)); text-align: right; }
 .site-loader-meta-bottom { position: absolute; right: max(24px, calc((100vw - 1280px) / 2)); bottom: 30px; }
+.site-loader-enter { position: absolute; z-index: 6; right: max(24px, calc((100vw - 1280px) / 2)); bottom: 30px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; color: rgba(243,246,247,.58); border: 0; border-radius: 4px; background: transparent; font-family: var(--font-chinese-display); font-size: 13px; font-weight: 400; line-height: 1; cursor: pointer; transition: color .2s ease, background-color .2s ease, transform .2s var(--ease-out); }
+.site-loader-enter:hover, .site-loader-enter:focus-visible { color: rgba(243,246,247,.98); background: rgba(243,246,247,.065); transform: translateY(-2px); }
 .site-loader-directory { position: absolute; z-index: 5; bottom: 30px; left: max(24px, calc((100vw - 1280px) / 2)); display: flex; flex-direction: column; gap: 2px; pointer-events: auto; font-family: var(--font-condensed); font-size: clamp(14px, 1.4vw, 20px); font-weight: 400; letter-spacing: .18em; line-height: 1.05; }
 .site-loader-directory a { display: grid; grid-template-columns: 2.5em minmax(0, 1fr); gap: 10px; align-items: center; width: max-content; min-width: 2.5em; padding: 2px 9px 2px 0; color: rgba(243,246,247,.58); border-radius: 4px; transition: color .2s ease, background-color .2s ease, transform .2s var(--ease-out), min-width .24s var(--ease-out); }
 .site-loader-directory a:hover, .site-loader-directory a:focus-visible { min-width: 150px; color: rgba(243,246,247,.98); background: rgba(243,246,247,.065); transform: translateX(5px); }
@@ -651,7 +653,7 @@ body:not(.language-en) .work-page .inner-hero h1 { font-family: var(--font-chine
   .site-loader-meta-top { top: 24px; left: 20px; }
   .site-loader-meta-left { top: auto; bottom: 28px; left: 20px; transform: none; }
   .site-loader-meta-right { top: 24px; right: 20px; transform: none; }
-  .site-loader-meta-bottom { display: block; right: 20px; bottom: 28px; width: 48vw; max-width: 48vw; white-space: normal; text-align: right; }
+  .site-loader-enter { right: 20px; bottom: 28px; font-size: 12px; }
   .site-loader-directory { bottom: 28px; left: 20px; gap: 1px; font-size: 12px; }
   .site-loader-directory a { grid-template-columns: 2.4em minmax(0, 1fr); gap: 7px; padding: 1px 6px 1px 0; }
   .site-loader-directory a:hover, .site-loader-directory a:focus-visible { min-width: 125px; }
