@@ -93,6 +93,9 @@ h1, h2, h3 { text-wrap: balance; }
 .site-loader-meta-left { position: absolute; bottom: 30px; left: max(24px, calc((100vw - 1280px) / 2)); }
 .site-loader-meta-right { position: absolute; top: 30px; right: max(24px, calc((100vw - 1280px) / 2)); text-align: right; }
 .site-loader-meta-bottom { position: absolute; right: max(24px, calc((100vw - 1280px) / 2)); bottom: 30px; }
+.site-loader-directory { position: absolute; z-index: 5; bottom: 30px; left: max(24px, calc((100vw - 1280px) / 2)); display: flex; flex-direction: column; gap: 7px; pointer-events: auto; font-family: var(--font-condensed); font-size: clamp(14px, 1.4vw, 20px); font-weight: 400; letter-spacing: .18em; line-height: 1.05; }
+.site-loader-directory a { width: max-content; color: rgba(243,246,247,.58); transition: color .2s ease, transform .2s var(--ease-out); }
+.site-loader-directory a:hover, .site-loader-directory a:focus-visible { color: rgba(243,246,247,.98); transform: translateX(5px) scale(1.08); }
 .site-loader-top-meta { position: absolute; top: 35px; right: max(52px, calc((100vw - 1280px) / 2 + 52px)); left: auto; display: flex; justify-content: flex-end; gap: 28px; color: rgba(243,246,247,.78); font-family: var(--font-display); font-size: 10px; font-weight: 500; letter-spacing: .16em; white-space: nowrap; animation: loader-fade-up .7s var(--ease-out) .18s both; }
 .site-loader.is-exiting .site-loader-glass-top { opacity: .38; -webkit-backdrop-filter: blur(22px) saturate(.7); backdrop-filter: blur(22px) saturate(.7); }
 .site-loader-label { position: absolute; z-index: 4; top: 36px; left: max(24px, calc((100vw - 1280px) / 2)); color: rgba(243,246,247,.72); font-family: var(--font-display); font-size: 10px; font-weight: 500; letter-spacing: .14em; animation: loader-fade-up .7s var(--ease-out) .28s both; }
@@ -636,6 +639,7 @@ body:not(.language-en) .work-page .inner-hero h1 { font-family: var(--font-chine
   .site-loader-meta-left { top: auto; bottom: 28px; left: 20px; transform: none; }
   .site-loader-meta-right { top: 24px; right: 20px; transform: none; }
   .site-loader-meta-bottom { display: block; right: 20px; bottom: 28px; width: 48vw; max-width: 48vw; white-space: normal; text-align: right; }
+  .site-loader-directory { bottom: 28px; left: 20px; gap: 6px; font-size: 12px; }
   .site-loader-top-meta { top: 24px; right: 29px; bottom: auto; left: auto; gap: 16px; font-size: 8px; letter-spacing: .1em; }
   .site-loader-label { top: 52px; left: 24px; font-size: 8px; }
   .site-loader-progress { right: auto; bottom: 20px; left: 22px; }

@@ -574,6 +574,13 @@ function SiteLoader() {
         <span className="site-loader-meta-right">SELECTED WORK<br />04 PROJECTS</span>
         <span className="site-loader-meta-bottom">SHENZHEN / SYSTEMS</span>
       </div>
+      <nav className="site-loader-directory" aria-label="Portfolio navigation">
+        <Link to="/">HOME</Link>
+        <Link to="/work">WORK</Link>
+        <Link to="/about">ABOUT</Link>
+        <Link to="/contact">CONTACT</Link>
+        <Link to="/work">PROJECTS</Link>
+      </nav>
     </div>
   )
 }
