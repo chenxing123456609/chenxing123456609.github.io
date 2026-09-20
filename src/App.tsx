@@ -291,9 +291,22 @@ function SignalMark({ className = '' }: { className?: string }) {
 function SiteLoader() {
   const loaderPlaybackDuration = 4
   const loaderExitDuration = 1450
+  const loaderRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [progress, setProgress] = useState(0)
   const [phase, setPhase] = useState<'loading' | 'exiting' | 'done'>('loading')
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== 'mouse') return
+    const rect = event.currentTarget.getBoundingClientRect()
+    event.currentTarget.style.setProperty('--loader-pointer-x', `${event.clientX - rect.left}px`)
+    event.currentTarget.style.setProperty('--loader-pointer-y', `${event.clientY - rect.top}px`)
+    event.currentTarget.style.setProperty('--loader-pointer-opacity', '1')
+  }
+
+  const handlePointerLeave = () => {
+    loaderRef.current?.style.setProperty('--loader-pointer-opacity', '0')
+  }
 
   useEffect(() => {
     document.body.classList.add('is-loading')
@@ -419,11 +432,14 @@ function SiteLoader() {
 
   if (phase === 'done') return null
   return (
-    <div className={`site-loader ${phase === 'exiting' ? 'is-exiting' : ''}`} role="status" aria-live="polite" aria-label={`页面加载 ${progress}%`}>
+    <div ref={loaderRef} className={`site-loader ${phase === 'exiting' ? 'is-exiting' : ''}`} role="status" aria-live="polite" aria-label={`页面加载 ${progress}%`} onPointerMove={handlePointerMove} onPointerLeave={handlePointerLeave}>
       <video ref={videoRef} className="site-loader-video" src={LOADING_VIDEO_URL} autoPlay muted playsInline preload="auto" aria-hidden="true" />
       <div className="site-loader-shade" aria-hidden="true" />
+      <svg className="site-loader-filter-defs" aria-hidden="true" focusable="false"><defs><filter id="site-loader-water-filter" x="-15%" y="-25%" width="130%" height="150%"><feTurbulence type="fractalNoise" baseFrequency=".012 .055" numOctaves="2" seed="7" result="water-noise"><animate attributeName="baseFrequency" dur="7s" values=".012 .055;.02 .075;.012 .055" repeatCount="indefinite" /></feTurbulence><feDisplacementMap in="SourceGraphic" in2="water-noise" scale="15" xChannelSelector="R" yChannelSelector="B" /></filter></defs></svg>
+      <div className="site-loader-water-surface" aria-hidden="true"><span className="site-loader-pointer-ripple" /><span className="site-loader-water-line" /></div>
       <div className="site-loader-glass-top" aria-hidden="true">
-        <div className="site-loader-portfolio">PORTFOLIO</div>
+        <div className="site-loader-portfolio site-loader-portfolio-base">PORTFOLIO</div>
+        <div className="site-loader-portfolio site-loader-portfolio-water">PORTFOLIO</div>
         <div className="site-loader-top-meta"><span>CHEN XING</span><span>SELECTED WORK / 2026</span></div>
       </div>
       <span className="site-loader-label">LOADING / CHEN XING PORTFOLIO</span>
