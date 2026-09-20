@@ -398,7 +398,7 @@ function IntroVisualSection() {
               <div className="intro-profile-line"><span>学历 / EDUCATION</span><strong>本科 / BACHELOR'S DEGREE</strong></div>
               <div className="intro-profile-line"><span>专业 / MAJOR</span><strong>视觉传达设计 / VISUAL COMMUNICATION DESIGN</strong></div>
               <div className="intro-profile-line"><span>期望薪资 / EXPECTATION</span><strong>面议 / NEGOTIABLE</strong></div>
-              <div className="intro-profile-line"><span>到岗时间 / START DATE</span><strong>待沟通 / TO DISCUSS</strong></div>
+              <div className="intro-profile-line"><span>到岗时间 / START DATE</span><strong>一个月以内 / WITHIN ONE MONTH</strong></div>
               <div className="intro-profile-line"><span>现居地 / BASE</span><strong>深圳 / SHENZHEN</strong></div>
             </div>
             <div className="intro-info-footer">
