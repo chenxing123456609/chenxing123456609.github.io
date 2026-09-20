@@ -226,7 +226,7 @@ body:not(.language-en) .next-project strong { font-family: var(--font-chinese-di
 .intro-visual-section.is-about-revealed .intro-profile-line:nth-child(4) { animation-delay: .42s; }
 .intro-visual-section.is-about-revealed .intro-profile-line:nth-child(5) { animation-delay: .52s; }
 .intro-visual-section.is-about-revealed .intro-profile-line:nth-child(6) { animation-delay: .62s; }
-.intro-profile-line span { color: rgba(243,246,247,.52); font-family: var(--font-condensed); font-size: 9px; letter-spacing: .1em; }
+.intro-profile-line span { color: rgba(243,246,247,.62); font-family: var(--font-condensed); font-size: 12px; line-height: 1.45; letter-spacing: .08em; }
 .intro-profile-line strong { margin: 0; color: rgba(243,246,247,.9); font-family: var(--font-chinese-display); font-size: 15px; font-weight: 400; letter-spacing: .04em; }
 .intro-info-footer { display: grid; grid-template-columns: minmax(0, 620px) minmax(230px, auto); align-items: end; justify-content: space-between; gap: 48px; width: 100%; margin-top: 22px; }
 .intro-head-info p { max-width: 620px; margin: 0; color: rgba(243,246,247,.72); font-size: 15px; line-height: 1.8; }
@@ -647,8 +647,8 @@ body:not(.language-en) .work-page .inner-hero h1 { font-family: var(--font-chine
   .intro-info-footer { display: flex; flex-direction: column; align-items: stretch; gap: 13px; margin-top: 12px; }
   .intro-head-info p { max-width: 330px; font-size: 15px; line-height: 1.75; }
   .intro-profile-list { margin-top: 18px; }
-  .intro-profile-line { grid-template-columns: 1fr 1.2fr; gap: 8px; padding: 8px 0; }
-  .intro-profile-line span { font-size: 10px; }
+  .intro-profile-line { grid-template-columns: 1fr 1.2fr; gap: 8px; padding: 10px 0; }
+  .intro-profile-line span { font-size: 13px; line-height: 1.4; letter-spacing: .06em; }
   .intro-profile-line strong { font-size: 13px; }
   .intro-visual-meta { align-items: flex-start; font-size: 10px; text-align: left; }
   .intro-visual-meta strong { font-size: 13px; }
