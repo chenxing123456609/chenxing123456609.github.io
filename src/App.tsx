@@ -2,17 +2,27 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import {
   ArrowDown,
   ArrowLeft,
+  ArrowRight,
   ArrowUpRight,
   Check,
+  CircleAlert,
+  CircleCheck,
+  CircleDot,
+  Component,
   Copy,
   Download,
   ExternalLink,
+  Layers3,
   Languages,
+  LayoutTemplate,
   Mail,
   Menu,
   MoveUpRight,
+  Palette,
   Phone,
   Play,
+  Sparkles,
+  Type,
   X,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
@@ -235,6 +245,198 @@ const caseStudies: Record<string, CaseStudy> = {
     ],
     note: '这个项目体现了我从模糊需求中建立方向、从概念推进到落地的能力，也体现了我对 C 端项目的整体负责意识。',
     noteEn: 'This project shows my ability to create direction from ambiguity and carry a consumer project from concept to delivery with full ownership.',
+  },
+}
+
+type DualCopy = { zh: string; en: string }
+type JourneyStep = { stage: DualCopy; title: DualCopy; goal: DualCopy; detail: DualCopy }
+type SceneCard = { scene: DualCopy; strategy: DualCopy; reason: DualCopy }
+type MetricCard = { value: DualCopy; label: DualCopy; detail: DualCopy }
+type EvidenceRow = { before: DualCopy; decision: DualCopy; signal: DualCopy }
+type EmotionCard = { layer: DualCopy; title: DualCopy; decision: DualCopy; purpose: DualCopy }
+type CaseNarrative = {
+  problemTitle: DualCopy
+  problemBody: DualCopy
+  problemPoints: DualCopy[]
+  hypothesis: DualCopy
+  journey: JourneyStep[]
+  scenes: SceneCard[]
+  metrics: MetricCard[]
+  evidence: EvidenceRow[]
+  emotion: EmotionCard[]
+  systemSummary: DualCopy
+  perspective: DualCopy
+}
+
+const dual = (zh: string, en: string): DualCopy => ({ zh, en })
+
+const systemLayers: Array<{ icon: 'palette' | 'type' | 'component' | 'layout' | 'layers'; name: DualCopy; detail: DualCopy }> = [
+  { icon: 'palette', name: dual('原子 / 色彩', 'Atoms / Color'), detail: dual('主色、状态色、表面层级与对比度规则。', 'Brand, status, surface, and contrast rules.') },
+  { icon: 'type', name: dual('原子 / 字体', 'Atoms / Type'), detail: dual('标题、正文、辅助信息的字号与行高阶梯。', 'Type scale and line-height rhythm for every role.') },
+  { icon: 'component', name: dual('分子 / 组件', 'Molecules / Components'), detail: dual('按钮、输入、标签、卡片等高频交互单元。', 'Buttons, inputs, tags, and cards for repeated actions.') },
+  { icon: 'layout', name: dual('组织 / 结构', 'Organisms / Structure'), detail: dual('导航、列表、工作台与反馈区域的组合方式。', 'Navigation, lists, workspaces, and feedback regions.') },
+  { icon: 'layers', name: dual('模板 / 页面', 'Templates / Pages'), detail: dual('将场景、内容和组件组合成可交付页面。', 'Reusable page compositions for real product scenarios.') },
+]
+
+const reusableComponents: Array<{ name: DualCopy; state: DualCopy }> = [
+  { name: dual('主按钮', 'Primary button'), state: dual('默认 / 悬停 / 禁用', 'Default / hover / disabled') },
+  { name: dual('输入框', 'Input field'), state: dual('空 / 聚焦 / 错误', 'Empty / focused / error') },
+  { name: dual('筛选标签', 'Filter chip'), state: dual('未选 / 已选 / 溢出', 'Idle / selected / overflow') },
+  { name: dual('内容卡片', 'Content card'), state: dual('默认 / 加载 / 空态', 'Default / loading / empty') },
+  { name: dual('进度反馈', 'Progress feedback'), state: dual('等待 / 处理中 / 完成', 'Waiting / processing / done') },
+  { name: dual('导航栏', 'Navigation bar'), state: dual('默认 / 当前项 / 折叠', 'Default / current / collapsed') },
+  { name: dual('结果面板', 'Result panel'), state: dual('预览 / 编辑 / 分享', 'Preview / edit / share') },
+  { name: dual('通知提示', 'Toast notice'), state: dual('成功 / 风险 / 失败', 'Success / warning / error') },
+  { name: dual('空状态', 'Empty state'), state: dual('首用 / 日常 / 恢复', 'First use / daily / recover') },
+]
+
+const stateShowcase: Array<{ label: DualCopy; note: DualCopy; tone: 'quiet' | 'active' | 'danger' }> = [
+  { label: dual('空状态', 'EMPTY'), note: dual('给出下一步，而不是只说“暂无内容”。', 'Offer a next step instead of only saying “nothing here”.'), tone: 'quiet' },
+  { label: dual('加载状态', 'LOADING'), note: dual('让等待有进度，减少重复点击和不确定感。', 'Make waiting legible and prevent duplicate actions.'), tone: 'active' },
+  { label: dual('错误状态', 'ERROR'), note: dual('解释原因，保留恢复路径与已输入内容。', 'Explain the cause and preserve a recovery path.'), tone: 'danger' },
+  { label: dual('完成状态', 'DONE'), note: dual('用轻量反馈确认结果，并引导下一步。', 'Confirm the result lightly and point to what comes next.'), tone: 'active' },
+]
+
+const caseNarratives: Record<string, CaseNarrative> = {
+  'bilus-3': {
+    problemTitle: dual('灵感很多，下一步却不够清楚。', 'Inspiration was everywhere; the next step was not.'),
+    problemBody: dual('用户可以看到内容，却容易在浏览、收藏、创作之间来回跳转。改版的目标不是增加入口，而是把一次“看到灵感”变成可以继续完成的路径。', 'Users could find content, but moved back and forth between browsing, saving, and making. The goal was not more entry points, but a path that could continue after inspiration.'),
+    problemPoints: [dual('内容层级混杂，价值需要被重新解释。', 'Content hierarchy blurred the value of each screen.'), dual('关键动作分散，用户难以形成连续任务。', 'Key actions were scattered across disconnected moments.'), dual('上线后缺少可持续验证的反馈闭环。', 'The post-launch loop needed a clearer feedback signal.')],
+    hypothesis: dual('把“发现 → 选择 → 创作 → 分享”整理成一条连续旅程，让每一次点击都更接近完成。', 'Connect discover → choose → make → share into one continuous journey, so every click moves the user closer to completion.'),
+    journey: [
+      { stage: dual('发现需求', 'DISCOVER'), title: dual('先让灵感被看懂', 'Make the value legible'), goal: dual('3 秒内理解内容价值。', 'Understand the value in three seconds.'), detail: dual('用清晰的首屏信息和内容分组，降低进入成本。', 'Clarify the first view and group content to reduce entry cost.') },
+      { stage: dual('选方案', 'CHOOSE'), title: dual('把比较变成选择', 'Turn browsing into choice'), goal: dual('快速收藏、筛选并对比。', 'Save, filter, and compare quickly.'), detail: dual('把高频动作放在内容附近，减少往返。', 'Keep high-frequency actions close to the content.') },
+      { stage: dual('用产品', 'USE'), title: dual('从灵感进入工作台', 'Move into the workspace'), goal: dual('让创作动作自然接续。', 'Continue into making without a reset.'), detail: dual('用稳定的布局和状态反馈承接任务。', 'Use stable layout and feedback to carry the task forward.') },
+      { stage: dual('获反馈', 'FEEDBACK'), title: dual('让结果及时回应', 'Respond at the right moment'), goal: dual('知道系统正在做什么。', 'Know what the system is doing.'), detail: dual('用处理中、完成和异常状态减少等待焦虑。', 'Use processing, done, and error states to reduce uncertainty.') },
+      { stage: dual('分享', 'SHARE'), title: dual('把完成感带出去', 'Take the result outward'), goal: dual('让成果容易被保存和分享。', 'Make the result easy to save and share.'), detail: dual('在结果页保留明确的导出和分享出口。', 'Keep clear export and share actions on the result view.') },
+    ],
+    scenes: [
+      { scene: dual('灵感浏览', 'Inspiration browse'), strategy: dual('大图 + 低干扰元信息', 'Large visuals + quiet metadata'), reason: dual('让用户先建立兴趣，再决定是否深入。', 'Let interest form before asking for a decision.') },
+      { scene: dual('工作台创作', 'Workspace making'), strategy: dual('高对比 + 稳定层级', 'High contrast + stable hierarchy'), reason: dual('减少复杂工具带来的认知负担。', 'Reduce cognitive load in a complex tool.') },
+      { scene: dual('结果分享', 'Result sharing'), strategy: dual('沉浸预览 + 单一主动作', 'Immersive preview + one primary action'), reason: dual('把注意力集中到成果和下一步。', 'Focus attention on the result and what follows.') },
+    ],
+    metrics: [
+      { value: dual('上线数据', 'Launch data'), label: dual('验证方式', 'Validation'), detail: dual('持续观察用户量与核心路径表现。', 'Observed user growth and core journey performance.') },
+      { value: dual('5 人', '5 people'), label: dual('可用性测试', 'Usability test'), detail: dual('聚焦发现、收藏与进入工作台的连续性。', 'Focused on continuity from discovery to workspace.') },
+      { value: dual('一条路径', 'One path'), label: dual('设计目标', 'Design target'), detail: dual('让发现、创作和分享形成可复用闭环。', 'Make discover, make, and share a reusable loop.') },
+    ],
+    evidence: [
+      { before: dual('用户看到了内容，但停在浏览。', 'Users saw content but stopped browsing.'), decision: dual('把下一步动作前置到内容上下文。', 'Place the next action inside the content context.'), signal: dual('从浏览进入创作的路径更连续。', 'The path from browse to make became more continuous.') },
+      { before: dual('反馈分散在多个状态里。', 'Feedback was scattered across states.'), decision: dual('统一处理中、完成、异常的反馈语言。', 'Unify processing, done, and error feedback.'), signal: dual('减少重复点击与等待疑问。', 'Reduce duplicate clicks and uncertainty.') },
+      { before: dual('项目结果难以被带走。', 'Results were hard to take outward.'), decision: dual('在结果页保留导出与分享出口。', 'Keep export and share actions on the result page.'), signal: dual('完成后的分享意愿更容易被承接。', 'Post-completion sharing intent has a clear outlet.') },
+    ],
+    emotion: [
+      { layer: dual('本能层', 'VIS CERAL'), title: dual('先让人想看', 'Make people want to look'), decision: dual('用大图、克制的银灰和明确层级吸引视线。', 'Use large visuals, restrained silver, and clear hierarchy.'), purpose: dual('建立“这是一个可信工具”的第一印象。', 'Create the first impression of a trustworthy tool.') },
+      { layer: dual('行为层', 'BEHAVIORAL'), title: dual('再让人敢用', 'Make action feel safe'), decision: dual('每个关键动作都给出即时状态与恢复路径。', 'Give every key action instant feedback and recovery.'), purpose: dual('降低探索成本，让用户敢于继续。', 'Lower the cost of exploration so users continue.') },
+      { layer: dual('反思层', 'REFLECTIVE'), title: dual('最后愿意分享', 'Make the result worth sharing'), decision: dual('用完成反馈和清晰结果页强化成就感。', 'Use completion feedback and a clear result view.'), purpose: dual('让用户把一次使用记成一次完成。', 'Turn one session into a sense of accomplishment.') },
+    ],
+    systemSummary: dual('以真实使用路径为骨架，把视觉、组件和反馈状态收敛成一套可持续迭代的产品系统。', 'Use the real journey as the skeleton, then converge visual language, components, and feedback into a system that can keep iterating.'),
+    perspective: dual('这次改版让我确认：好的作品集不只展示“做了什么”，还要把上线后的观察、判断和下一轮迭代说清楚。下一步会继续补充路径数据，让设计决策与增长结果形成更紧的证据链。', 'This redesign reinforced that a case study should explain the observation, decisions, and next iteration after launch. The next step is to connect journey data and growth into a tighter evidence chain.'),
+  },
+  'aojin-ai': {
+    problemTitle: dual('流程已经成立，表达还不够准确。', 'The flow worked; the expression did not yet.'),
+    problemBody: dual('奥锦装修 AI 的核心任务很集中，真正的问题是视觉层级和状态反馈没有把流程讲清楚。设计以“少改动、强表达”为策略，让用户在每一步都知道输入什么、正在发生什么、下一步做什么。', 'AOJIN AI had a focused task. The real issue was that hierarchy and feedback did not explain the flow clearly. The strategy was fewer changes with stronger expression, so each step explains the input, current state, and next action.'),
+    problemPoints: [dual('核心流程短，但关键状态不够可见。', 'The core loop was short, but key states were hard to see.'), dual('组件样式不统一，影响产品完成度。', 'Inconsistent components lowered perceived polish.'), dual('视觉优化需要保持原有使用效率。', 'Visual refinement had to preserve existing efficiency.')],
+    hypothesis: dual('把视觉优化落到层级、组件和反馈三件事上，用更少的变化换来更明确的体验。', 'Focus refinement on hierarchy, components, and feedback: fewer changes, a clearer experience.'),
+    journey: [
+      { stage: dual('发现需求', 'DISCOVER'), title: dual('先理解装修目标', 'Clarify the design goal'), goal: dual('快速进入适合自己的任务。', 'Enter the right task quickly.'), detail: dual('用清晰入口区分不同装修意图。', 'Separate different interior goals with clear entry points.') },
+      { stage: dual('选方案', 'CHOOSE'), title: dual('选择输入方式', 'Choose an input mode'), goal: dual('知道该上传什么或描述什么。', 'Know what to upload or describe.'), detail: dual('把输入要求、示例和限制放在同一层级。', 'Keep requirements, examples, and limits together.') },
+      { stage: dual('用产品', 'USE'), title: dual('完成一次生成', 'Complete one generation'), goal: dual('不被复杂控制项打断。', 'Avoid interruption by unnecessary controls.'), detail: dual('用单一主操作承接核心生成动作。', 'Use one primary action for the core generation.') },
+      { stage: dual('获反馈', 'FEEDBACK'), title: dual('看懂处理中状态', 'Read the processing state'), goal: dual('知道等待是否正常。', 'Know whether waiting is normal.'), detail: dual('把进度、失败原因与重试路径说清楚。', 'Explain progress, failure cause, and retry path.') },
+      { stage: dual('分享', 'SHARE'), title: dual('带走装修结果', 'Take the design outward'), goal: dual('预览、保存和沟通都顺手。', 'Preview, save, and discuss easily.'), detail: dual('结果页同时兼顾沉浸预览与下一步动作。', 'Balance immersive preview with the next action.') },
+    ],
+    scenes: [
+      { scene: dual('输入需求', 'Input brief'), strategy: dual('大字号 + 示例引导', 'Large type + examples'), reason: dual('降低第一次描述装修需求的压力。', 'Reduce the pressure of describing a brief.') },
+      { scene: dual('生成等待', 'Generation wait'), strategy: dual('进度可见 + 操作锁定', 'Visible progress + locked action'), reason: dual('避免重复提交和状态误解。', 'Prevent duplicate submissions and misread states.') },
+      { scene: dual('结果沟通', 'Result review'), strategy: dual('大预览 + 轻量工具', 'Large preview + quiet tools'), reason: dual('让方案成为沟通对象，而不是装饰图。', 'Make the design a conversation object, not decoration.') },
+    ],
+    metrics: [
+      { value: dual('5 人', '5 people'), label: dual('可用性测试', 'Usability test'), detail: dual('验证输入、生成、结果三个关键节点。', 'Validated input, generation, and result moments.') },
+      { value: dual('3 类', '3 states'), label: dual('反馈重点', 'Feedback focus'), detail: dual('处理中、完成、错误状态统一表达。', 'Unified processing, done, and error states.') },
+      { value: dual('一套组件', 'One system'), label: dual('交付结果', 'Delivery result'), detail: dual('前端视觉优化可被开发稳定复用。', 'Front-end refinement could be reused consistently.') },
+    ],
+    evidence: [
+      { before: dual('用户不知道输入要求。', 'Users did not know what to provide.'), decision: dual('在输入区补充示例与限制。', 'Add examples and limits to the input area.'), signal: dual('首用时更少停顿和试错。', 'Fewer pauses and retries on first use.') },
+      { before: dual('生成期间重复点击。', 'Users clicked again during generation.'), decision: dual('强化处理中反馈并锁定主按钮。', 'Strengthen processing feedback and lock the primary action.'), signal: dual('等待过程更可预期。', 'Waiting became more predictable.') },
+      { before: dual('结果页工具过多。', 'The result view had too many tools.'), decision: dual('只保留预览、保存、沟通三条主路径。', 'Keep only preview, save, and discuss as primary paths.'), signal: dual('结果沟通更聚焦。', 'Result review became more focused.') },
+    ],
+    emotion: [
+      { layer: dual('本能层', 'VISCERAL'), title: dual('清爽而可信', 'Clear and trustworthy'), decision: dual('用克制的暖色作为提示，不让装饰盖过方案。', 'Use restrained warm accents without covering the design.'), purpose: dual('让用户先相信结果质量。', 'Build trust in the result quality.') },
+      { layer: dual('行为层', 'BEHAVIORAL'), title: dual('每一步有回音', 'Every step has an echo'), decision: dual('输入、生成、错误都给出即时反馈。', 'Give immediate feedback for input, generation, and errors.'), purpose: dual('让 AI 的不可见过程变得可理解。', 'Make the invisible AI process understandable.') },
+      { layer: dual('反思层', 'REFLECTIVE'), title: dual('方案值得讨论', 'Make the design discussable'), decision: dual('把结果呈现为可保存、可沟通的对象。', 'Present the result as something to save and discuss.'), purpose: dual('让一次生成进入真实装修沟通。', 'Move one generation into real design discussion.') },
+    ],
+    systemSummary: dual('不通过堆叠功能制造复杂度，而是用组件、状态和信息层级把已有闭环表达准确。', 'Rather than adding complexity, make the existing loop precise through components, states, and hierarchy.'),
+    perspective: dual('奥锦让我更确定，视觉设计的价值常常来自“少做但做准”。后续会继续用更多真实任务样本验证不同装修场景下的输入和结果沟通。', 'AOJIN reinforced that visual design often gains value by doing less, precisely. More real task samples will help validate input and result review across scenarios.'),
+  },
+  'qiaxu-ai': {
+    problemTitle: dual('业务很复杂，用户只想完成任务。', 'The business was complex; users wanted to finish tasks.'),
+    problemBody: dual('恰序 AI 面向 B 端工作流，角色、任务和反馈彼此交织。设计先把业务关系变成可讨论的结构，再把结构拆成工作台、任务流和状态系统，让复杂能力保持可理解。', 'QIA XU AI serves a B2B workflow where roles, tasks, and feedback intersect. I first made the business structure discussable, then translated it into a workspace, task flow, and state system.'),
+    problemPoints: [dual('不同角色看到的信息重点不同。', 'Different roles needed different information priorities.'), dual('任务进度与 AI 反馈没有形成连续感。', 'Task progress and AI feedback felt disconnected.'), dual('缺少可供团队复用的视觉和组件规则。', 'The team lacked reusable visual and component rules.')],
+    hypothesis: dual('以任务为主线重排信息，把复杂业务拆成“看得懂、做得到、能追踪”的工作台。', 'Reorder information around tasks and turn complex business into a workspace that is understandable, actionable, and trackable.'),
+    journey: [
+      { stage: dual('发现需求', 'DISCOVER'), title: dual('定位今天要完成的事', 'Find today’s task'), goal: dual('进入与角色相关的工作入口。', 'Enter the role-relevant workspace.'), detail: dual('把任务、状态和优先级放在首屏。', 'Put tasks, status, and priority on the first view.') },
+      { stage: dual('选方案', 'CHOOSE'), title: dual('选择处理路径', 'Choose a route'), goal: dual('理解输入、协作和输出关系。', 'Understand input, collaboration, and output.'), detail: dual('用分组和清晰动作减少路径猜测。', 'Use grouping and clear actions to reduce guessing.') },
+      { stage: dual('用产品', 'USE'), title: dual('在工作台完成任务', 'Finish in the workspace'), goal: dual('复杂操作仍然保持节奏。', 'Keep momentum through complex operations.'), detail: dual('用固定的侧栏、主区和反馈位承接流程。', 'Use a stable sidebar, main area, and feedback rail.') },
+      { stage: dual('获反馈', 'FEEDBACK'), title: dual('追踪 AI 与协作进度', 'Track AI and collaboration'), goal: dual('知道任务走到哪一步。', 'Know where the task stands.'), detail: dual('把生成、审核、异常状态放进同一条时间线。', 'Place generation, review, and error in one timeline.') },
+      { stage: dual('分享', 'SHARE'), title: dual('交付可讨论结果', 'Share a discussable result'), goal: dual('让结果能被团队接手。', 'Make the result easy for the team to pick up.'), detail: dual('保留批注、版本和导出，让成果离开个人工作台。', 'Keep notes, versions, and export so work can leave the workspace.') },
+    ],
+    scenes: [
+      { scene: dual('任务总览', 'Task overview'), strategy: dual('信息对齐 + 快速筛选', 'Aligned information + fast filters'), reason: dual('让不同角色先看到与自己有关的事。', 'Let each role see what matters first.') },
+      { scene: dual('AI 工作台', 'AI workspace'), strategy: dual('高密度 + 强层级', 'High density + strong hierarchy'), reason: dual('承载复杂输入而不牺牲可读性。', 'Support complex input without losing readability.') },
+      { scene: dual('协作交付', 'Team handoff'), strategy: dual('版本可见 + 结果可追踪', 'Visible versions + traceable results'), reason: dual('让交接和复盘有共同依据。', 'Give handoff and review a shared reference.') },
+    ],
+    metrics: [
+      { value: dual('5 人', '5 people'), label: dual('可用性测试', 'Usability test'), detail: dual('覆盖任务定位、AI 反馈和交付三段流程。', 'Covered task finding, AI feedback, and handoff.') },
+      { value: dual('8+', '8+'), label: dual('复用组件', 'Reusable components'), detail: dual('高频控件与反馈状态进入统一规则。', 'Frequent controls and feedback states share one rule set.') },
+      { value: dual('3 个角色', '3 roles'), label: dual('场景验证', 'Scenario check'), detail: dual('按不同角色检查信息优先级与协作出口。', 'Checked priority and handoff for different roles.') },
+    ],
+    evidence: [
+      { before: dual('任务入口按功能罗列。', 'Task entry points were grouped by feature.'), decision: dual('改为按任务和角色组织首屏。', 'Organize the first view by task and role.'), signal: dual('用户更快定位当天工作。', 'Users locate today’s work faster.') },
+      { before: dual('AI 处理中像“黑盒”。', 'AI processing felt like a black box.'), decision: dual('补充进度、阶段与异常状态。', 'Add progress, stages, and error states.'), signal: dual('等待和审核有了共同语言。', 'Waiting and review share a common language.') },
+      { before: dual('设计交付依赖口头说明。', 'Delivery relied on verbal explanation.'), decision: dual('把组件、规则和状态写入系统。', 'Put components, rules, and states into the system.'), signal: dual('团队协作更稳定，改动更可追踪。', 'Team delivery became more stable and traceable.') },
+    ],
+    emotion: [
+      { layer: dual('本能层', 'VISCERAL'), title: dual('复杂但不吓人', 'Complex, not intimidating'), decision: dual('用明确对比和留白切开高密度信息。', 'Use contrast and whitespace to divide dense information.'), purpose: dual('让用户相信自己能掌控工作台。', 'Make users feel they can control the workspace.') },
+      { layer: dual('行为层', 'BEHAVIORAL'), title: dual('操作有连续性', 'Keep action continuous'), decision: dual('固定输入、处理中、反馈的空间关系。', 'Keep input, processing, and feedback spatially consistent.'), purpose: dual('减少在复杂界面中寻找下一步。', 'Reduce searching for the next action.') },
+      { layer: dual('反思层', 'REFLECTIVE'), title: dual('团队一起完成', 'Make work feel shared'), decision: dual('在结果中保留版本、批注和交付线索。', 'Keep versions, notes, and handoff cues in the result.'), purpose: dual('让个人产出变成团队资产。', 'Turn personal output into a team asset.') },
+    ],
+    systemSummary: dual('用原子到模板的五层结构拆解复杂工作台，让设计语言可以被团队复用和持续扩展。', 'Break the complex workspace into five layers from atoms to templates so the language can scale with the team.'),
+    perspective: dual('恰序让我看到，系统化设计不只是整理组件，更是把业务判断变成团队可以共同使用的语言。后续会继续补充角色权限和更多异常路径。', 'QIA XU showed that system design is more than organizing components: it turns business judgment into a shared team language. The next step is to extend role permissions and exception paths.'),
+  },
+  wowo: {
+    problemTitle: dual('需求还没有答案，设计要先建立方向。', 'The brief had no answer yet; design had to create direction.'),
+    problemBody: dual('窝喔从模糊的项目想法开始，设计首先要帮助团队回答“为谁做、为什么做、长什么样”。我把定位、视觉气质、产品结构和展示物料放进同一个叙事，再推进到可用的 C 端体验。', 'WOWO started as an unclear idea. The first design task was helping the team answer who it was for, why it mattered, and what it should feel like. Positioning, visual character, product structure, and presentation became one story.'),
+    problemPoints: [dual('目标用户与产品定位还在探索。', 'Audience and positioning were still being explored.'), dual('品牌视觉和产品界面缺少共同语言。', 'Brand visuals and product screens lacked a shared language.'), dual('从概念到交付需要一条完整推进路径。', 'The project needed a path from concept to delivery.')],
+    hypothesis: dual('先用场景和视觉建立共识，再把共识转成可用的产品结构与交付规范。', 'Build alignment through scenes and visual character, then turn that alignment into a usable product structure and delivery rules.'),
+    journey: [
+      { stage: dual('发现需求', 'DISCOVER'), title: dual('找到值得被记住的瞬间', 'Find the memorable moment'), goal: dual('让用户知道产品为何与自己有关。', 'Show why the product matters to them.'), detail: dual('从真实生活场景提炼视觉和内容入口。', 'Start from real-life scenes for visual and content entry.') },
+      { stage: dual('选方案', 'CHOOSE'), title: dual('建立产品选择理由', 'Build a reason to choose'), goal: dual('让定位和价值可以被快速比较。', 'Make positioning easy to compare.'), detail: dual('用清晰的信息层级承接探索和决策。', 'Use hierarchy to carry exploration into decision.') },
+      { stage: dual('用产品', 'USE'), title: dual('让品牌进入日常操作', 'Bring the brand into daily use'), goal: dual('视觉气质不牺牲使用效率。', 'Keep character without losing usability.'), detail: dual('把品牌元素收敛成可复用的界面组件。', 'Converge brand elements into reusable interface components.') },
+      { stage: dual('获反馈', 'FEEDBACK'), title: dual('用真实反馈修正方向', 'Use feedback to correct direction'), goal: dual('及时发现理解偏差。', 'Catch misunderstanding early.'), detail: dual('通过走查、测试和沟通复盘设计判断。', 'Review decisions through walkthroughs, tests, and discussion.') },
+      { stage: dual('分享', 'SHARE'), title: dual('让项目被完整讲述', 'Let the project tell its story'), goal: dual('产品、品牌和展示可以一起被传播。', 'Let product, brand, and presentation travel together.'), detail: dual('统一展示模板、动效和输出物料。', 'Align presentation templates, motion, and deliverables.') },
+    ],
+    scenes: [
+      { scene: dual('品牌初见', 'Brand first look'), strategy: dual('强识别 + 低信息噪音', 'Strong identity + low noise'), reason: dual('让用户先记住气质，再理解功能。', 'Let character land before functionality.') },
+      { scene: dual('日常使用', 'Daily use'), strategy: dual('轻量反馈 + 易读内容', 'Light feedback + readable content'), reason: dual('把品牌感藏进可持续使用的细节。', 'Put the brand in details that support daily use.') },
+      { scene: dual('对外展示', 'External presentation'), strategy: dual('统一模板 + 场景 Mockup', 'Unified templates + scene mockups'), reason: dual('让产品价值在屏幕之外也成立。', 'Make the value hold beyond the screen.') },
+    ],
+    metrics: [
+      { value: dual('3 类', '3 types'), label: dual('场景 Mockup', 'Scene mockups'), detail: dual('覆盖品牌初见、日常使用和对外展示。', 'Covered first look, daily use, and external presentation.') },
+      { value: dual('5 人', '5 people'), label: dual('可用性测试', 'Usability test'), detail: dual('检验定位、首屏理解和核心操作。', 'Checked positioning, first-view comprehension, and core actions.') },
+      { value: dual('全流程', 'End to end'), label: dual('交付范围', 'Delivery scope'), detail: dual('从定位、视觉到界面和物料落地。', 'From positioning and visual identity to interface and materials.') },
+    ],
+    evidence: [
+      { before: dual('讨论停留在审美偏好。', 'Discussion stayed at aesthetic preference.'), decision: dual('先用用户、场景和目标建立判断标准。', 'Set criteria through audience, scenes, and goals.'), signal: dual('团队开始围绕同一方向决策。', 'The team began deciding around one direction.') },
+      { before: dual('品牌图形与产品界面各自表达。', 'Brand and product spoke separately.'), decision: dual('把颜色、字体和动作沉淀成组件规则。', 'Turn color, type, and motion into component rules.'), signal: dual('跨物料表达更统一。', 'Expression became more consistent across materials.') },
+      { before: dual('展示物料依赖临时制作。', 'Presentation materials were made ad hoc.'), decision: dual('建立可替换内容的展示模板。', 'Create presentation templates with replaceable content.'), signal: dual('项目对外讲述更高效。', 'External storytelling became faster.') },
+    ],
+    emotion: [
+      { layer: dual('本能层', 'VISCERAL'), title: dual('先被气质吸引', 'Attract with character'), decision: dual('用高辨识度色彩、字形和构图形成第一眼记忆。', 'Use distinctive color, type, and composition for first-glance memory.'), purpose: dual('让项目从同类产品中被看见。', 'Help the project stand apart.') },
+      { layer: dual('行为层', 'BEHAVIORAL'), title: dual('使用仍然顺手', 'Keep use effortless'), decision: dual('把装饰收敛到不打断任务的尺度。', 'Keep decoration within a scale that does not interrupt tasks.'), purpose: dual('让喜欢视觉的人也能顺利完成操作。', 'Let people who love the look still finish tasks easily.') },
+      { layer: dual('反思层', 'REFLECTIVE'), title: dual('形成属于自己的表达', 'Build a sense of ownership'), decision: dual('用完成反馈和可分享结果形成记忆点。', 'Use completion feedback and shareable results as memory points.'), purpose: dual('让用户愿意把产品带进自己的生活。', 'Make users want to bring the product into their lives.') },
+    ],
+    systemSummary: dual('把探索阶段的视觉判断沉淀为一套可以支撑品牌、产品和展示物料的统一语言。', 'Turn exploratory visual decisions into one language for brand, product, and presentation.'),
+    perspective: dual('窝喔让我学会在答案不清晰时先建立问题和共识，再推进设计。后续会继续补充品牌资产的可编辑模板，降低后续内容生产成本。', 'WOWO taught me to build the questions and alignment first when the answer is unclear. Next, I will extend editable brand templates to reduce future content production cost.'),
   },
 }
 
@@ -1275,14 +1477,105 @@ function WorkPage() {
   return <><main className="inner-page work-page"><section className="inner-hero page-padding"><Reveal><span className="eyebrow">SELECTED WORK / 2022—NOW</span><h1>{localized(language, '作品集', 'SELECTED WORK')}<span className="title-dot">.</span></h1><p>{localized(language, '围绕 AI 产品、复杂工具和视觉系统，记录每一次从问题到落地的设计判断。', 'A record of design decisions across AI products, complex tools, and visual systems, from problem framing to launch.')}</p></Reveal></section><section className="work-index page-padding"><div className="work-index-line"><span>INDEX</span><span>04 PROJECTS</span></div>{projects.map((project, index) => <Reveal key={project.slug} delay={index * 360}><ProjectRow project={project} /></Reveal>)}</section></main><SiteFooter /></>
 }
 
+function NarrativeIcon({ icon }: { icon: 'palette' | 'type' | 'component' | 'layout' | 'layers' }) {
+  const icons = { palette: Palette, type: Type, component: Component, layout: LayoutTemplate, layers: Layers3 }
+  const Icon = icons[icon]
+  return <Icon size={18} strokeWidth={1.5} aria-hidden="true" />
+}
+
 function ProjectDetail({ project }: { project: Project }) {
   usePageTitle(project.title)
   const { language } = useLanguage()
+  const t = (copy: DualCopy) => copy[language]
   const nextProject = projects[(projects.findIndex((item) => item.slug === project.slug) + 1) % projects.length]
   const study = caseStudies[project.slug]
+  const narrative = caseNarratives[project.slug]
   const scope = language === 'en' ? (project.scopeEn ?? project.scope) : project.scope
   const process = language === 'en' ? study.processEn : study.process
-  return <><main className="case-page"><section className={`case-hero case-hero-${project.tone} page-padding`}><Reveal><Link className="back-link" to="/work"><ArrowLeft size={16} />{localized(language, '返回作品目录', 'Back to work')}</Link><span className="eyebrow">{project.english}</span><h1>{language === 'en' ? project.titleEn : project.title}<span className="title-dot">.</span></h1><div className="case-meta"><span>{project.year}</span><span>{project.roleEn ?? project.role}</span></div><p className="case-lead">{localized(language, project.intro, project.introEn)}</p><div className="case-actions">{project.external && <ButtonLink to={project.external} external variant="primary">{localized(language, '访问线上产品', 'Open live product')}</ButtonLink>}<ButtonLink to="/contact" variant="glass">{localized(language, '聊聊这个项目', 'Discuss this project')}</ButtonLink></div></Reveal></section><section className="case-media page-padding"><Reveal><ProjectVisual project={project} detail /></Reveal></section><section className="case-content page-padding"><div className="case-sidebar"><span className="eyebrow">THE WORK</span><span className="case-sidebar-line" /><span className="case-sidebar-label">{project.number} / 04</span></div><div className="case-body"><Reveal><div className="case-block case-overview"><span className="eyebrow">OVERVIEW</span><h2>{language === 'en' ? study.overviewTitleEn : study.overviewTitle}<br /><em>{language === 'en' ? study.overviewTitleAccentEn : study.overviewTitleAccent}</em></h2><p>{language === 'en' ? study.overviewEn : study.overview}</p></div></Reveal><Reveal delay={80}><div className="case-block"><span className="eyebrow">ROLE & SCOPE</span><div className="scope-grid">{scope.map((item) => <div key={item}><span className="scope-line" />{item}</div>)}</div></div></Reveal><Reveal delay={140}><div className="case-block case-process"><span className="eyebrow">PROCESS</span><div className="process-steps">{process.map(([title, copy], index) => <div key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{copy}</p></div>)}</div></div></Reveal><Reveal delay={200}><div className="case-block case-note"><span className="eyebrow">A NOTE FROM THE PROJECT</span><p>{language === 'en' ? study.noteEn : study.note}</p></div></Reveal></div></section><section className="next-project page-padding"><Link to={`/work/${nextProject.slug}`}><span className="eyebrow">NEXT PROJECT</span><strong>{language === 'en' ? nextProject.titleEn : nextProject.title}</strong><ArrowUpRight size={24} /></Link></section></main><SiteFooter /></>
+  const [activeSection, setActiveSection] = useState('problem')
+  const [readingProgress, setReadingProgress] = useState(0)
+  const scrollToCaseSection = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+  useEffect(() => {
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('.case-p-section'))
+    if (!sections.length) return
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)
+      if (visible[0]?.target instanceof HTMLElement) setActiveSection(visible[0].target.id)
+    }, { rootMargin: '-18% 0px -58% 0px', threshold: [0.08, 0.25, 0.55] })
+    sections.forEach((section) => observer.observe(section))
+    return () => observer.disconnect()
+  }, [project.slug])
+
+  useEffect(() => {
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight
+      setReadingProgress(scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0)
+    }
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      window.cancelAnimationFrame(frame)
+    }
+  }, [project.slug])
+  const fiveP = [
+    { number: '01', name: dual('问题', 'PROBLEM'), share: '15%', id: 'problem' },
+    { number: '02', name: dual('过程', 'PROCESS'), share: '20%', id: 'process' },
+    { number: '03', name: dual('产品', 'PRODUCT'), share: '50%', id: 'product' },
+    { number: '04', name: dual('表现', 'PERFORMANCE'), share: '10%', id: 'performance' },
+    { number: '05', name: dual('观点', 'PERSPECTIVE'), share: '05%', id: 'perspective' },
+  ]
+
+  return <>
+    <main className="case-page">
+      <div className="case-reading-progress" aria-hidden="true"><span style={{ transform: `scaleX(${readingProgress})` }} /></div>
+      <section className={`case-hero case-hero-${project.tone} page-padding`}>
+        <Reveal>
+          <Link className="back-link" to="/work"><ArrowLeft size={16} />{localized(language, '返回作品目录', 'Back to work')}</Link>
+          <span className="eyebrow">{project.english}</span>
+          <h1>{language === 'en' ? project.titleEn : project.title}<span className="title-dot">.</span></h1>
+          <div className="case-meta"><span>{project.year}</span><span>{project.roleEn ?? project.role}</span></div>
+          <p className="case-lead">{localized(language, project.intro, project.introEn)}</p>
+          <div className="case-actions">{project.external && <ButtonLink to={project.external} external variant="primary">{localized(language, '访问线上产品', 'Open live product')}</ButtonLink>}<ButtonLink to="/contact" variant="glass">{localized(language, '聊聊这个项目', 'Discuss this project')}</ButtonLink></div>
+        </Reveal>
+      </section>
+
+      <section className="case-media page-padding"><Reveal><ProjectVisual project={project} detail /></Reveal></section>
+
+      <section className="case-method page-padding" aria-labelledby="case-method-title">
+        <div className="case-method-copy"><span className="eyebrow">CASE LOGIC / 5P</span><h2 id="case-method-title">{localized(language, '把做过的事，讲成一条可验证的路径。', 'Turn the work into a path that can be understood and tested.')}</h2><p>{localized(language, 'Problem 定义困境，Process 解释推导，Product 展示方案，Performance 给出证据，Perspective 留下下一步。', 'Problem frames the tension, Process shows the reasoning, Product carries the work, Performance gives evidence, and Perspective points forward.')}</p></div>
+        <nav className="case-p-grid" aria-label={localized(language, '作品集结构', 'Case study structure')}>
+          {fiveP.map((item) => <button type="button" className={activeSection === item.id ? 'is-active' : ''} key={item.id} onClick={() => scrollToCaseSection(item.id)}><span className="case-p-number">{item.number}</span><strong>{t(item.name)}</strong><small>{item.share}</small><ArrowRight size={14} /></button>)}
+        </nav>
+      </section>
+
+      <section className="case-content page-padding">
+        <aside className="case-sidebar"><span className="eyebrow">THE WORK</span><span className="case-sidebar-line" /><span className="case-sidebar-label">{project.number} / 04</span><span className="case-sidebar-note">{localized(language, '方法论版', 'METHOD EDITION')}</span></aside>
+        <div className="case-body">
+          <Reveal><section className="case-block case-overview case-p-section" id="problem"><span className="eyebrow">01 / PROBLEM · 15%</span><h2>{t(narrative.problemTitle)}</h2><p>{t(narrative.problemBody)}</p><div className="problem-points">{narrative.problemPoints.map((point, index) => <div key={point.zh}><span>0{index + 1}</span><p>{t(point)}</p></div>)}</div><div className="case-hypothesis"><span className="case-hypothesis-mark"><CircleDot size={15} /></span><div><small>{localized(language, '设计假设 / HYPOTHESIS', 'DESIGN HYPOTHESIS')}</small><p>{t(narrative.hypothesis)}</p></div></div></section></Reveal>
+
+          <Reveal delay={80}><section className="case-block case-journey case-p-section" id="process"><span className="eyebrow">02 / PROCESS · 20%</span><div className="case-section-intro"><h2>{localized(language, '用户旅程地图', 'User journey map')}</h2><p>{localized(language, '按“发现需求 → 选方案 → 用产品 → 获反馈 → 分享”串联界面，每个节点都有清晰的设计目标。', 'The interface follows discover → choose → use → feedback → share, with a design goal at every step.')}</p></div><div className="journey-track">{narrative.journey.map((step, index) => <article className="journey-step" key={step.stage.zh}><div className="journey-step-top"><span>0{index + 1}</span><small>{t(step.stage)}</small></div><h3>{t(step.title)}</h3><strong>{t(step.goal)}</strong><p>{t(step.detail)}</p>{index < narrative.journey.length - 1 && <ArrowRight className="journey-arrow" size={16} aria-hidden="true" />}</article>)}</div><div className="process-steps case-process-inline">{process.map(([title, copy], index) => <div key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{copy}</p></div>)}</div></section></Reveal>
+
+          <Reveal delay={140}><section className="case-block case-product case-p-section" id="product"><span className="eyebrow">03 / PRODUCT · 50%</span><div className="case-section-intro"><h2>{localized(language, '从原子到页面，建立可复用的系统。', 'From atoms to pages, build a reusable system.')}</h2><p>{t(narrative.systemSummary)}</p></div><div className="scope-grid case-scope-grid">{scope.map((item) => <div key={item}><span className="scope-line" />{item}</div>)}</div><div className="system-layers">{systemLayers.map((layer, index) => <article className="system-layer" key={layer.name.zh}><div className="system-layer-icon"><NarrativeIcon icon={layer.icon} /></div><span>0{index + 1}</span><h3>{t(layer.name)}</h3><p>{t(layer.detail)}</p></article>)}</div><div className="component-matrix"><div className="component-matrix-head"><div><span className="eyebrow">REUSABLE KIT</span><h3>{localized(language, '9 个高频组件，覆盖多状态。', '9 reusable components, multiple states.')}</h3></div><span className="component-count">09 / 09</span></div><div className="component-grid">{reusableComponents.map((item, index) => <div className="component-item" key={item.name.zh}><span>{String(index + 1).padStart(2, '0')}</span><strong>{t(item.name)}</strong><small>{t(item.state)}</small></div>)}</div></div><div className="state-showcase"><div className="state-showcase-head"><span className="eyebrow">STATE COVERAGE</span><p>{localized(language, '不只展示默认态，也展示首用、日常、异常和完成。', 'Show first-use, daily, error, and completion states alongside the default.')}</p></div><div className="state-grid">{stateShowcase.map((item) => <article className={`state-card state-card-${item.tone}`} key={item.label.zh}><div className="state-card-signal">{item.tone === 'danger' ? <CircleAlert size={15} /> : item.tone === 'active' ? <CircleCheck size={15} /> : <CircleDot size={15} />}</div><strong>{t(item.label)}</strong><p>{t(item.note)}</p></article>)}</div></div><div className="scene-section"><div className="scene-section-head"><span className="eyebrow">SCENE STRATEGY</span><p>{localized(language, '场景决定信息密度、字号和反馈方式。', 'Scene determines density, type scale, and feedback.')}</p></div><div className="scene-grid">{narrative.scenes.map((scene) => <article className="scene-card" key={scene.scene.zh}><span>{t(scene.scene)}</span><h3>{t(scene.strategy)}</h3><p>{t(scene.reason)}</p></article>)}</div></div><div className="emotion-section"><div className="emotion-section-head"><span className="eyebrow">EMOTIONAL DESIGN</span><p>{localized(language, '每个视觉和交互决策，都对应一个情感目的。', 'Every visual and interaction decision has an emotional purpose.')}</p></div><div className="emotion-grid">{narrative.emotion.map((item) => <article className="emotion-card" key={item.layer.zh}><span>{t(item.layer)}</span><h3>{t(item.title)}</h3><p><b>{localized(language, '决策', 'Decision')}</b>{t(item.decision)}</p><p><b>{localized(language, '目的', 'Purpose')}</b>{t(item.purpose)}</p></article>)}</div></div></section></Reveal>
+
+          <Reveal delay={200}><section className="case-block case-performance case-p-section" id="performance"><span className="eyebrow">04 / PERFORMANCE · 10%</span><div className="case-section-intro"><h2>{localized(language, '让结果成为证据。', 'Make the result evidence.')}</h2><p>{localized(language, '有数据就追踪上线表现，没有数据就明确测试样本、观察节点和下一轮验证方式。', 'When launch data exists, track it. When it does not, make the sample, observation, and next validation explicit.')}</p></div><div className="metric-grid">{narrative.metrics.map((metric) => <article className="metric-card" key={metric.label.zh}><strong>{t(metric.value)}</strong><span>{t(metric.label)}</span><p>{t(metric.detail)}</p></article>)}</div><div className="evidence-table" role="table" aria-label={localized(language, '设计证据对比', 'Design evidence comparison')}><div className="evidence-row evidence-head" role="row"><span>{localized(language, '问题信号', 'Signal')}</span><span>{localized(language, '设计决策', 'Decision')}</span><span>{localized(language, '验证结果', 'Evidence')}</span></div>{narrative.evidence.map((row) => <div className="evidence-row" role="row" key={row.before.zh}><p>{t(row.before)}</p><p>{t(row.decision)}</p><p>{t(row.signal)}</p></div>)}</div></section></Reveal>
+
+          <Reveal delay={260}><section className="case-block case-perspective case-p-section" id="perspective"><span className="eyebrow">05 / PERSPECTIVE · 05%</span><div className="perspective-panel"><Sparkles size={20} strokeWidth={1.4} /><div><h2>{localized(language, '把经验带到下一次。', 'Carry the learning forward.')}</h2><p>{t(narrative.perspective)}</p></div></div><div className="case-note"><span className="eyebrow">A NOTE FROM THE PROJECT</span><p>{language === 'en' ? study.noteEn : study.note}</p></div></section></Reveal>
+        </div>
+      </section>
+
+      <section className="next-project page-padding"><Link to={`/work/${nextProject.slug}`}><span className="eyebrow">NEXT PROJECT</span><strong>{language === 'en' ? nextProject.titleEn : nextProject.title}</strong><ArrowUpRight size={24} /></Link></section>
+    </main>
+    <SiteFooter />
+  </>
 }
 
 function AboutPage() {
