@@ -76,7 +76,7 @@ const projects: Project[] = [
     introEn: 'A consumer product redesign validated through real user feedback and launch data, improving the experience and driving measurable user growth.',
     scope: ['官网改版', '核心体验优化', '用户路径', '视觉系统', '上线数据'],
     scopeEn: ['Website redesign', 'Core experience', 'User journeys', 'Visual system', 'Launch data'],
-    cover: '/media/bilus-cover.png',
+    cover: '/media/bilus-cover.jpg',
     external: BILUS_URL,
     tone: 'silver',
   },
@@ -93,7 +93,7 @@ const projects: Project[] = [
     introEn: 'A focused interior-design AI product with a simple closed loop, refined through front-end visual optimization for a clearer and more consistent experience.',
     scope: ['前端视觉优化', '装修 AI 闭环', '界面层级', '组件统一', '状态反馈'],
     scopeEn: ['Front-end visual polish', 'Interior AI loop', 'Interface hierarchy', 'Component consistency', 'State feedback'],
-    cover: '/media/aojin-cover.png',
+    cover: '/media/aojin-cover.jpg',
     video: '/media/aojin-demo.mp4',
     poster: '/media/aojin-poster.jpg',
     videoLabel: '奥锦装修 AI 产品演示',
@@ -113,7 +113,7 @@ const projects: Project[] = [
     introEn: 'A B2B AI product structured around a clear workspace, task flow, feedback states, and a coherent visual system.',
     scope: ['B 端产品结构', '工作台', 'AI 任务流', '反馈状态', '视觉系统'],
     scopeEn: ['B2B product structure', 'Workspace', 'AI task flow', 'Feedback states', 'Visual system'],
-    cover: '/media/qiaxu-cover.png',
+    cover: '/media/qiaxu-cover.jpg',
     video: '/media/qiaxu-demo.mp4',
     poster: '/media/qiaxu-poster.jpg',
     videoLabel: '恰序 AI 产品演示',
@@ -133,7 +133,7 @@ const projects: Project[] = [
     introEn: 'A consumer product taken from an unclear brief through positioning, visual design, and full delivery.',
     scope: ['需求澄清', '产品定位', 'C 端项目结构', '品牌视觉', '产品界面', '全流程落地'],
     scopeEn: ['Brief clarification', 'Product positioning', 'Consumer product structure', 'Brand visuals', 'Product interface', 'End-to-end delivery'],
-    cover: '/media/wowo-cover.png',
+    cover: '/media/wowo-cover.jpg',
     video: '/media/wowo-demo.mp4',
     poster: '/media/wowo-poster.jpg',
     videoLabel: '窝喔视觉演示',
@@ -570,8 +570,8 @@ function SignalMark({ className = '' }: { className?: string }) {
 }
 
 function SiteLoader() {
-  const loaderPlaybackDuration = 4
-  const loaderExitDuration = 1450
+  const loaderPlaybackDuration = 2.8
+  const loaderExitDuration = 1200
   const videoRef = useRef<HTMLVideoElement>(null)
   const fluidCanvasRef = useRef<HTMLCanvasElement>(null)
   const loaderHoldRef = useRef(false)
@@ -757,15 +757,17 @@ function SiteLoader() {
     const withTimeout = (promise: Promise<unknown>, duration = 4800) => Promise.race([promise, wait(duration)])
     const report = (weight: number) => { assetTarget = Math.min(100, assetTarget + weight) }
     const waitForMedia = (media: HTMLMediaElement | null) => new Promise<void>((resolve) => {
-      if (!media || media.readyState >= 2) { resolve(); return }
+      // Metadata is enough to start the hero after the loader; waiting for a full
+      // video buffer here would delay the page on slower connections.
+      if (!media || media.readyState >= 1) { resolve(); return }
       const finish = () => {
+        media.removeEventListener('loadedmetadata', finish)
         media.removeEventListener('loadeddata', finish)
-        media.removeEventListener('canplay', finish)
         media.removeEventListener('error', finish)
         resolve()
       }
+      media.addEventListener('loadedmetadata', finish, { once: true })
       media.addEventListener('loadeddata', finish, { once: true })
-      media.addEventListener('canplay', finish, { once: true })
       media.addEventListener('error', finish, { once: true })
     })
     const loadImage = (src: string) => new Promise<void>((resolve) => {
@@ -786,15 +788,10 @@ function SiteLoader() {
     }
     frame = window.requestAnimationFrame(renderProgress)
 
-    const assets = [
-      '/media/hero-cover-poster.jpg',
-      '/media/about-portrait-v2.png',
-      '/media/bilus-cover.png',
-      '/media/aojin-cover.png',
-      '/media/qiaxu-cover.png',
-      '/media/wowo-cover.png',
-    ]
-    const fontTask = withTimeout(document.fonts.ready).finally(() => report(15))
+    // Only the poster is a blocking first-viewport asset. Project covers and the
+    // portrait are lazy-loaded by their own sections once they approach view.
+    const assets = ['/media/hero-cover-poster.jpg']
+    const fontTask = withTimeout(document.fonts.ready, 900).finally(() => report(15))
     const loaderVideoTask = new Promise<void>((resolve) => {
       const video = videoRef.current
       if (!video) { videoFinished = true; resolve(); return }
@@ -833,8 +830,8 @@ function SiteLoader() {
       if (video.readyState >= 1) start()
       else video.addEventListener('loadedmetadata', start, { once: true })
     }).finally(() => report(20))
-    const heroVideoTask = withTimeout(waitForMedia(document.querySelector<HTMLVideoElement>('.hero-video'))).finally(() => report(20))
-    const imageTask = withTimeout(Promise.all(assets.map(loadImage))).finally(() => report(30))
+    const heroVideoTask = withTimeout(waitForMedia(document.querySelector<HTMLVideoElement>('.hero-video')), 1500).finally(() => report(20))
+    const imageTask = withTimeout(Promise.all(assets.map(loadImage)), 1500).finally(() => report(30))
     const windowTask = withTimeout(document.readyState === 'complete'
       ? Promise.resolve()
       : new Promise<void>((resolve) => window.addEventListener('load', () => resolve(), { once: true }))).finally(() => report(10))
@@ -947,7 +944,7 @@ function IntroVisualSection() {
   return (
     <section ref={sectionRef} className={`intro-visual-section ${revealed ? 'is-about-revealed' : ''}`} aria-label="关于陈兴的视觉介绍">
       <div className="intro-visual-frame">
-        <img className="intro-visual-image" src="/media/about-portrait-v2.png" alt="" loading="eager" decoding="async" />
+        <img className="intro-visual-image" src="/media/about-portrait-v2.jpg" alt="" loading="lazy" decoding="async" />
         <div className="intro-visual-mask" aria-hidden="true" />
         <div className="intro-visual-overlay" aria-hidden="true" />
         <div className="intro-visual-content page-padding">
@@ -1134,7 +1131,7 @@ function ProjectVisual({ project, detail = false }: { project: Project; detail?:
   const { language } = useLanguage()
   if (project.video) return <VideoPanel src={project.video} poster={project.poster} cover={project.cover} label={localized(language, project.videoLabel ?? `${project.title} 项目演示片段`, project.videoLabelEn ?? `${project.titleEn} product demo`)} compact={!detail} />
   if (!detail && project.cover) return <div className="video-panel is-compact static-cover"><img className="video-cover" src={project.cover} alt="" loading="lazy" decoding="async" /><div className="video-panel-bar"><span><span className="video-dot" />{localized(language, `${project.title} 项目封面`, `${project.titleEn} project cover`)}</span></div></div>
-  if (project.slug === 'bilus-3' && detail) return <div className="bilus-detail-media"><img src="/media/bilus-cover.png" alt={localized(language, '毕鲁斯 3.0 产品展示图', 'BILUS 3.0 product showcase')} loading="eager" decoding="async" /></div>
+  if (project.slug === 'bilus-3' && detail) return <div className="bilus-detail-media"><img src="/media/bilus-cover.jpg" alt={localized(language, '毕鲁斯 3.0 产品展示图', 'BILUS 3.0 product showcase')} loading="eager" decoding="async" /></div>
   if (project.slug === 'bilus-3') {
     return (
       <div className={`bilus-visual ${detail ? 'is-detail' : ''}`}>
@@ -1354,7 +1351,7 @@ function PosterOrbit() {
                     aria-current={active ? 'true' : undefined}
                     aria-label={`${language === 'en' ? item.titleEn : item.title}：${language === 'en' ? item.descriptionEn : item.description}`}
                   >
-                    <img src={item.src} alt="" loading="eager" decoding="async" />
+                    <img src={item.src} alt="" loading="lazy" decoding="async" />
                     <div className="poster-orbit-card-label" aria-hidden="true">
                       <span>0{index + 1}</span>
                       <strong>{language === 'en' ? item.titleEn : item.title}</strong>
@@ -1530,7 +1527,7 @@ function HomePage() {
     <>
       <main>
         <section className="hero-section" style={{ '--hero-reveal-duration': `${heroRevealDuration}s` } as React.CSSProperties}>
-          <video ref={heroVideoRef} className="hero-video" src="/media/hero-cover.mp4" poster="/media/hero-cover-poster.jpg" muted playsInline preload="auto" onPlaying={handleHeroPlaying} onEnded={() => setHeroRevealed(true)} aria-label={localized(language, '作品集封面动态背景', 'Portfolio cover motion background')} />
+          <video ref={heroVideoRef} className="hero-video" src="/media/hero-cover.mp4" poster="/media/hero-cover-poster.jpg" muted playsInline preload="metadata" onPlaying={handleHeroPlaying} onEnded={() => setHeroRevealed(true)} aria-label={localized(language, '作品集封面动态背景', 'Portfolio cover motion background')} />
           <div className={`hero-shade ${heroRevealed ? 'is-visible' : ''}`} />
           <div className={`hero-grain ${heroRevealed ? 'is-visible' : ''}`} />
           <div className={`hero-signal ${heroRevealed ? 'is-visible' : ''}`} aria-hidden="true"><span /></div>
@@ -1736,7 +1733,7 @@ function WowoReferenceDetail({ project }: { project: Project }) {
         <ReferenceSection number="05" eyebrow="DISPLAY / 页面展示" title="页面展示" intro={localized(language, '从品牌初见、日常使用到对外展示，保持同一套产品气质。', 'From first look, to daily use, to external presentation, keep one product character.')} className="reference-product">
           <div className="reference-product-callout"><span className="reference-label">页面节点 / SCREEN LOGIC</span><strong>品牌初见、内容浏览、核心操作和展示物料彼此连贯。</strong></div>
           <div className="wowo-display-gallery">
-            <figure><img src="/media/wowo-cover.png" alt="窝喔产品视觉封面" loading="lazy" decoding="async" /><figcaption><span>01</span>产品视觉 / PRODUCT VISUAL</figcaption></figure>
+            <figure><img src="/media/wowo-cover.jpg" alt="窝喔产品视觉封面" loading="lazy" decoding="async" /><figcaption><span>01</span>产品视觉 / PRODUCT VISUAL</figcaption></figure>
             <figure><img src="/media/wowo-poster.jpg" alt="窝喔产品演示画面" loading="lazy" decoding="async" /><figcaption><span>02</span>页面演示 / PRODUCT PREVIEW</figcaption></figure>
           </div>
           <div className="reference-state-row">{states.map((state) => <article key={state.label.zh}><div className={`reference-state-dot is-${state.tone}`} /><strong>{t(state.label)}</strong><p>{t(state.note)}</p></article>)}</div>
@@ -1838,11 +1835,11 @@ function WowoEditorialDetail({ project }: { project: Project }) {
           { no: '03', title: '形成复访', en: 'RETURN & GROW', text: '承接改造、抽卡、喂养和任务反馈，把一次惊喜延伸成收藏、养成和分享。', icon: Users },
         ].map((item, index) => { const Icon = item.icon; return <article className={`wo-loop-step wo-loop-step-${index + 1}`} key={item.no}><span>{item.no}</span><div className="wo-loop-glyph"><Icon size={24} strokeWidth={1.5} /></div><small>{item.en}</small><h3>{item.title}</h3><p>{item.text}</p></article> })}</div><p className="wo-direction-caption">{localized(language, t(narrative.hypothesis), t(narrative.hypothesis))}</p></div></section>
 
-      <section className="wo-section wo-thesis" id="wo-thesis"><div className="wo-inner"><header className="wo-section-head"><div className="wo-index"><b>04</b><span>BRAND<br />THESIS</span></div><div><span className="wo-eyebrow">BRAND / THREE PILLARS</span><h2>一个小窝，三种连接。</h2><p>从个人陪伴到社区关系，让每个设计决定都有情绪目的。</p></div></header><div className="wo-thesis-layout"><div className="wo-thesis-art"><img src="/media/wowo-cover.png" alt="窝喔产品视觉主图" loading="lazy" decoding="async" /><span>MY OWN LITTLE WORLD</span></div><div className="wo-thesis-values"><article><span>01 / TO MYSELF</span><h3>专属陪伴</h3><p>窝灵不只是角色，更是可以持续被养成的情绪关系。</p></article><article><span>02 / TO MY WORLD</span><h3>自我表达</h3><p>通过小窝、装扮和身份卡，把个人审美沉淀在数字空间。</p></article><article><span>03 / TO OTHERS</span><h3>社区连接</h3><p>从分享窝灵、加入窝圈到串门互动，让关系自然发生。</p></article></div></div></div></section>
+      <section className="wo-section wo-thesis" id="wo-thesis"><div className="wo-inner"><header className="wo-section-head"><div className="wo-index"><b>04</b><span>BRAND<br />THESIS</span></div><div><span className="wo-eyebrow">BRAND / THREE PILLARS</span><h2>一个小窝，三种连接。</h2><p>从个人陪伴到社区关系，让每个设计决定都有情绪目的。</p></div></header><div className="wo-thesis-layout"><div className="wo-thesis-art"><img src="/media/wowo-cover.jpg" alt="窝喔产品视觉主图" loading="lazy" decoding="async" /><span>MY OWN LITTLE WORLD</span></div><div className="wo-thesis-values"><article><span>01 / TO MYSELF</span><h3>专属陪伴</h3><p>窝灵不只是角色，更是可以持续被养成的情绪关系。</p></article><article><span>02 / TO MY WORLD</span><h3>自我表达</h3><p>通过小窝、装扮和身份卡，把个人审美沉淀在数字空间。</p></article><article><span>03 / TO OTHERS</span><h3>社区连接</h3><p>从分享窝灵、加入窝圈到串门互动，让关系自然发生。</p></article></div></div></div></section>
 
       <section className="wo-section wo-system" id="wo-system"><div className="wo-inner"><header className="wo-section-head"><div className="wo-index"><b>05</b><span>VISUAL<br />SYSTEM</span></div><div><span className="wo-eyebrow">DESIGN LANGUAGE / TOKENS</span><h2>粉色建立识别，规则支撑长期迭代。</h2><p>用品牌粉承接亲和与情绪，用黑白组织信息，以薄荷青标记互动和状态变化。</p></div></header><div className="wo-color-board"><div className="wo-color-main"><span>BRAND PINK</span><strong>#FD749D</strong><i /></div><div className="wo-color-cyan"><span>INTERACTION</span><strong>#2FD6D0</strong><i /></div><div className="wo-color-white"><span>CANVAS</span><strong>#FFF9FB</strong><i /></div><div className="wo-color-black"><span>CONTRAST</span><strong>#000000</strong><i /></div></div><div className="wo-type-board"><div><span className="wo-eyebrow">DISPLAY TYPE</span><strong>窝喔<em> WO</em></strong></div><div><span className="wo-eyebrow">BODY / INTERFACE</span><p>易读层级 / 清晰状态 / 情绪反馈</p></div><div className="wo-type-sample">Aa 字体层级 123</div></div><div className="wo-icon-board"><div className="wo-icon-heading"><span className="wo-eyebrow">ICON & COMPONENT LANGUAGE</span><p>统一圆角、描边和状态色，让功能清晰，也保留角色亲和力。</p></div><div className="wo-icon-set">{[[Heart, '陪伴'], [Home, '小窝'], [Users, '窝圈'], [MessageCircle, '互动'], [Sparkles, '生成'], [Palette, '装扮'], [CircleCheck, '完成'], [CircleDot, '选择']].map(([Icon, label], index) => <div className={`wo-icon-item wo-icon-item-${index + 1}`} key={label as string}><Icon size={22} strokeWidth={1.6} /><span>{label as string}</span></div>)}</div></div></div></section>
 
-      <section className="wo-section wo-prototype" id="wo-prototype"><div className="wo-inner"><header className="wo-section-head"><div className="wo-index"><b>06</b><span>INTERACTIVE<br />PROTOTYPE</span></div><div><span className="wo-eyebrow">PRODUCT FLOW / LIVE PREVIEW</span><h2>从偏好选择，到专属窝灵。</h2><p>点击步骤切换产品节点，体验一次生成如何接入陪伴与分享。</p></div></header><div className="wo-prototype-tabs" role="tablist" aria-label="窝喔生成流程">{flow.map((step, index) => <button type="button" role="tab" aria-selected={activeFlow === index} className={activeFlow === index ? 'is-active' : ''} key={step.title.zh} onClick={() => setActiveFlow(index)}><small>0{index + 1}</small><span>{t(step.title)}</span><ArrowRight size={15} /></button>)}</div><div className="wo-prototype-stage"><div className="wo-prototype-copy"><span className="wo-eyebrow">STEP 0{activeFlow + 1} / {activeStep.title.en}</span><h3>{t(activeStep.title)}</h3><p>{t(activeStep.copy)}</p><div className="wo-prototype-options">{activeStep.choices.map((choice, index) => <button type="button" className={index === 0 ? 'is-selected' : ''} key={choice}><span>{index === 0 ? <Check size={14} /> : <CircleDot size={14} />}</span>{choice}</button>)}</div><button className="wo-prototype-next" type="button" onClick={() => setActiveFlow((current) => (current + 1) % flow.length)}>{localized(language, activeFlow === 3 ? '再看一次流程' : '继续下一步', activeFlow === 3 ? 'REPLAY FLOW' : 'CONTINUE')}<ArrowRight size={16} /></button></div><div className={`wo-phone-preview wo-phone-step-${activeFlow + 1}`}><div className="wo-phone-top"><span>09:41</span><i /><span>•••</span></div><div className="wo-phone-screen"><div className="wo-phone-brand">窝喔<small>YOUR LITTLE WORLD</small></div>{activeFlow === 0 && <div className="wo-phone-question"><span>01 / YOUR PREFERENCES</span><strong>你希望窝灵是什么感觉？</strong><div className="wo-mini-options"><b>温柔陪伴</b><b>自由探索</b><b>安静治愈</b></div></div>}{activeFlow === 1 && <div className="wo-phone-choice"><span>CHOOSE YOUR COMPANION</span><div className="wo-choice-orbit"><Heart size={31} /><b>WO·01</b></div><strong>选择你的窝灵</strong></div>}{activeFlow === 2 && <div className="wo-phone-tags"><span>为窝灵选择标签</span><div><b>治愈</b><b>探索</b><b>收藏</b><b>分享</b><b>陪伴</b><b>创作</b></div></div>}{activeFlow === 3 && <div className="wo-phone-result"><div className="wo-result-orbit"><img src="/media/wowo-cover.png" alt="窝喔角色生成结果" /></div><span>你的窝灵已经准备好了</span><strong>欢迎回到你的小窝</strong><button type="button">进入我的小窝</button></div>}<div className="wo-phone-nav"><span><Home size={15} /></span><span><Heart size={15} /></span><span className="is-plus">+</span><span><MessageCircle size={15} /></span><span><Users size={15} /></span></div></div></div></div></div></section>
+      <section className="wo-section wo-prototype" id="wo-prototype"><div className="wo-inner"><header className="wo-section-head"><div className="wo-index"><b>06</b><span>INTERACTIVE<br />PROTOTYPE</span></div><div><span className="wo-eyebrow">PRODUCT FLOW / LIVE PREVIEW</span><h2>从偏好选择，到专属窝灵。</h2><p>点击步骤切换产品节点，体验一次生成如何接入陪伴与分享。</p></div></header><div className="wo-prototype-tabs" role="tablist" aria-label="窝喔生成流程">{flow.map((step, index) => <button type="button" role="tab" aria-selected={activeFlow === index} className={activeFlow === index ? 'is-active' : ''} key={step.title.zh} onClick={() => setActiveFlow(index)}><small>0{index + 1}</small><span>{t(step.title)}</span><ArrowRight size={15} /></button>)}</div><div className="wo-prototype-stage"><div className="wo-prototype-copy"><span className="wo-eyebrow">STEP 0{activeFlow + 1} / {activeStep.title.en}</span><h3>{t(activeStep.title)}</h3><p>{t(activeStep.copy)}</p><div className="wo-prototype-options">{activeStep.choices.map((choice, index) => <button type="button" className={index === 0 ? 'is-selected' : ''} key={choice}><span>{index === 0 ? <Check size={14} /> : <CircleDot size={14} />}</span>{choice}</button>)}</div><button className="wo-prototype-next" type="button" onClick={() => setActiveFlow((current) => (current + 1) % flow.length)}>{localized(language, activeFlow === 3 ? '再看一次流程' : '继续下一步', activeFlow === 3 ? 'REPLAY FLOW' : 'CONTINUE')}<ArrowRight size={16} /></button></div><div className={`wo-phone-preview wo-phone-step-${activeFlow + 1}`}><div className="wo-phone-top"><span>09:41</span><i /><span>•••</span></div><div className="wo-phone-screen"><div className="wo-phone-brand">窝喔<small>YOUR LITTLE WORLD</small></div>{activeFlow === 0 && <div className="wo-phone-question"><span>01 / YOUR PREFERENCES</span><strong>你希望窝灵是什么感觉？</strong><div className="wo-mini-options"><b>温柔陪伴</b><b>自由探索</b><b>安静治愈</b></div></div>}{activeFlow === 1 && <div className="wo-phone-choice"><span>CHOOSE YOUR COMPANION</span><div className="wo-choice-orbit"><Heart size={31} /><b>WO·01</b></div><strong>选择你的窝灵</strong></div>}{activeFlow === 2 && <div className="wo-phone-tags"><span>为窝灵选择标签</span><div><b>治愈</b><b>探索</b><b>收藏</b><b>分享</b><b>陪伴</b><b>创作</b></div></div>}{activeFlow === 3 && <div className="wo-phone-result"><div className="wo-result-orbit"><img src="/media/wowo-cover.jpg" alt="窝喔角色生成结果" /></div><span>你的窝灵已经准备好了</span><strong>欢迎回到你的小窝</strong><button type="button">进入我的小窝</button></div>}<div className="wo-phone-nav"><span><Home size={15} /></span><span><Heart size={15} /></span><span className="is-plus">+</span><span><MessageCircle size={15} /></span><span><Users size={15} /></span></div></div></div></div></div></section>
 
       <section className="wo-section wo-community" id="wo-community"><div className="wo-inner"><header className="wo-section-head"><div className="wo-index"><b>07</b><span>COMMUNITY<br />CONNECTION</span></div><div><span className="wo-eyebrow">FIND YOUR CIRCLE</span><h2>找到和你同频的小窝。</h2><p>一起分享角色、房间和日常灵感，让数字身份进入真实的社交表达。</p></div></header><div className="wo-community-layout"><div className="wo-community-visual"><img src="/media/wowo-poster.jpg" alt="窝喔社区内容视觉" loading="lazy" decoding="async" /><span>WO CIRCLE / SHARE A LITTLE MOMENT</span></div><div className="wo-community-copy"><span className="wo-eyebrow">PERSONAL → SOCIAL</span><h3>窝圈不是内容列表，<br />而是关系的入口。</h3><p>围绕角色、身份卡和小窝发生推荐、串门、加入与分享。</p><div className="wo-community-links"><span><Users size={17} />推荐窝圈</span><span><Heart size={17} />推荐好友</span><span><Home size={17} />串门互动</span></div></div></div></div></section>
 
