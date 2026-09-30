@@ -2407,7 +2407,8 @@ body:not(.language-en) .work-page .inner-hero h1 { font-family: var(--font-chine
 .wo-prototype-options button span { display: grid; place-items: center; width: 20px; height: 20px; color: #fff; border-radius: 50%; background: var(--wo-pink); }
 .wo-prototype-options button:not(.is-selected) span { color: #aaa4ac; background: transparent; }
 .wo-prototype-next { display: inline-flex; align-items: center; gap: 12px; margin-top: 22px; padding: 0 18px; min-height: 42px; color: #fff; background: #17151d; font-size: 12px; }
-.wo-phone-preview { position: relative; width: 330px; min-height: 570px; justify-self: center; padding: 11px; border: 7px solid #141319; border-radius: 38px; background: #141319; box-shadow: 24px 30px 0 rgba(23,21,29,.12); }
+.wo-phone-preview { position: relative; width: 330px; min-height: 0; justify-self: center; padding: 9px; overflow: hidden; border: 7px solid #141319; border-radius: 38px; background: #141319; box-shadow: 24px 30px 0 rgba(23,21,29,.12); }
+.wo-phone-real-screen { display: block; width: 100%; height: auto; border-radius: 22px; }
 .wo-phone-top { display: flex; justify-content: space-between; align-items: center; height: 25px; padding: 0 9px; color: #1d1a20; background: #fff; font-family: var(--font-condensed); font-size: 9px; }
 .wo-phone-top i { width: 54px; height: 13px; border-radius: 8px; background: #121116; }
 .wo-phone-screen { position: relative; display: flex; flex-direction: column; min-height: 518px; padding: 20px 16px 14px; overflow: hidden; background: linear-gradient(180deg,#fff 0%,#fff9fb 100%); }
@@ -2539,7 +2540,7 @@ body:not(.language-en) .work-page .inner-hero h1 { font-family: var(--font-chine
   .wo-prototype-tabs button { font-size: 11px; }
   .wo-prototype-stage { grid-template-columns: 1fr; gap: 35px; margin-top: 26px; padding: 23px 16px 30px; }
   .wo-prototype-copy h3 { font-size: 27px; }
-  .wo-phone-preview { width: 286px; min-height: 520px; }
+  .wo-phone-preview { width: 286px; min-height: 0; }
   .wo-phone-screen { min-height: 468px; }
   .wo-community .wo-section-head h2 { font-size: 34px; }
   .wo-community-layout { grid-template-columns: 1fr; gap: 27px; margin-top: 38px; }
