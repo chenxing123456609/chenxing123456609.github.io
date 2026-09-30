@@ -1390,7 +1390,7 @@ const experienceCards: Record<Language, ExperienceCardData[]> = {
       company: '喵们工作室',
       role: 'UI 设计师',
       summary: '负责多项 C 端 APP 与小程序的全流程 UI 设计，从需求拆解、用户画像到高保真原型与上线走查。',
-      highlights: ['协同产品与开发推进落地，解决 20+ 处视觉与交互还原问题，上线还原度达 95%+。', '参与南岳旅游区新型 APP 设计，推动工作室与政府及后续小程序合作。'],
+      highlights: ['协同产品与开发推进落地，解决 20+ 处视觉与交互还原问题，上线还原度达 95%+。'],
     },
     {
       date: '2025.07 — 2025.10',
