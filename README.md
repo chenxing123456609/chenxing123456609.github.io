@@ -28,7 +28,7 @@ npm run preview
 - `public/site/fonts/A-Nice-Day-2.ttf`：超大英文标题字体
 - `public/site/fonts/BeiBanChuanXiangSuChaoWanTi-2.ttf`：中文像素感标题字体
 - `public/site/media/qiaxu-cover.png`：恰序作品目录封面
-- `public/site/media/bilus-cover.png`：毕鲁斯 3.0 作品目录封面
+- `public/site/media/bilus-cover.png`：毕鲁斯2.0 作品目录封面
 - `public/site/media/aojin-cover.png`：奥锦装修 AI 作品目录封面
 - `public/site/media/wowo-cover.png`：窝喔作品目录封面
 - `public/site/media/qiaxu-demo.mp4`：恰序 AI 压缩演示视频
@@ -42,3 +42,9 @@ npm run preview
 生产构建通过 `vite.config.ts` 的白名单静态目录 `public/site/` 输出，不会把工作区中保留的原始视频副本复制到 `dist/`。
 
 外部毕鲁斯入口只作为辅助链接，完整项目内容保留在站内。
+
+## 加载性能
+
+生产页面使用 WOFF2 字体子集与 WebP 图片。首页文字、按钮和海报独立显示；弱网、节省流量或减少动态效果模式跳过入场并停止背景视频自动下载。正常网络的入场最长等待 800 ms，退出过渡 250 ms；本次会话再次进入首页和直接访问详情时跳过入场。
+
+首页屏幕外图片在距视口 280 px 时加载，项目视频在接近视口或悬停时激活；恰序详情的脚本和样式按需加载。背景视频在首页封面离开视口或标签页隐藏时暂停。

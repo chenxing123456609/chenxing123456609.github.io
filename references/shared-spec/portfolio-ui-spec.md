@@ -52,7 +52,7 @@ Owner: Chen Xing
 - Display art sans may use positive tracking from `0.04em` to `0.12em` to preserve its poster-like rhythm; body Chinese text stays at `0`.
 - Large Chinese headings use lighter weight and more line height than the previous version; hierarchy comes from scale and whitespace rather than heavy bold weight.
 - Project cards reveal individually from scroll with a 360ms stagger between items and a roughly 1s entrance, preserving uninterrupted page scrolling.
-- BILUS 3.0 is the approved live-product card exception: it keeps the shared card pattern but exposes a separate direct website action with an external-link cue.
+- BILUS 2.0 is the approved live-product card exception: it keeps the shared card pattern but exposes a separate direct website action with an external-link cue.
 - On hover, the BILUS live action uses a restrained silver highlight and compact frosted access cue; it must not cover neighboring project media or compete with video playback.
 - Custom display override: local `A Nice Day` is used for every oversized English title, project title, next-project label, and the English about statement.
 - Custom pixel override: local `Bei Ban Pixel` is used for Chinese section headings, project headings, capability headings, and timeline headings.
@@ -152,3 +152,12 @@ Owner: Chen Xing
 - No project status labels.
 - No replacement or paraphrase of the locked personal-positioning copy.
 - No external-only case study.
+## Performance Overrides
+
+- Use optimized WebP images and WOFF2 subsets while preserving original assets for editing.
+- Home content and the poster are independent of background video loading.
+- Slow connections, reduced-motion preferences and data-saving mode skip the loader and automatic background video downloads.
+- On normal connections, the first home visit waits at most 800 ms for the poster and exits in 250 ms. Subsequent visits and direct detail routes skip the loader.
+- Offscreen home images request their source within 280 px of the viewport. Offscreen project videos defer their media source until activated.
+- QIA XU detail scripts and styles load on demand. Background playback pauses offscreen and in hidden tabs.
+- The fluid loader renders at up to 960 px and 30 fps to keep low-powered devices responsive.

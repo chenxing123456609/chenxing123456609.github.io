@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { createContext, lazy, Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowDown,
   ArrowLeft,
@@ -35,10 +35,11 @@ import {
   X,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
+const QiaxuCaseContent = lazy(() => import('./QiaxuCaseContent'))
 
 const BILUS_URL = 'https://www.aigcacs.com/inspiration'
 const RESUME_URL = '/media/Chen-Xing-UI-Designer-Resume-2026.pdf'
-const AOJIN_FIGMA_FRAME_URL = '/media/aojin-figma-export.png'
+const AOJIN_FIGMA_FRAME_URL = '/media/aojin-figma-export.webp'
 
 type Project = {
   slug: string
@@ -66,8 +67,8 @@ const projects: Project[] = [
   {
     slug: 'bilus-3',
     number: '01',
-    title: '毕鲁斯 3.0',
-    titleEn: 'BILUS 3.0',
+    title: '毕鲁斯2.0',
+    titleEn: 'BILUS 2.0',
     english: 'BILUS TOOL / PRODUCT SYSTEM',
     year: '2025—2026',
     role: 'UI 设计师 / 项目负责人',
@@ -76,7 +77,7 @@ const projects: Project[] = [
     introEn: 'A consumer product redesign validated through real user feedback and launch data, improving the experience and driving measurable user growth.',
     scope: ['官网改版', '核心体验优化', '用户路径', '视觉系统', '上线数据'],
     scopeEn: ['Website redesign', 'Core experience', 'User journeys', 'Visual system', 'Launch data'],
-    cover: '/media/bilus-cover.jpg',
+    cover: '/media/bilus-cover.webp',
     external: BILUS_URL,
     tone: 'silver',
   },
@@ -93,9 +94,9 @@ const projects: Project[] = [
     introEn: 'A focused interior-design AI product with a simple closed loop, refined through front-end visual optimization for a clearer and more consistent experience.',
     scope: ['前端视觉优化', '装修 AI 闭环', '界面层级', '组件统一', '状态反馈'],
     scopeEn: ['Front-end visual polish', 'Interior AI loop', 'Interface hierarchy', 'Component consistency', 'State feedback'],
-    cover: '/media/aojin-cover.jpg',
+    cover: '/media/aojin-cover.webp',
     video: '/media/aojin-demo.mp4',
-    poster: '/media/aojin-poster.jpg',
+    poster: '/media/aojin-poster.webp',
     videoLabel: '奥锦装修 AI 产品演示',
     videoLabelEn: 'AOJIN AI product demo',
     tone: 'warm',
@@ -105,17 +106,17 @@ const projects: Project[] = [
     number: '03',
     title: '恰序 AI',
     titleEn: 'QIA XU AI',
-    english: 'QIA XU / INTERNAL AI PRODUCT',
+    english: 'QIA XU / AI DESIGN WORKFLOWS',
     year: '2025—2026',
     role: 'UI 设计师 / 项目负责人',
     roleEn: 'UI Designer & Project Lead',
-    intro: '面向 B 端 AI 场景，围绕工作台、任务流和反馈状态建立清晰的产品结构与视觉系统。',
-    introEn: 'A B2B AI product structured around a clear workspace, task flow, feedback states, and a coherent visual system.',
-    scope: ['B 端产品结构', '工作台', 'AI 任务流', '反馈状态', '视觉系统'],
-    scopeEn: ['B2B product structure', 'Workspace', 'AI task flow', 'Feedback states', 'Visual system'],
-    cover: '/media/qiaxu-cover.jpg',
+    intro: '围绕四类 AI 任务，建立清楚的入口、操作流程与反馈；通过任务差异、状态规则与组件规范，串联需求到设计交付。',
+    introEn: 'Clear entry points, flows, and feedback for four AI tasks, connecting requirements to design delivery through task-specific interactions and shared component rules.',
+    scope: ['需求与任务梳理', '用户流程', '交互方案', '视觉设计', '组件与状态规范'],
+    scopeEn: ['Requirements and tasks', 'User flows', 'Interaction design', 'Visual design', 'Components and states'],
+    cover: '/media/qiaxu-cover.webp',
     video: '/media/qiaxu-demo.mp4',
-    poster: '/media/qiaxu-poster.jpg',
+    poster: '/media/qiaxu-poster.webp',
     videoLabel: '恰序 AI 产品演示',
     videoLabelEn: 'QIA XU AI product demo',
     tone: 'olive',
@@ -133,9 +134,9 @@ const projects: Project[] = [
     introEn: 'A consumer product taken from an unclear brief through positioning, visual design, and full delivery.',
     scope: ['需求澄清', '产品定位', 'C 端项目结构', '品牌视觉', '产品界面', '全流程落地'],
     scopeEn: ['Brief clarification', 'Product positioning', 'Consumer product structure', 'Brand visuals', 'Product interface', 'End-to-end delivery'],
-    cover: '/media/wowo-cover.jpg',
+    cover: '/media/wowo-cover.webp',
     video: '/media/wowo-demo.mp4',
-    poster: '/media/wowo-poster.jpg',
+    poster: '/media/wowo-poster.webp',
     videoLabel: '窝喔视觉演示',
     videoLabelEn: 'WOWO visual demo',
     tone: 'silver',
@@ -152,7 +153,7 @@ const navItems = [
 const projectCategoryZh: Record<string, string> = {
   'bilus-3': '毕鲁斯工具 / 产品系统',
   'aojin-ai': '奥锦 / 装修 AI 工作流',
-  'qiaxu-ai': '恰序 / 内部 AI 产品',
+  'qiaxu-ai': '恰序 / B 端 AI 工具产品',
   wowo: '窝喔 / 品牌与产品视觉',
 }
 
@@ -217,24 +218,24 @@ const caseStudies: Record<string, CaseStudy> = {
     noteEn: 'This project shows my ability to improve a focused product with restraint, using a small number of precise changes to raise its polish and usability.',
   },
   'qiaxu-ai': {
-    overviewTitle: '让复杂任务，',
-    overviewTitleAccent: '变得可理解。',
-    overviewTitleEn: 'MAKE COMPLEX TASKS',
-    overviewTitleAccentEn: 'EASIER TO UNDERSTAND.',
-    overview: '恰序 AI 是一个以工作台和任务流程为核心的 B 端产品。设计重点不只是制作页面，而是先理解用户角色、工作目标和任务关系，再将复杂操作整理成清晰的界面层级。项目围绕任务结构、AI 反馈、工作台信息组织和视觉系统展开，让产品在复杂业务场景下依然保持可理解、可操作和可持续扩展。',
-    overviewEn: 'QIA XU AI is a B2B product centered on a workspace and task flows. The work went beyond producing screens: I first understood user roles, goals, and task relationships, then organized complex operations into clear interface hierarchy. The result connects task structure, AI feedback, workspace organization, and a scalable visual system.',
+    overviewTitle: '让 AI 功能，',
+    overviewTitleAccent: '成为清晰流程。',
+    overviewTitleEn: 'MAKE AI TASKS',
+    overviewTitleAccentEn: 'CLEAR AND USABLE.',
+    overview: '恰序 AI 面向设计与业务团队，涵盖标准生图、智能生图、图片标注、算量报价等任务。作为 UI 设计师 / 项目负责人，我参与产品需求讨论，梳理不同任务的用户目标、信息结构和操作流程，完成交互方案、界面视觉与组件规范，并与产品、研发协作推进设计交付和开发走查。设计重点是让用户快速识别功能入口，明确每一步的输入、处理状态与结果。',
+    overviewEn: 'QIA XU AI serves design and business teams across image generation, smart generation, image annotation, and quantity estimation. As UI designer and project lead, I joined product discussions, mapped user goals, information structure, and task flows, then delivered interaction design, interface visuals, and component rules with product and engineering. The focus was to make each task easy to find, follow, and understand from input through processing to result.',
     process: [
-      ['梳理业务关系', '理解 B 端业务目标、用户角色和任务关系，建立可以讨论的产品结构。'],
-      ['搭建任务工作台', '围绕核心任务设计工作台层级、AI 任务流和输入到反馈的连续体验。'],
-      ['建立系统交付', '完善组件、视觉规范和关键状态，让复杂产品具备持续扩展和协作落地的基础。'],
+      ['对齐需求与任务', '与产品团队讨论使用目标，区分不同 AI 功能的入口、输入内容和结果形态。'],
+      ['设计流程与界面', '梳理用户操作路径，完成页面信息层级、交互方案、视觉表现和关键反馈状态。'],
+      ['规范并跟进落地', '沉淀可复用组件和视觉规则，配合研发完成设计交付、开发走查与细节校准。'],
     ],
     processEn: [
-      ['Map the business', 'Understood B2B goals, user roles, and task relationships to create a shared product structure.'],
-      ['Build the task workspace', 'Designed the workspace hierarchy, AI task flow, and continuous experience from input to feedback.'],
-      ['Deliver a system', 'Defined components, visual rules, and key states to support future scale and team delivery.'],
+      ['Align on requirements', 'Worked with product to distinguish each AI task, its entry point, required input, and result.'],
+      ['Design flows and screens', 'Mapped user steps and delivered information hierarchy, interactions, visuals, and key feedback states.'],
+      ['Document and follow through', 'Defined reusable components and visual rules, then partnered with engineering on handoff and implementation review.'],
     ],
-    note: '这个项目体现了我处理复杂 B 端产品的能力：先理解业务，再组织结构，最后通过系统化设计完成界面落地。',
-    noteEn: 'This project shows how I handle complex B2B products: understand the business first, organize the structure, and deliver the interface through a coherent system.',
+    note: '恰序项目让我把需求讨论、流程设计、视觉表达和研发协作连成一套完整工作方式。后续可以结合真实使用反馈，继续验证不同任务入口、输入指引和结果呈现的效率。',
+    noteEn: 'QIA XU connected requirement discussions, flow design, visual expression, and engineering collaboration into one working method. Real usage feedback can guide further validation of task entry points, input guidance, and result presentation.',
   },
   wowo: {
     overviewTitle: '从模糊需求，',
@@ -415,56 +416,55 @@ const caseNarratives: Record<string, CaseNarrative> = {
     perspective: dual('奥锦让我更确定，视觉设计的价值常常来自“少做但做准”。后续会继续用更多真实任务样本验证不同装修场景下的输入和结果沟通。', 'AOJIN reinforced that visual design often gains value by doing less, precisely. More real task samples will help validate input and result review across scenarios.'),
   },
   'qiaxu-ai': {
-    problemTitle: dual('业务很复杂，用户只想完成任务。', 'The business was complex; users wanted to finish tasks.'),
-    problemBody: dual('恰序 AI 面向 B 端工作流，角色、任务和反馈彼此交织。设计先把业务关系变成可讨论的结构，再把结构拆成工作台、任务流和状态系统，让复杂能力保持可理解。', 'QIA XU AI serves a B2B workflow where roles, tasks, and feedback intersect. I first made the business structure discussable, then translated it into a workspace, task flow, and state system.'),
-    problemPoints: [dual('不同角色看到的信息重点不同。', 'Different roles needed different information priorities.'), dual('任务进度与 AI 反馈没有形成连续感。', 'Task progress and AI feedback felt disconnected.'), dual('缺少可供团队复用的视觉和组件规则。', 'The team lacked reusable visual and component rules.')],
-    hypothesis: dual('以任务为主线重排信息，把复杂业务拆成“看得懂、做得到、能追踪”的工作台。', 'Reorder information around tasks and turn complex business into a workspace that is understandable, actionable, and trackable.'),
+    problemTitle: dual('多种 AI 任务并列，入口和操作路径需要清楚。', 'Multiple AI tasks need clear entry points and flows.'),
+    problemBody: dual('恰序 AI 将标准生图、智能生图、图片标注、算量报价等能力放在同一产品中。设计先与产品团队对齐各项任务的目标、输入和结果，再梳理用户流程与页面结构，避免不同功能混用同一套操作逻辑。', 'QIA XU AI brings image generation, smart generation, image annotation, and quantity estimation into one product. I aligned each task’s goal, input, and result with product, then mapped the user flows and page structure so distinct functions would not blur into one interaction.'),
+    problemPoints: [dual('不同任务需要不同的输入方式与结果呈现。', 'Different tasks need different inputs and result views.'), dual('AI 处理过程需要明确、连续的状态反馈。', 'AI processing needs clear, continuous feedback.'), dual('多个功能页面需要共享组件与视觉规则。', 'Multiple feature pages need shared components and visual rules.')],
+    hypothesis: dual('按任务目标区分入口，统一页面骨架和状态语言，让每项功能都沿着“输入—处理—结果”清晰推进。', 'Separate entry points by task while sharing page structure and state language, so each feature follows a clear input-to-processing-to-result flow.'),
     journey: [
-      { stage: dual('发现需求', 'DISCOVER'), title: dual('定位今天要完成的事', 'Find today’s task'), goal: dual('进入与角色相关的工作入口。', 'Enter the role-relevant workspace.'), detail: dual('把任务、状态和优先级放在首屏。', 'Put tasks, status, and priority on the first view.') },
-      { stage: dual('选方案', 'CHOOSE'), title: dual('选择处理路径', 'Choose a route'), goal: dual('理解输入、协作和输出关系。', 'Understand input, collaboration, and output.'), detail: dual('用分组和清晰动作减少路径猜测。', 'Use grouping and clear actions to reduce guessing.') },
-      { stage: dual('用产品', 'USE'), title: dual('在工作台完成任务', 'Finish in the workspace'), goal: dual('复杂操作仍然保持节奏。', 'Keep momentum through complex operations.'), detail: dual('用固定的侧栏、主区和反馈位承接流程。', 'Use a stable sidebar, main area, and feedback rail.') },
-      { stage: dual('获反馈', 'FEEDBACK'), title: dual('追踪 AI 与协作进度', 'Track AI and collaboration'), goal: dual('知道任务走到哪一步。', 'Know where the task stands.'), detail: dual('把生成、审核、异常状态放进同一条时间线。', 'Place generation, review, and error in one timeline.') },
-      { stage: dual('分享', 'SHARE'), title: dual('交付可讨论结果', 'Share a discussable result'), goal: dual('让结果能被团队接手。', 'Make the result easy for the team to pick up.'), detail: dual('保留批注、版本和导出，让成果离开个人工作台。', 'Keep notes, versions, and export so work can leave the workspace.') },
+      { stage: dual('选任务', 'CHOOSE TASK'), title: dual('找到对应的 AI 功能', 'Choose an AI task'), goal: dual('快速理解不同功能的适用场景。', 'Understand what each feature is for.'), detail: dual('区分标准生图、智能生图、图片标注与算量报价。', 'Distinguish image generation, smart generation, annotation, and estimation.') },
+      { stage: dual('准备输入', 'PREPARE INPUT'), title: dual('补充素材与需求', 'Provide inputs'), goal: dual('清楚知道需要上传或填写什么。', 'Know what to upload or enter.'), detail: dual('组织上传入口、描述信息与必要选项。', 'Organize uploads, descriptions, and required options.') },
+      { stage: dual('执行任务', 'PROCESS'), title: dual('提交并等待 AI 处理', 'Submit and wait'), goal: dual('了解任务正在进行到哪一步。', 'Understand the current processing state.'), detail: dual('为处理中、完成与异常情况提供一致反馈。', 'Provide consistent feedback for processing, completion, and errors.') },
+      { stage: dual('查看结果', 'REVIEW RESULT'), title: dual('理解结果并继续操作', 'Review and continue'), goal: dual('让生成图像或业务结果容易查看。', 'Make generated images and task results easy to review.'), detail: dual('突出结果本身，并清楚呈现可继续执行的操作。', 'Prioritize the result and make the next action clear.') },
     ],
     scenes: [
-      { scene: dual('任务总览', 'Task overview'), strategy: dual('信息对齐 + 快速筛选', 'Aligned information + fast filters'), reason: dual('让不同角色先看到与自己有关的事。', 'Let each role see what matters first.') },
-      { scene: dual('AI 工作台', 'AI workspace'), strategy: dual('高密度 + 强层级', 'High density + strong hierarchy'), reason: dual('承载复杂输入而不牺牲可读性。', 'Support complex input without losing readability.') },
-      { scene: dual('协作交付', 'Team handoff'), strategy: dual('版本可见 + 结果可追踪', 'Visible versions + traceable results'), reason: dual('让交接和复盘有共同依据。', 'Give handoff and review a shared reference.') },
+      { scene: dual('功能入口', 'TASK ENTRY'), strategy: dual('任务名称清楚 + 分类有序', 'Clear labels + organized modes'), reason: dual('帮助用户先选对功能，再进入对应流程。', 'Help users choose the right feature before entering its flow.') },
+      { scene: dual('任务输入', 'TASK INPUT'), strategy: dual('输入区聚焦 + 说明明确', 'Focused input + clear guidance'), reason: dual('减少上传素材或填写需求时的犹豫。', 'Reduce uncertainty when adding materials or requirements.') },
+      { scene: dual('AI 结果', 'AI RESULT'), strategy: dual('状态可见 + 结果突出', 'Visible states + prominent results'), reason: dual('让等待过程和完成后的结果都容易理解。', 'Keep processing and completed results easy to understand.') },
     ],
     metrics: [
-      { value: dual('工作台', 'Workspace'), label: dual('核心载体', 'Core surface'), detail: dual('以任务、输入、反馈和结果组织 B 端工作流。', 'Organized the B2B workflow around task, input, feedback, and result.') },
-      { value: dual('任务流', 'Task flow'), label: dual('交互主线', 'Interaction spine'), detail: dual('把 AI 处理过程放进可追踪的任务关系中。', 'Placed AI processing inside a traceable task relationship.') },
-      { value: dual('组件规则', 'Component rules'), label: dual('团队交付', 'Team delivery'), detail: dual('将组件、视觉规范和关键状态整理为交付基础。', 'Defined components, visual rules, and key states for delivery.') },
+      { value: dual('4 类任务', '4 TASK TYPES'), label: dual('功能入口', 'FEATURE ENTRY'), detail: dual('标准生图、智能生图、图片标注与算量报价。', 'Image generation, smart generation, annotation, and estimation.') },
+      { value: dual('输入—处理—结果', 'INPUT—PROCESS—RESULT'), label: dual('交互主线', 'FLOW STRUCTURE'), detail: dual('围绕每项任务组织连续流程和关键状态。', 'Organized each task around a continuous flow and key states.') },
+      { value: dual('组件与规范', 'COMPONENTS & RULES'), label: dual('设计交付', 'DESIGN DELIVERY'), detail: dual('沉淀可复用的页面结构、组件和视觉状态规则。', 'Defined reusable page structures, components, and visual states.') },
     ],
     evidence: [
-      { before: dual('工作台信息需要围绕任务重排。', 'Workspace information needed a task-based order.'), decision: dual('将任务、输入和反馈放进稳定的工作区结构。', 'Place task, input, and feedback in a stable workspace structure.'), signal: dual('落地证据：工作台从信息堆叠变成任务入口。', 'Evidence: the workspace becomes a task entry, not an information pile.') },
-      { before: dual('AI 处理中像“黑盒”。', 'AI processing felt like a black box.'), decision: dual('补充进度、阶段与异常状态。', 'Add progress, stages, and error states.'), signal: dual('落地证据：输入到反馈的任务流可以被追踪。', 'Evidence: the task flow from input to feedback is traceable.') },
-      { before: dual('设计交付依赖口头说明。', 'Delivery relied on verbal explanation.'), decision: dual('把组件、规则和状态写入系统。', 'Put components, rules, and states into the system.'), signal: dual('落地证据：视觉系统支持后续扩展和协作落地。', 'Evidence: the visual system supports scale and team delivery.') },
+      { before: dual('四类 AI 功能需要快速区分。', 'Four AI features need to be easy to distinguish.'), decision: dual('按任务类型组织入口，并保持命名与层级清楚。', 'Organize entry points by task with clear labels and hierarchy.'), signal: dual('交付落点：标准生图、智能生图、图片标注、算量报价各有清晰入口。', 'Delivery: each of the four task types has a clear entry point.') },
+      { before: dual('输入、处理中和结果容易断开。', 'Input, processing, and result can feel disconnected.'), decision: dual('沿统一流程设计页面结构和状态反馈。', 'Use a consistent flow to structure screens and state feedback.'), signal: dual('交付落点：关键操作和 AI 反馈纳入同一套流程表达。', 'Delivery: key actions and AI feedback share one flow language.') },
+      { before: dual('多个页面需要保持视觉一致。', 'Multiple pages need a consistent visual language.'), decision: dual('整理组件、视觉规范与多状态表现。', 'Define components, visual rules, and state variations.'), signal: dual('交付落点：形成可复用的设计文件与研发协作依据。', 'Delivery: reusable design files and a shared reference for engineering.') },
     ],
     emotion: [
-      { layer: dual('本能层', 'VISCERAL'), title: dual('复杂但不吓人', 'Complex, not intimidating'), decision: dual('用明确对比和留白切开高密度信息。', 'Use contrast and whitespace to divide dense information.'), purpose: dual('让用户相信自己能掌控工作台。', 'Make users feel they can control the workspace.') },
-      { layer: dual('行为层', 'BEHAVIORAL'), title: dual('操作有连续性', 'Keep action continuous'), decision: dual('固定输入、处理中、反馈的空间关系。', 'Keep input, processing, and feedback spatially consistent.'), purpose: dual('减少在复杂界面中寻找下一步。', 'Reduce searching for the next action.') },
-      { layer: dual('反思层', 'REFLECTIVE'), title: dual('团队一起完成', 'Make work feel shared'), decision: dual('在结果中保留版本、批注和交付线索。', 'Keep versions, notes, and handoff cues in the result.'), purpose: dual('让个人产出变成团队资产。', 'Turn personal output into a team asset.') },
+      { layer: dual('本能层', 'VISCERAL'), title: dual('专业、清晰', 'Clear and professional'), decision: dual('用克制的色彩、对比和留白建立稳定视觉层级。', 'Use restrained color, contrast, and whitespace to create hierarchy.'), purpose: dual('让用户快速识别主操作和核心信息。', 'Help users recognize primary actions and key information.') },
+      { layer: dual('行为层', 'BEHAVIORAL'), title: dual('每一步都有反馈', 'Feedback at every step'), decision: dual('统一输入、处理中、完成和异常状态的表达。', 'Unify input, processing, completion, and error states.'), purpose: dual('让 AI 处理过程更可理解，操作更有连续性。', 'Make AI processing understandable and actions continuous.') },
+      { layer: dual('反思层', 'REFLECTIVE'), title: dual('页面可以持续扩展', 'A system that can grow'), decision: dual('用组件和规范承接新增任务与后续页面。', 'Use components and rules to support new tasks and screens.'), purpose: dual('减少重复设计，保持产品体验一致。', 'Reduce repeated design work and maintain consistency.') },
     ],
     components: [
-      { name: dual('任务导航', 'Task navigation'), state: dual('默认 / 当前项 / 收起', 'Default / current / collapsed') },
-      { name: dual('任务列表', 'Task list'), state: dual('待处理 / 处理中 / 已完成', 'To do / processing / done') },
-      { name: dual('工作台输入区', 'Workspace input'), state: dual('空 / 编辑 / 提交', 'Empty / editing / submitted') },
-      { name: dual('AI 任务卡', 'AI task card'), state: dual('等待 / 运行 / 结果', 'Waiting / running / result') },
-      { name: dual('进度时间线', 'Progress timeline'), state: dual('当前 / 已完成 / 异常', 'Current / done / error') },
-      { name: dual('结果面板', 'Result panel'), state: dual('预览 / 编辑 / 交付', 'Preview / edit / handoff') },
-      { name: dual('版本切换', 'Version switcher'), state: dual('当前 / 历史 / 对比', 'Current / history / compare') },
-      { name: dual('批注入口', 'Comment entry'), state: dual('未读 / 已读 / 回复', 'Unread / read / reply') },
-      { name: dual('交付操作', 'Handoff action'), state: dual('导出 / 分享 / 归档', 'Export / share / archive') },
+      { name: dual('功能导航', 'Feature navigation'), state: dual('默认 / 当前项 / 不可用', 'Default / current / unavailable') },
+      { name: dual('图片上传区', 'Image upload'), state: dual('空 / 上传中 / 已完成', 'Empty / uploading / complete') },
+      { name: dual('需求描述框', 'Brief input'), state: dual('空 / 编辑 / 已填写', 'Empty / editing / filled') },
+      { name: dual('任务选项', 'Task options'), state: dual('未选 / 已选 / 禁用', 'Idle / selected / disabled') },
+      { name: dual('主操作按钮', 'Primary action'), state: dual('可用 / 处理中 / 禁用', 'Ready / processing / disabled') },
+      { name: dual('AI 处理反馈', 'AI feedback'), state: dual('等待 / 处理中 / 完成', 'Waiting / processing / complete') },
+      { name: dual('结果画布', 'Result canvas'), state: dual('空态 / 预览 / 错误', 'Empty / preview / error') },
+      { name: dual('标注与报价结果', 'Annotation and estimate'), state: dual('未生成 / 已生成 / 需调整', 'Pending / ready / needs revision') },
+      { name: dual('状态提示', 'Status message'), state: dual('成功 / 注意 / 异常', 'Success / notice / error') },
     ],
     states: [
-      { label: dual('任务空态', 'EMPTY TASKS'), note: dual('说明下一步如何创建或筛选任务。', 'Explain how to create or filter the next task.'), tone: 'quiet' },
-      { label: dual('AI 处理中', 'AI RUNNING'), note: dual('显示阶段和进度，保持工作台连续。', 'Show stage and progress to maintain continuity.'), tone: 'active' },
-      { label: dual('任务异常', 'TASK ERROR'), note: dual('保留输入和上下文，支持重试或转交。', 'Preserve context and support retry or handoff.'), tone: 'danger' },
-      { label: dual('交付完成', 'HANDOFF READY'), note: dual('让版本、批注和导出动作可被接手。', 'Make version, comments, and export ready for handoff.'), tone: 'active' },
+      { label: dual('功能初始态', 'FEATURE EMPTY'), note: dual('明确当前功能的输入方式和开始操作。', 'Explain the required input and how to begin.'), tone: 'quiet' },
+      { label: dual('AI 处理中', 'AI PROCESSING'), note: dual('及时说明系统状态，避免重复提交。', 'Show the current state and prevent duplicate submissions.'), tone: 'active' },
+      { label: dual('任务异常', 'TASK ERROR'), note: dual('说明异常并提供明确的恢复或重试方向。', 'Explain the issue and provide a recovery path.'), tone: 'danger' },
+      { label: dual('结果就绪', 'RESULT READY'), note: dual('突出图像、标注或报价结果，承接后续操作。', 'Prioritize image, annotation, or estimate results and the next action.'), tone: 'active' },
     ],
-    systemSummary: dual('用原子到模板的五层结构拆解复杂工作台，让设计语言可以被团队复用和持续扩展。', 'Break the complex workspace into five layers from atoms to templates so the language can scale with the team.'),
-    perspective: dual('恰序让我看到，系统化设计不只是整理组件，更是把业务判断变成团队可以共同使用的语言。后续会继续补充角色权限和更多异常路径。', 'QIA XU showed that system design is more than organizing components: it turns business judgment into a shared team language. The next step is to extend role permissions and exception paths.'),
+    systemSummary: dual('围绕不同 AI 任务建立共用的页面结构、输入组件与反馈规则，在区分功能差异的同时保持整体一致。', 'Build shared page structures, input components, and feedback rules across AI tasks while keeping each feature distinct.'),
+    perspective: dual('这个项目让我进一步确认，复杂产品的体验不仅取决于视觉表现，也取决于需求是否被拆清、流程是否可理解、规范是否能支撑团队协作。', 'This project reinforced that complex product experience depends on more than visual polish: requirements must be clear, flows understandable, and rules useful to the team.'),
   },
   wowo: {
     problemTitle: dual('需求还没有答案，设计要先建立方向。', 'The brief had no answer yet; design had to create direction.'),
@@ -569,23 +569,30 @@ function SignalMark({ className = '' }: { className?: string }) {
   return <span className={`signal-mark ${className}`} aria-hidden="true"><span /></span>
 }
 
+function hasSlowConnection() {
+  const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string; downlink?: number } }).connection
+  const poster = performance.getEntriesByType('resource').find(entry => entry.name.endsWith('/media/hero-cover-poster.webp')) as PerformanceResourceTiming | undefined
+  const slowPoster = !!poster && poster.encodedBodySize > 20000 && poster.duration > 500 && poster.encodedBodySize / poster.duration < 200
+  return !!connection?.saveData || /^(slow-2g|2g|3g)$/.test(connection?.effectiveType ?? '') || !!(connection?.downlink && connection.downlink < 2) || slowPoster
+}
+
 function SiteLoader() {
-  const loaderPlaybackDuration = 2.8
-  const loaderExitDuration = 1200
-  const videoRef = useRef<HTMLVideoElement>(null)
   const fluidCanvasRef = useRef<HTMLCanvasElement>(null)
-  const loaderHoldRef = useRef(false)
-  const loaderHoldWaitersRef = useRef<Array<() => void>>([])
-  const [progress, setProgress] = useState(0)
-  const [phase, setPhase] = useState<'loading' | 'exiting' | 'done'>('loading')
+  const [phase, setPhase] = useState<'loading' | 'exiting' | 'done'>(() => {
+    const home = !window.location.hash || /^#\/(?:$|\?)/.test(window.location.hash)
+    if (!home || hasSlowConnection() || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 'done'
+    try { return window.sessionStorage.getItem('portfolio-entered') ? 'done' : 'loading' } catch { return 'loading' }
+  })
 
   const enterNow = () => {
     document.body.classList.remove('is-loading')
+    try { window.sessionStorage.setItem('portfolio-entered', '1') } catch { /* Storage can be disabled. */ }
     window.dispatchEvent(new Event('portfolio-loader-complete'))
     setPhase('done')
   }
 
   useEffect(() => {
+    if (phase !== 'loading') return
     const canvas = fluidCanvasRef.current
     const gl = canvas?.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: false })
     if (!canvas || !gl) return
@@ -701,18 +708,22 @@ function SiteLoader() {
     gl.clearColor(0, 0, 0, 0)
 
     let frame = 0
+    let lastDraw = 0
     const resize = () => {
       const rect = canvas.getBoundingClientRect()
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+      const dpr = Math.min(window.devicePixelRatio || 1, 1, 960 / Math.max(rect.width, rect.height))
       canvas.width = Math.max(1, Math.floor(rect.width * dpr))
       canvas.height = Math.max(1, Math.floor(rect.height * dpr))
       gl.viewport(0, 0, canvas.width, canvas.height)
     }
     const draw = (time: number) => {
-      gl.clear(gl.COLOR_BUFFER_BIT)
-      gl.uniform2f(resolutionLocation, canvas.width, canvas.height)
-      gl.uniform1f(timeLocation, time)
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+      if (time - lastDraw >= 32) {
+        lastDraw = time
+        gl.clear(gl.COLOR_BUFFER_BIT)
+        gl.uniform2f(resolutionLocation, canvas.width, canvas.height)
+        gl.uniform1f(timeLocation, time)
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+      }
       frame = window.requestAnimationFrame(draw)
     }
     resize()
@@ -724,148 +735,42 @@ function SiteLoader() {
       gl.deleteBuffer(positionBuffer)
       gl.deleteProgram(program)
     }
-  }, [])
+  }, [phase])
 
   useEffect(() => {
+    if (phase === 'done') {
+      document.body.classList.remove('is-loading')
+      return
+    }
+    if (phase === 'exiting') {
+      document.body.classList.remove('is-loading')
+      try { window.sessionStorage.setItem('portfolio-entered', '1') } catch { /* Storage can be disabled. */ }
+      window.dispatchEvent(new Event('portfolio-loader-complete'))
+      const exitTimer = window.setTimeout(() => setPhase('done'), 250)
+      return () => window.clearTimeout(exitTimer)
+    }
     document.body.classList.add('is-loading')
     let cancelled = false
-    let frame = 0
-    let current = 0
-    let assetTarget = 5
-    let videoProgress = 0
-    let videoHasDuration = false
-    let videoFinished = false
-    let assetsFinished = false
-    const startedAt = performance.now()
-    const minimumDuration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 350 : loaderPlaybackDuration * 1000
-
-    const wait = (duration: number) => new Promise<void>((resolve) => window.setTimeout(resolve, duration))
-    const holdTargets = Array.from(document.querySelectorAll<HTMLElement>('.site-loader-contact, .site-loader-directory'))
-    const holdLoader = () => { loaderHoldRef.current = true }
-    const releaseLoader = () => {
-      loaderHoldRef.current = false
-      const waiters = loaderHoldWaitersRef.current.splice(0)
-      waiters.forEach((resolve) => resolve())
+    const poster = new Image()
+    let posterReady = false
+    let minimumElapsed = false
+    const finish = () => {
+      if (!cancelled && posterReady && minimumElapsed) setPhase('exiting')
     }
-    const waitForLoaderResume = () => loaderHoldRef.current ? new Promise<void>((resolve) => loaderHoldWaitersRef.current.push(resolve)) : Promise.resolve()
-    holdTargets.forEach((target) => {
-      target.addEventListener('mouseenter', holdLoader)
-      target.addEventListener('mouseleave', releaseLoader)
-      target.addEventListener('focusin', holdLoader)
-      target.addEventListener('focusout', releaseLoader)
-    })
-    const withTimeout = (promise: Promise<unknown>, duration = 4800) => Promise.race([promise, wait(duration)])
-    const report = (weight: number) => { assetTarget = Math.min(100, assetTarget + weight) }
-    const waitForMedia = (media: HTMLMediaElement | null) => new Promise<void>((resolve) => {
-      // Metadata is enough to start the hero after the loader; waiting for a full
-      // video buffer here would delay the page on slower connections.
-      if (!media || media.readyState >= 1) { resolve(); return }
-      const finish = () => {
-        media.removeEventListener('loadedmetadata', finish)
-        media.removeEventListener('loadeddata', finish)
-        media.removeEventListener('error', finish)
-        resolve()
-      }
-      media.addEventListener('loadedmetadata', finish, { once: true })
-      media.addEventListener('loadeddata', finish, { once: true })
-      media.addEventListener('error', finish, { once: true })
-    })
-    const loadImage = (src: string) => new Promise<void>((resolve) => {
-      const image = new Image()
-      const finish = () => resolve()
-      image.onload = finish
-      image.onerror = finish
-      image.src = src
-      if (image.complete) finish()
-    })
-
-    const renderProgress = () => {
-      const elapsedProgress = minimumDuration > 1000 ? Math.min(99, ((performance.now() - startedAt) / minimumDuration) * 100) : 99
-      const desired = assetsFinished && videoFinished ? 100 : Math.max(elapsedProgress, videoHasDuration ? videoProgress : Math.min(95, assetTarget))
-      current = Math.max(current, desired)
-      setProgress(Math.min(100, Math.round(current)))
-      frame = window.requestAnimationFrame(renderProgress)
-    }
-    frame = window.requestAnimationFrame(renderProgress)
-
-    // Only the poster is a blocking first-viewport asset. Project covers and the
-    // portrait are lazy-loaded by their own sections once they approach view.
-    const assets = ['/media/hero-cover-poster.jpg']
-    const fontTask = withTimeout(document.fonts.ready, 900).finally(() => report(15))
-    const loaderVideoTask = new Promise<void>((resolve) => {
-      const video = videoRef.current
-      if (!video) { videoFinished = true; resolve(); return }
-      let finished = false
-      let fallbackTimer = 0
-      const updateVideoProgress = () => {
-        if (Number.isFinite(video.duration) && video.duration > 0) {
-          videoHasDuration = true
-          const targetDuration = Math.min(loaderPlaybackDuration, video.duration)
-          videoProgress = Math.min(99, (video.currentTime / targetDuration) * 100)
-          if (video.currentTime >= targetDuration - 0.04) finish()
-        }
-      }
-      const finish = () => {
-        if (finished) return
-        finished = true
-        window.clearTimeout(fallbackTimer)
-        const targetDuration = Number.isFinite(video.duration) && video.duration > 0 ? Math.min(loaderPlaybackDuration, video.duration) : loaderPlaybackDuration
-        if (Number.isFinite(video.duration) && video.duration > targetDuration) video.currentTime = targetDuration
-        video.pause()
-        videoProgress = 100
-        videoFinished = true
-        video.removeEventListener('timeupdate', updateVideoProgress)
-        video.removeEventListener('ended', finish)
-        video.removeEventListener('error', finish)
-        resolve()
-      }
-      video.addEventListener('timeupdate', updateVideoProgress)
-      video.addEventListener('ended', finish, { once: true })
-      video.addEventListener('error', finish, { once: true })
-      fallbackTimer = window.setTimeout(finish, loaderPlaybackDuration * 1000)
-      const start = () => {
-        updateVideoProgress()
-        video.play().catch(() => undefined)
-      }
-      if (video.readyState >= 1) start()
-      else video.addEventListener('loadedmetadata', start, { once: true })
-    }).finally(() => report(20))
-    const heroVideoTask = withTimeout(waitForMedia(document.querySelector<HTMLVideoElement>('.hero-video')), 1500).finally(() => report(20))
-    const imageTask = withTimeout(Promise.all(assets.map(loadImage)), 1500).finally(() => report(30))
-    const windowTask = withTimeout(document.readyState === 'complete'
-      ? Promise.resolve()
-      : new Promise<void>((resolve) => window.addEventListener('load', () => resolve(), { once: true }))).finally(() => report(10))
-    const assetTasks = [fontTask, heroVideoTask, imageTask, windowTask]
-
-    Promise.allSettled(assetTasks).then(() => { assetsFinished = true })
-    Promise.allSettled([...assetTasks, loaderVideoTask]).then(async () => {
-      const elapsed = performance.now() - startedAt
-      if (elapsed < minimumDuration) await wait(minimumDuration - elapsed)
-      await waitForLoaderResume()
-      if (cancelled) return
-      current = 100
-      setProgress(100)
-      setPhase('exiting')
-      window.dispatchEvent(new Event('portfolio-loader-complete'))
-      await wait(loaderExitDuration)
-      if (cancelled) return
-      document.body.classList.remove('is-loading')
-      setPhase('done')
-    })
-
+    poster.onload = poster.onerror = () => { posterReady = true; finish() }
+    poster.src = '/media/hero-cover-poster.webp'
+    if (poster.complete) posterReady = true
+    const minimumTimer = window.setTimeout(() => { minimumElapsed = true; finish() }, 350)
+    // Navigation must remain usable even if the poster or network fails.
+    const maximumTimer = window.setTimeout(() => { if (!cancelled) setPhase('exiting') }, 800)
     return () => {
       cancelled = true
-      window.cancelAnimationFrame(frame)
-      holdTargets.forEach((target) => {
-        target.removeEventListener('mouseenter', holdLoader)
-        target.removeEventListener('mouseleave', releaseLoader)
-        target.removeEventListener('focusin', holdLoader)
-        target.removeEventListener('focusout', releaseLoader)
-      })
-      loaderHoldWaitersRef.current.splice(0).forEach((resolve) => resolve())
+      poster.onload = poster.onerror = null
+      window.clearTimeout(minimumTimer)
+      window.clearTimeout(maximumTimer)
       document.body.classList.remove('is-loading')
     }
-  }, [loaderExitDuration, loaderPlaybackDuration])
+  }, [phase])
 
   if (phase === 'done') return null
   return (
@@ -896,6 +801,22 @@ function SiteLoader() {
       </nav>
     </div>
   )
+}
+
+function DeferredImage({ src, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) {
+  const ref = useRef<HTMLImageElement>(null)
+  const [active, setActive] = useState(false)
+  useEffect(() => {
+    const node = ref.current
+    if (!node) return
+    if (!('IntersectionObserver' in window)) { setActive(true); return }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setActive(true); observer.disconnect() }
+    }, { rootMargin: '280px 0px' })
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+  return <img {...props} ref={ref} src={active ? src : undefined} loading='lazy' decoding='async' />
 }
 
 function IntroVisualSection() {
@@ -944,7 +865,7 @@ function IntroVisualSection() {
   return (
     <section ref={sectionRef} className={`intro-visual-section ${revealed ? 'is-about-revealed' : ''}`} aria-label="关于陈兴的视觉介绍">
       <div className="intro-visual-frame">
-        <img className="intro-visual-image" src="/media/about-portrait-v2.jpg" alt="" loading="lazy" decoding="async" />
+        <DeferredImage className="intro-visual-image" src="/media/about-portrait-v2.webp" alt="" />
         <div className="intro-visual-mask" aria-hidden="true" />
         <div className="intro-visual-overlay" aria-hidden="true" />
         <div className="intro-visual-content page-padding">
@@ -1120,8 +1041,8 @@ function VideoPanel({ src, label, poster, cover, compact = false }: { src: strin
 
   return (
     <div ref={panelRef} className={`video-panel ${compact ? 'is-compact is-hover-video' : ''} ${hovered ? 'is-playing' : ''}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-      {compact && <img className="video-cover" src={cover ?? poster} alt="" loading="lazy" decoding="async" />}
-      <video ref={videoRef} src={active ? src : undefined} poster={poster} muted loop playsInline controls={!compact} preload={active ? 'metadata' : 'none'} aria-label={label} />
+      {compact && <DeferredImage className="video-cover" src={cover ?? poster} alt="" />}
+      <video ref={videoRef} src={active ? src : undefined} poster={active ? poster : undefined} muted loop playsInline controls={!compact} preload={active ? 'metadata' : 'none'} aria-label={label} />
       <div className="video-panel-bar"><span><span className="video-dot" />{label}</span><Play size={15} /></div>
     </div>
   )
@@ -1130,8 +1051,8 @@ function VideoPanel({ src, label, poster, cover, compact = false }: { src: strin
 function ProjectVisual({ project, detail = false }: { project: Project; detail?: boolean }) {
   const { language } = useLanguage()
   if (project.video) return <VideoPanel src={project.video} poster={project.poster} cover={project.cover} label={localized(language, project.videoLabel ?? `${project.title} 项目演示片段`, project.videoLabelEn ?? `${project.titleEn} product demo`)} compact={!detail} />
-  if (!detail && project.cover) return <div className="video-panel is-compact static-cover"><img className="video-cover" src={project.cover} alt="" loading="lazy" decoding="async" /><div className="video-panel-bar"><span><span className="video-dot" />{localized(language, `${project.title} 项目封面`, `${project.titleEn} project cover`)}</span></div></div>
-  if (project.slug === 'bilus-3' && detail) return <div className="bilus-detail-media"><img src="/media/bilus-cover.jpg" alt={localized(language, '毕鲁斯 3.0 产品展示图', 'BILUS 3.0 product showcase')} loading="eager" decoding="async" /></div>
+  if (!detail && project.cover) return <div className="video-panel is-compact static-cover"><DeferredImage className="video-cover" src={project.cover} alt="" /><div className="video-panel-bar"><span><span className="video-dot" />{localized(language, `${project.title} 项目封面`, `${project.titleEn} project cover`)}</span></div></div>
+  if (project.slug === 'bilus-3' && detail) return <div className="bilus-detail-media"><img src="/media/bilus-cover.webp" alt={localized(language, '毕鲁斯2.0 产品展示图', 'BILUS 2.0 product showcase')} loading="eager" decoding="async" /></div>
   if (project.slug === 'bilus-3') {
     return (
       <div className={`bilus-visual ${detail ? 'is-detail' : ''}`}>
@@ -1147,7 +1068,7 @@ function ProjectVisual({ project, detail = false }: { project: Project; detail?:
             </div>
           </div>
         </div>
-        <div className="project-visual-caption"><span>{localized(language, '工具 / 工作台 / AI', 'TOOL / WORKBENCH / AI')}</span><strong>{localized(language, '毕鲁斯 3.0', 'BILUS 3.0')}</strong></div>
+        <div className="project-visual-caption"><span>{localized(language, '工具 / 工作台 / AI', 'TOOL / WORKBENCH / AI')}</span><strong>{localized(language, '毕鲁斯2.0', 'BILUS 2.0')}</strong></div>
       </div>
     )
   }
@@ -1177,7 +1098,7 @@ function ProjectRow({ project }: { project: Project }) {
       <div className="project-row-arrow"><ArrowUpRight size={20} /></div>
     </Link>
     {project.external && (
-      <a className="project-row-live" href={project.external} target="_blank" rel="noreferrer" aria-label={localized(language, '直接访问毕鲁斯 3.0 网站（新窗口打开）', 'Open BILUS 3.0 website in a new window')}>
+      <a className="project-row-live" href={project.external} target="_blank" rel="noreferrer" aria-label={localized(language, '直接访问毕鲁斯2.0 网站（新窗口打开）', 'Open BILUS 2.0 website in a new window')}>
         <span className="project-row-live-dot" aria-hidden="true" />
         <span>{localized(language, '访问线上产品', 'OPEN WEBSITE')}</span>
         <ExternalLink size={14} />
@@ -1351,7 +1272,7 @@ function PosterOrbit() {
                     aria-current={active ? 'true' : undefined}
                     aria-label={`${language === 'en' ? item.titleEn : item.title}：${language === 'en' ? item.descriptionEn : item.description}`}
                   >
-                    <img src={item.src} alt="" loading="lazy" decoding="async" />
+                    <DeferredImage src={item.src} alt="" />
                     <div className="poster-orbit-card-label" aria-hidden="true">
                       <span>0{index + 1}</span>
                       <strong>{language === 'en' ? item.titleEn : item.title}</strong>
@@ -1403,7 +1324,7 @@ const experienceCards: Record<Language, ExperienceCardData[]> = {
       date: '2025.11 — 至今',
       company: '深圳市人工智能科技有限公司',
       role: 'UI 设计师 / 项目负责人',
-      summary: '独立完成恰序 AI、奥锦装修 AI 等 B 端项目；负责毕鲁斯工具端 3.0 全面更新并落地上线。',
+      summary: '独立完成恰序 AI、奥锦装修 AI 等 B 端项目；负责毕鲁斯2.0 全面更新并落地上线。',
       highlights: ['覆盖工具首页、工作台、AI 功能、组件系统、交互流程与视觉规范。', '窝喔负责全部视觉设计，项目目前处于投资阶段。'],
     },
   ],
@@ -1426,7 +1347,7 @@ const experienceCards: Record<Language, ExperienceCardData[]> = {
       date: '2025.11 — NOW',
       company: 'Shenzhen Artificial Intelligence Technology Co., Ltd.',
       role: 'UI Designer & Project Lead',
-      summary: 'Independently delivered QIA XU AI and AOJIN AI B2B products, and led the full BILUS Tool 3.0 update through launch.',
+      summary: 'Independently delivered QIA XU AI and AOJIN AI B2B products, and led the full BILUS 2.0 update through launch.',
       highlights: ['Updated the tool home, workspace, AI features, component system, interaction flows, and visual rules.', 'Owned all visual design for WOWO, a project currently preparing for investment.'],
     },
   ],
@@ -1460,7 +1381,7 @@ function ExperienceSection() {
             <div className="experience-tool-grid">
               {designTools.map((tool, index) => (
                 <div className="experience-tool" key={tool.name} style={{ '--tool-index': index } as React.CSSProperties}>
-                  <span className="experience-tool-mark" aria-hidden="true"><img src={tool.icon} alt="" /></span>
+                  <span className="experience-tool-mark" aria-hidden="true"><DeferredImage src={tool.icon} alt="" /></span>
                   <span className="experience-tool-copy"><strong>{tool.name}</strong><small>{tool.detail}</small></span>
                 </div>
               ))}
@@ -1501,37 +1422,60 @@ function ExperienceSection() {
 function HomePage() {
   usePageTitle('首页')
   const { language } = useLanguage()
-  const [heroRevealDuration, setHeroRevealDuration] = useState(4.3)
-  const [heroRevealed, setHeroRevealed] = useState(false)
+  const [heroVideoActive, setHeroVideoActive] = useState(false)
+  const [heroVideoPlaying, setHeroVideoPlaying] = useState(false)
   const heroVideoRef = useRef<HTMLVideoElement>(null)
+  const heroSectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    const startHero = () => {
-      const video = heroVideoRef.current
-      if (!video) return
-      video.currentTime = 0
-      video.play().catch(() => undefined)
+    let timer = 0
+    let ready = false
+    let visible = true
+    const canAnimate = () => !window.matchMedia('(prefers-reduced-motion: reduce)').matches && !hasSlowConnection()
+    const schedule = () => {
+      window.clearTimeout(timer)
+      if (canAnimate() && ready && visible && !document.hidden) timer = window.setTimeout(() => {
+        if (!canAnimate()) return
+        setHeroVideoActive(true)
+        const video = heroVideoRef.current
+        if (video?.currentSrc && !video.ended) video.play().catch(() => undefined)
+      }, 1200)
+      else heroVideoRef.current?.pause()
     }
+    const startHero = () => {
+      ready = true
+      schedule()
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+      schedule()
+    })
+    if (heroSectionRef.current) observer.observe(heroSectionRef.current)
+    document.addEventListener('visibilitychange', schedule)
     window.addEventListener('portfolio-loader-complete', startHero)
     if (!document.querySelector('.site-loader')) startHero()
-    return () => window.removeEventListener('portfolio-loader-complete', startHero)
+    return () => {
+      window.clearTimeout(timer)
+      observer.disconnect()
+      document.removeEventListener('visibilitychange', schedule)
+      window.removeEventListener('portfolio-loader-complete', startHero)
+    }
   }, [])
 
-  function handleHeroPlaying(event: React.SyntheticEvent<HTMLVideoElement>) {
-    const duration = event.currentTarget.duration
-    if (Number.isFinite(duration)) setHeroRevealDuration(Math.max(1.2, duration - 0.25))
-    setHeroRevealed(true)
-  }
+  useEffect(() => {
+    if (heroVideoActive) heroVideoRef.current?.play().catch(() => undefined)
+  }, [heroVideoActive])
 
   return (
     <>
       <main>
-        <section className="hero-section" style={{ '--hero-reveal-duration': `${heroRevealDuration}s` } as React.CSSProperties}>
-          <video ref={heroVideoRef} className="hero-video" src="/media/hero-cover.mp4" poster="/media/hero-cover-poster.jpg" muted playsInline preload="metadata" onPlaying={handleHeroPlaying} onEnded={() => setHeroRevealed(true)} aria-label={localized(language, '作品集封面动态背景', 'Portfolio cover motion background')} />
-          <div className={`hero-shade ${heroRevealed ? 'is-visible' : ''}`} />
-          <div className={`hero-grain ${heroRevealed ? 'is-visible' : ''}`} />
-          <div className={`hero-signal ${heroRevealed ? 'is-visible' : ''}`} aria-hidden="true"><span /></div>
-          <div className={`hero-content page-padding ${heroRevealed ? 'is-visible' : ''}`}>
+        <section ref={heroSectionRef} className="hero-section">
+          <img className="hero-poster" src="/media/hero-cover-poster.webp" alt="" width="1800" height="1013" fetchPriority="high" decoding="async" />
+          <video ref={heroVideoRef} className={`hero-video ${heroVideoPlaying ? 'is-playing' : ''}`} src={heroVideoActive ? '/media/hero-cover.mp4' : undefined} muted playsInline preload="none" onPlaying={() => setHeroVideoPlaying(true)} aria-label={localized(language, '作品集封面动态背景', 'Portfolio cover motion background')} />
+          <div className="hero-shade is-visible" />
+          <div className="hero-grain is-visible" />
+          <div className="hero-signal is-visible" aria-hidden="true"><span /></div>
+          <div className="hero-content page-padding is-visible">
             <Reveal className="hero-copy">
               <span className="eyebrow hero-eyebrow">SHENZHEN / 5 YEARS / UI DESIGN</span>
               <h1><span>CHEN XING</span><small> / UI DESIGNER · AI PRODUCT LEAD</small></h1>
@@ -1540,7 +1484,7 @@ function HomePage() {
             </Reveal>
             <div className="hero-side-note"><span>SELECTED WORK</span><strong>01—04</strong><span>SCROLL TO EXPLORE</span></div>
           </div>
-          <div className={`hero-scroll ${heroRevealed ? 'is-visible' : ''}`}><ArrowDown size={15} /><span>{localized(language, '向下浏览', 'SCROLL DOWN')}</span></div>
+          <div className="hero-scroll is-visible"><ArrowDown size={15} /><span>{localized(language, '向下浏览', 'SCROLL DOWN')}</span></div>
         </section>
 
         <IntroVisualSection />
@@ -1599,32 +1543,55 @@ function ReferenceCaseDetail({ project }: { project: Project }) {
   const study = caseStudies[project.slug]
   const narrative = caseNarratives[project.slug]
   const isAojin = project.slug === 'aojin-ai'
+  const isQiaxu = project.slug === 'qiaxu-ai'
   const nextProject = projects[(projects.findIndex((item) => item.slug === project.slug) + 1) % projects.length]
   const scope = language === 'en' ? (project.scopeEn ?? project.scope) : project.scope
   const process = language === 'en' ? study.processEn : study.process
   const referenceProcess = study.process.map(([title, detail], index) => ({ stage: dual(`策略 0${index + 1}`, `STEP 0${index + 1}`), title: dual(title, study.processEn[index][0]), detail: dual(detail, study.processEn[index][1]) }))
   const components = narrative.components ?? reusableComponents
   const states = narrative.states ?? stateShowcase
-  const sceneTitle = isAojin ? localized(language, '把一次生成，讲成一条清晰的装修流程。', 'Turn one generation into a clear interior-design flow.') : localized(language, '把复杂工作台，拆成团队能协作的系统。', 'Break a complex workspace into a system the team can share.')
-  const sceneIntro = isAojin ? localized(language, '参考长图作品集的节奏，先解释问题和策略，再进入输入、生成、结果三个产品节点。', 'Following a long-form case-study rhythm, explain the problem and strategy before showing input, generation, and result.') : localized(language, '从业务关系、用户调研和问题归纳开始，再展示工作台、信息层级与协作结果。', 'Start with business relationships, research, and problem framing, then show the workspace, hierarchy, and team handoff.')
-  const surveyEyebrow = isAojin ? 'SURVEY / 调研与问题' : 'USER RESEARCH / 用户调研'
-  const surveyTitle = isAojin ? t(narrative.problemTitle) : localized(language, '先统一角色和任务，再重排工作台信息。', 'Align roles and tasks before reordering the workspace.')
-  const strategyEyebrow = isAojin ? 'STRATEGY / 设计策略' : 'COLLECT QUESTIONS / 问题归纳'
-  const styleEyebrow = isAojin ? 'STYLE / 视觉规范' : 'SOLUTION / 解决方案'
-  const styleTitle = isAojin ? localized(language, '用蓝色建立清晰、友好的 AI 体验。', 'Use blue to make the AI experience clear and approachable.') : localized(language, '优化看板，提升信息识别和协作效率。', 'Optimize the workspace to improve recognition and collaboration.')
-  const productEyebrow = isAojin ? 'PRODUCT / 产品页面' : 'ALL PAGES / 全部页面'
-  const productTitle = isAojin ? localized(language, '输入、生成、结果：三段体验连成一条线。', 'Input, generation, result: one connected experience.') : localized(language, '从任务入口到结果交付，页面保持同一套秩序。', 'From task entry to handoff, every screen keeps one order.')
-  const summaryEyebrow = isAojin ? 'SUMMARY / 项目总结' : 'USER FEEDBACK / 用户反馈'
-  const summaryTitle = isAojin ? localized(language, '把方法留下，把下一次做得更快。', 'Keep the method. Make the next one faster.') : localized(language, '让信息更快被看懂，反馈才会真正发生。', 'Make information easier to read so feedback can happen.')
+  const sceneTitle = isAojin
+    ? localized(language, '把一次生成，讲成一条清晰的装修流程。', 'Turn one generation into a clear interior-design flow.')
+    : isQiaxu
+      ? localized(language, '把多种 AI 能力，组织成清楚的任务路径。', 'Organize multiple AI capabilities into clear task flows.')
+      : localized(language, '把复杂工作台，拆成团队能协作的系统。', 'Break a complex workspace into a system the team can share.')
+  const sceneIntro = isAojin
+    ? localized(language, '参考长图作品集的节奏，先解释问题和策略，再进入输入、生成、结果三个产品节点。', 'Following a long-form case-study rhythm, explain the problem and strategy before showing input, generation, and result.')
+    : isQiaxu
+      ? localized(language, '从需求讨论与任务拆分开始，再展示用户流程、交互方案、视觉规则和交付内容。', 'Start with requirements and task definition, then show user flows, interaction design, visual rules, and delivery.')
+      : localized(language, '从业务关系、用户调研和问题归纳开始，再展示工作台、信息层级与协作结果。', 'Start with business relationships, research, and problem framing, then show the workspace, hierarchy, and team handoff.')
+  const surveyEyebrow = isAojin ? 'SURVEY / 调研与问题' : isQiaxu ? 'REQUIREMENTS / 需求与流程' : 'USER RESEARCH / 用户调研'
+  const surveyTitle = isAojin || isQiaxu ? t(narrative.problemTitle) : localized(language, '先统一角色和任务，再重排工作台信息。', 'Align roles and tasks before reordering the workspace.')
+  const strategyEyebrow = isAojin ? 'STRATEGY / 设计策略' : isQiaxu ? 'DESIGN PROCESS / 设计流程' : 'COLLECT QUESTIONS / 问题归纳'
+  const styleEyebrow = isAojin ? 'STYLE / 视觉规范' : isQiaxu ? 'DESIGN SYSTEM / 设计规范' : 'SOLUTION / 解决方案'
+  const styleTitle = isAojin
+    ? localized(language, '用蓝色建立清晰、友好的 AI 体验。', 'Use blue to make the AI experience clear and approachable.')
+    : isQiaxu
+      ? localized(language, '用共用规则支撑不同 AI 任务。', 'Support distinct AI tasks with shared design rules.')
+      : localized(language, '优化看板，提升信息识别和协作效率。', 'Optimize the workspace to improve recognition and collaboration.')
+  const productEyebrow = isAojin ? 'PRODUCT / 产品页面' : isQiaxu ? 'TASK FLOW / 核心流程' : 'ALL PAGES / 全部页面'
+  const productTitle = isAojin
+    ? localized(language, '输入、生成、结果：三段体验连成一条线。', 'Input, generation, result: one connected experience.')
+    : isQiaxu
+      ? localized(language, '清楚呈现入口、输入、AI 反馈与结果。', 'Clarify task entry, input, AI feedback, and result.')
+      : localized(language, '从任务入口到结果交付，页面保持同一套秩序。', 'From task entry to handoff, every screen keeps one order.')
+  const summaryEyebrow = isAojin ? 'SUMMARY / 项目总结' : isQiaxu ? 'DELIVERY / 交付总结' : 'USER FEEDBACK / 用户反馈'
+  const summaryTitle = isAojin
+    ? localized(language, '把方法留下，把下一次做得更快。', 'Keep the method. Make the next one faster.')
+    : isQiaxu
+      ? localized(language, '把 AI 功能沉淀为可复用的产品体验。', 'Turn AI features into a reusable product experience.')
+      : localized(language, '让信息更快被看懂，反馈才会真正发生。', 'Make information easier to read so feedback can happen.')
   const chapterLabels = isAojin
     ? [localized(language, '项目介绍', 'Introduction'), localized(language, '调研', 'Survey'), localized(language, '策略', 'Strategy'), localized(language, '视觉规范', 'Style'), localized(language, '产品页面', 'Product'), localized(language, '项目总结', 'Summary')]
-    : [localized(language, '项目介绍', 'Introduction'), localized(language, '用户调研', 'User research'), localized(language, '收集问题', 'Collect questions'), localized(language, '解决方案', 'Solution'), localized(language, '全部页面', 'All pages'), localized(language, '用户反馈', 'User feedback')]
+    : isQiaxu
+      ? [localized(language, '项目介绍', 'Introduction'), localized(language, '需求流程', 'Requirements'), localized(language, '设计过程', 'Process'), localized(language, '设计规范', 'System'), localized(language, '核心流程', 'Task flow'), localized(language, '交付总结', 'Delivery')]
+      : [localized(language, '项目介绍', 'Introduction'), localized(language, '用户调研', 'User research'), localized(language, '收集问题', 'Collect questions'), localized(language, '解决方案', 'Solution'), localized(language, '全部页面', 'All pages'), localized(language, '用户反馈', 'User feedback')]
   return <>
     <main className={`reference-case reference-case-${project.slug}`}>
       <div className="reference-progress" aria-hidden="true" />
       <section className="reference-hero">
         <div className="reference-hero-top page-padding"><Link className="back-link" to="/work"><ArrowLeft size={16} />{localized(language, '返回作品目录', 'Back to work')}</Link><span>{project.number} / 04</span></div>
-        <div className="reference-hero-copy page-padding"><span className="eyebrow">{project.english}</span><h1>{language === 'en' ? project.titleEn : project.title}<small> / REDESIGN & PRODUCT SYSTEM</small></h1><p>{localized(language, project.intro, project.introEn)}</p><div className="reference-meta"><span>{project.year}</span><span>{project.roleEn ?? project.role}</span><span>{localized(language, '真实项目复盘', 'REAL PROJECT CASE')}</span></div></div>
+        <div className="reference-hero-copy page-padding"><span className="eyebrow">{project.english}</span><h1>{language === 'en' ? project.titleEn : project.title}<small>{isQiaxu ? ' / AI TOOL EXPERIENCE' : ' / REDESIGN & PRODUCT SYSTEM'}</small></h1><p>{localized(language, project.intro, project.introEn)}</p><div className="reference-meta"><span>{project.year}</span><span>{project.roleEn ?? project.role}</span><span>{localized(language, '真实项目复盘', 'REAL PROJECT CASE')}</span></div></div>
         <div className="reference-hero-art"><ReferenceArtifact project={project} label={localized(language, `${project.title} / 主视觉`, `${project.titleEn} / KEY VISUAL`)} /></div>
       </section>
 
@@ -1633,7 +1600,7 @@ function ReferenceCaseDetail({ project }: { project: Project }) {
       </div>
 
       <div className="reference-body">
-        <ReferenceSection number="01" eyebrow="INTRODUCTION / 项目介绍" title={localized(language, isAojin ? '简洁的装修 AI，重点是把流程讲清楚。' : '让复杂的 AI 工作台，变成可协作的管理系统。', isAojin ? 'A focused interior AI product, made clear through flow.' : 'A complex AI workspace, made collaborative through structure.')} intro={sceneIntro} className="reference-intro">
+        <ReferenceSection number="01" eyebrow="INTRODUCTION / 项目介绍" title={localized(language, isAojin ? '简洁的装修 AI，重点是把流程讲清楚。' : isQiaxu ? '从需求讨论到可交付的 AI 工具体验。' : '让复杂的 AI 工作台，变成可协作的管理系统。', isAojin ? 'A focused interior AI product, made clear through flow.' : isQiaxu ? 'From requirements to a deliverable AI tool experience.' : 'A complex AI workspace, made collaborative through structure.')} intro={sceneIntro} className="reference-intro">
           <div className="reference-intro-grid"><div className="reference-copy-block"><span className="reference-label">{localized(language, '项目背景', 'CONTEXT')}</span><p>{localized(language, study.overview, study.overviewEn)}</p></div><div className="reference-copy-block"><span className="reference-label">{localized(language, '设计范围', 'SCOPE')}</span><div className="reference-scope-list">{scope.map((item) => <span key={item}>{item}</span>)}</div></div></div>
         </ReferenceSection>
 
@@ -1642,19 +1609,19 @@ function ReferenceCaseDetail({ project }: { project: Project }) {
           <div className="reference-quote"><CircleDot size={17} /><p>{t(narrative.hypothesis)}</p></div>
         </ReferenceSection>
 
-        <ReferenceSection number="03" eyebrow={strategyEyebrow} title={sceneTitle} intro={localized(language, '把设计判断拆成可被验证的步骤，再进入具体页面。', 'Break design decisions into verifiable steps before entering the screens.')} className="reference-strategy">
+        <ReferenceSection number="03" eyebrow={strategyEyebrow} title={sceneTitle} intro={localized(language, isQiaxu ? '从需求拆解、流程设计到视觉交付，每一步都对应具体的产品任务。' : '把设计判断拆成可被验证的步骤，再进入具体页面。', isQiaxu ? 'Each step from requirements and flows to visual delivery maps to a product task.' : 'Break design decisions into verifiable steps before entering the screens.')} className="reference-strategy">
           <div className="reference-process-list">{referenceProcess.map((step, index) => <article key={step.title.zh}><div><span>0{index + 1}</span><small>{t(step.stage)}</small></div><h3>{t(step.title)}</h3><p>{t(step.detail)}</p></article>)}</div>
           <div className="reference-process-caption"><span className="reference-label">{localized(language, '执行路径', 'EXECUTION PATH')}</span><div>{process.map(([title]) => <span key={title}>{title}</span>)}</div></div>
         </ReferenceSection>
 
         <ReferenceSection number="04" eyebrow={styleEyebrow} title={styleTitle} intro={t(narrative.systemSummary)} className="reference-style">
-          <div className="reference-style-strip"><div className="reference-color-field"><span>COLOR</span><strong>{isAojin ? 'BLUE / AIR / AI' : 'NAVY / WHITE / SIGNAL'}</strong></div><div className="reference-type-field"><span>TYPE / COMPONENT / MOTION</span><strong>{localized(language, '层级、状态和反馈保持一致。', 'Keep hierarchy, states, and feedback consistent.')}</strong></div></div>
+          <div className="reference-style-strip"><div className="reference-color-field"><span>COLOR</span><strong>{isAojin ? 'BLUE / AIR / AI' : isQiaxu ? 'BLUE / WHITE / AI STATES' : 'NAVY / WHITE / SIGNAL'}</strong></div><div className="reference-type-field"><span>TYPE / COMPONENT / MOTION</span><strong>{localized(language, '层级、状态和反馈保持一致。', 'Keep hierarchy, states, and feedback consistent.')}</strong></div></div>
           <div className="reference-system-list">{systemLayers.map((layer, index) => <article key={layer.name.zh}><div className="reference-system-icon"><NarrativeIcon icon={layer.icon} /></div><span>0{index + 1}</span><h3>{t(layer.name)}</h3><p>{t(layer.detail)}</p></article>)}</div>
           <div className="reference-component-sheet"><div className="reference-label">{localized(language, `${components.length} 个项目组件 / 多状态`, `${components.length} PROJECT COMPONENTS / STATES`)}</div><div className="reference-component-list">{components.map((item, index) => <div key={item.name.zh}><span>{String(index + 1).padStart(2, '0')}</span><strong>{t(item.name)}</strong><small>{t(item.state)}</small></div>)}</div></div>
         </ReferenceSection>
 
         <ReferenceSection number="05" eyebrow={productEyebrow} title={productTitle} intro={localized(language, '把最终页面放大展示，让视觉决策回到真实产品里。', 'Put the final screens at full scale so every decision returns to the real product.')} className="reference-product">
-          <div className="reference-product-callout"><span className="reference-label">{localized(language, '页面节点', 'SCREEN LOGIC')}</span><strong>{localized(language, isAojin ? '输入要求、生成状态、结果预览各自清楚，又彼此连续。' : '任务入口、处理中反馈、结果交付各自清楚，又彼此连续。', isAojin ? 'Input, generation state, and result preview stay distinct and connected.' : 'Task entry, processing feedback, and handoff stay distinct and connected.')}</strong></div>
+          <div className="reference-product-callout"><span className="reference-label">{localized(language, '页面节点', 'SCREEN LOGIC')}</span><strong>{localized(language, isAojin ? '输入要求、生成状态、结果预览各自清楚，又彼此连续。' : isQiaxu ? '功能入口、任务输入、AI 反馈与结果查看各自清楚，又彼此连续。' : '任务入口、处理中反馈、结果交付各自清楚，又彼此连续。', isAojin ? 'Input, generation state, and result preview stay distinct and connected.' : isQiaxu ? 'Task entry, input, AI feedback, and result review stay distinct and connected.' : 'Task entry, processing feedback, and handoff stay distinct and connected.')}</strong></div>
           <div className="reference-state-row">{states.map((state) => <article key={state.label.zh}><div className={`reference-state-dot is-${state.tone}`} /> <strong>{t(state.label)}</strong><p>{t(state.note)}</p></article>)}</div>
           <div className="reference-scene-row">{narrative.scenes.map((scene) => <article key={scene.scene.zh}><span>{t(scene.scene)}</span><h3>{t(scene.strategy)}</h3><p>{t(scene.reason)}</p></article>)}</div>
         </ReferenceSection>
@@ -1733,8 +1700,8 @@ function WowoReferenceDetail({ project }: { project: Project }) {
         <ReferenceSection number="05" eyebrow="DISPLAY / 页面展示" title="页面展示" intro={localized(language, '从品牌初见、日常使用到对外展示，保持同一套产品气质。', 'From first look, to daily use, to external presentation, keep one product character.')} className="reference-product">
           <div className="reference-product-callout"><span className="reference-label">页面节点 / SCREEN LOGIC</span><strong>品牌初见、内容浏览、核心操作和展示物料彼此连贯。</strong></div>
           <div className="wowo-display-gallery">
-            <figure><img src="/media/wowo-cover.jpg" alt="窝喔产品视觉封面" loading="lazy" decoding="async" /><figcaption><span>01</span>产品视觉 / PRODUCT VISUAL</figcaption></figure>
-            <figure><img src="/media/wowo-poster.jpg" alt="窝喔产品演示画面" loading="lazy" decoding="async" /><figcaption><span>02</span>页面演示 / PRODUCT PREVIEW</figcaption></figure>
+            <figure><img src="/media/wowo-cover.webp" alt="窝喔产品视觉封面" loading="lazy" decoding="async" /><figcaption><span>01</span>产品视觉 / PRODUCT VISUAL</figcaption></figure>
+            <figure><img src="/media/wowo-poster.webp" alt="窝喔产品演示画面" loading="lazy" decoding="async" /><figcaption><span>02</span>页面演示 / PRODUCT PREVIEW</figcaption></figure>
           </div>
           <div className="reference-state-row">{states.map((state) => <article key={state.label.zh}><div className={`reference-state-dot is-${state.tone}`} /><strong>{t(state.label)}</strong><p>{t(state.note)}</p></article>)}</div>
           <div className="reference-scene-row">{narrative.scenes.map((scene) => <article key={scene.scene.zh}><span>{t(scene.scene)}</span><h3>{t(scene.strategy)}</h3><p>{t(scene.reason)}</p></article>)}</div>
@@ -1758,7 +1725,7 @@ function AojinPhone({ variant, label, wide = false }: { variant: 'home' | 'input
     quote: <><h4>精准报价</h4><div className="aojin-phone-form"><span>户型面积</span><b>120 ㎡</b><span>装修风格</span><b>现代简约</b><span>预算范围</span><b>30 - 50 万</b></div><button>生成报价</button></>,
     nav: <><h4>功能导航</h4><div className="aojin-phone-nav-grid"><span>图生图</span><span>高清放大</span><span>精准报价</span><span>灵感广场</span><span>客服中心</span><span>我的方案</span></div></>,
   }[variant]
-  const realScreen = variant === 'input' ? '/media/aojin-input-screen.png' : variant === 'result' ? '/media/aojin-result-screen.png' : variant === 'quote' ? '/media/aojin-quote-screen.png' : variant === 'nav' ? '/media/aojin-community-screen.png' : variant === 'home' ? '/media/aojin-home-real.png' : undefined
+  const realScreen = variant === 'input' ? '/media/aojin-input-screen.webp' : variant === 'result' ? '/media/aojin-result-screen.webp' : variant === 'quote' ? '/media/aojin-quote-screen.webp' : variant === 'nav' ? '/media/aojin-community-screen.webp' : variant === 'home' ? '/media/aojin-home-real.webp' : undefined
   return <figure className={`aojin-phone-card ${wide ? 'is-wide' : ''} ${realScreen ? 'has-real-screen' : ''}`}><div className="aojin-phone-shell">{realScreen ? <img className="aojin-phone-real-screen" src={realScreen} alt={label} loading="lazy" decoding="async" /> : <><div className="aojin-phone-status"><span>9:41</span><i /><i /><i /></div><div className="aojin-phone-screen">{content}</div><div className="aojin-phone-bottom"><span>智能助手</span><span>灵感广场</span><span>客服中心</span></div></>}</div><figcaption>{label}</figcaption></figure>
 }
 
@@ -1835,7 +1802,7 @@ function WowoEditorialDetail({ project }: { project: Project }) {
           { no: '03', title: '形成复访', en: 'RETURN & GROW', text: '承接改造、抽卡、喂养和任务反馈，把一次惊喜延伸成收藏、养成和分享。', icon: Users },
         ].map((item, index) => { const Icon = item.icon; return <article className={`wo-loop-step wo-loop-step-${index + 1}`} key={item.no}><span>{item.no}</span><div className="wo-loop-glyph"><Icon size={24} strokeWidth={1.5} /></div><small>{item.en}</small><h3>{item.title}</h3><p>{item.text}</p></article> })}</div><p className="wo-direction-caption">{localized(language, t(narrative.hypothesis), t(narrative.hypothesis))}</p></div></section>
 
-      <section className="wo-section wo-thesis" id="wo-thesis"><div className="wo-inner"><header className="wo-section-head"><div className="wo-index"><b>04</b><span>BRAND<br />THESIS</span></div><div><span className="wo-eyebrow">BRAND / THREE PILLARS</span><h2>一个小窝，三种连接。</h2><p>从个人陪伴到社区关系，让每个设计决定都有情绪目的。</p></div></header><div className="wo-thesis-layout"><div className="wo-thesis-art"><img src="/media/wowo-cover.jpg" alt="窝喔产品视觉主图" loading="lazy" decoding="async" /><span>MY OWN LITTLE WORLD</span></div><div className="wo-thesis-values"><article><span>01 / TO MYSELF</span><h3>专属陪伴</h3><p>窝灵不只是角色，更是可以持续被养成的情绪关系。</p></article><article><span>02 / TO MY WORLD</span><h3>自我表达</h3><p>通过小窝、装扮和身份卡，把个人审美沉淀在数字空间。</p></article><article><span>03 / TO OTHERS</span><h3>社区连接</h3><p>从分享窝灵、加入窝圈到串门互动，让关系自然发生。</p></article></div></div></div></section>
+      <section className="wo-section wo-thesis" id="wo-thesis"><div className="wo-inner"><header className="wo-section-head"><div className="wo-index"><b>04</b><span>BRAND<br />THESIS</span></div><div><span className="wo-eyebrow">BRAND / THREE PILLARS</span><h2>一个小窝，三种连接。</h2><p>从个人陪伴到社区关系，让每个设计决定都有情绪目的。</p></div></header><div className="wo-thesis-layout"><div className="wo-thesis-art"><img src="/media/wowo-cover.webp" alt="窝喔产品视觉主图" loading="lazy" decoding="async" /><span>MY OWN LITTLE WORLD</span></div><div className="wo-thesis-values"><article><span>01 / TO MYSELF</span><h3>专属陪伴</h3><p>窝灵不只是角色，更是可以持续被养成的情绪关系。</p></article><article><span>02 / TO MY WORLD</span><h3>自我表达</h3><p>通过小窝、装扮和身份卡，把个人审美沉淀在数字空间。</p></article><article><span>03 / TO OTHERS</span><h3>社区连接</h3><p>从分享窝灵、加入窝圈到串门互动，让关系自然发生。</p></article></div></div></div></section>
 
       <section className="wo-section wo-system" id="wo-system"><div className="wo-inner"><header className="wo-section-head"><div className="wo-index"><b>05</b><span>VISUAL<br />SYSTEM</span></div><div><span className="wo-eyebrow">DESIGN LANGUAGE / TOKENS</span><h2>粉色建立识别，规则支撑长期迭代。</h2><p>用品牌粉承接亲和与情绪，用黑白组织信息，以薄荷青标记互动和状态变化。</p></div></header><div className="wo-color-board"><div className="wo-color-main"><span>BRAND PINK</span><strong>#FD749D</strong><i /></div><div className="wo-color-cyan"><span>INTERACTION</span><strong>#2FD6D0</strong><i /></div><div className="wo-color-white"><span>CANVAS</span><strong>#FFF9FB</strong><i /></div><div className="wo-color-black"><span>CONTRAST</span><strong>#000000</strong><i /></div></div><div className="wo-type-board"><div><span className="wo-eyebrow">DISPLAY TYPE</span><strong>窝喔<em> WO</em></strong></div><div><span className="wo-eyebrow">BODY / INTERFACE</span><p>易读层级 / 清晰状态 / 情绪反馈</p></div><div className="wo-type-sample">Aa 字体层级 123</div></div><div className="wo-icon-board"><div className="wo-icon-heading"><span className="wo-eyebrow">ICON & COMPONENT LANGUAGE</span><p>统一圆角、描边和状态色，让功能清晰，也保留角色亲和力。</p></div><div className="wo-icon-set">{[[Heart, '陪伴'], [Home, '小窝'], [Users, '窝圈'], [MessageCircle, '互动'], [Sparkles, '生成'], [Palette, '装扮'], [CircleCheck, '完成'], [CircleDot, '选择']].map(([Icon, label], index) => <div className={`wo-icon-item wo-icon-item-${index + 1}`} key={label as string}><Icon size={22} strokeWidth={1.6} /><span>{label as string}</span></div>)}</div></div></div></section>
 
@@ -1857,13 +1824,13 @@ function WowoEditorialDetail({ project }: { project: Project }) {
               <button className="wo-prototype-next" type="button" onClick={() => setActiveFlow((current) => (current + 1) % flow.length)}>{localized(language, activeFlow === 3 ? '再看一次流程' : '继续下一步', activeFlow === 3 ? 'REPLAY FLOW' : 'CONTINUE')}<ArrowRight size={16} /></button>
             </div>
             <div className="wo-phone-preview" aria-label="窝喔生成方式选择页">
-              <img className="wo-phone-real-screen" src="/media/wowo-generation-method.png" alt="窝喔生成方式选择页真实移动端界面" loading="lazy" decoding="async" />
+              <img className="wo-phone-real-screen" src="/media/wowo-generation-method.webp" alt="窝喔生成方式选择页真实移动端界面" loading="lazy" decoding="async" />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="wo-section wo-community" id="wo-community"><div className="wo-inner"><header className="wo-section-head"><div className="wo-index"><b>07</b><span>COMMUNITY<br />CONNECTION</span></div><div><span className="wo-eyebrow">FIND YOUR CIRCLE</span><h2>找到和你同频的小窝。</h2><p>一起分享角色、房间和日常灵感，让数字身份进入真实的社交表达。</p></div></header><div className="wo-community-layout"><div className="wo-community-visual"><img src="/media/wowo-poster.jpg" alt="窝喔社区内容视觉" loading="lazy" decoding="async" /><span>WO CIRCLE / SHARE A LITTLE MOMENT</span></div><div className="wo-community-copy"><span className="wo-eyebrow">PERSONAL → SOCIAL</span><h3>窝圈不是内容列表，<br />而是关系的入口。</h3><p>围绕角色、身份卡和小窝发生推荐、串门、加入与分享。</p><div className="wo-community-links"><span><Users size={17} />推荐窝圈</span><span><Heart size={17} />推荐好友</span><span><Home size={17} />串门互动</span></div></div></div></div></section>
+      <section className="wo-section wo-community" id="wo-community"><div className="wo-inner"><header className="wo-section-head"><div className="wo-index"><b>07</b><span>COMMUNITY<br />CONNECTION</span></div><div><span className="wo-eyebrow">FIND YOUR CIRCLE</span><h2>找到和你同频的小窝。</h2><p>一起分享角色、房间和日常灵感，让数字身份进入真实的社交表达。</p></div></header><div className="wo-community-layout"><div className="wo-community-visual"><img src="/media/wowo-poster.webp" alt="窝喔社区内容视觉" loading="lazy" decoding="async" /><span>WO CIRCLE / SHARE A LITTLE MOMENT</span></div><div className="wo-community-copy"><span className="wo-eyebrow">PERSONAL → SOCIAL</span><h3>窝圈不是内容列表，<br />而是关系的入口。</h3><p>围绕角色、身份卡和小窝发生推荐、串门、加入与分享。</p><div className="wo-community-links"><span><Users size={17} />推荐窝圈</span><span><Heart size={17} />推荐好友</span><span><Home size={17} />串门互动</span></div></div></div></div></section>
 
       <section className="wo-section wo-summary" id="wo-summary"><div className="wo-inner"><div className="wo-summary-top"><div className="wo-index"><b>08</b><span>PROJECT<br />SUMMARY</span></div><span className="wo-eyebrow">A WORLD THAT GROWS WITH YOU</span></div><h2>从一次生成，<br /><em>到一段长期关系。</em></h2><p>{t(narrative.perspective)}</p><div className="wo-summary-values"><span>陪伴 / COMPANIONSHIP</span><span>表达 / IDENTITY</span><span>连接 / COMMUNITY</span></div><div className="wo-summary-footer"><span>WOWO / BRAND & PRODUCT EXPERIENCE</span><Link to={`/work/${nextProject.slug}`}>{localized(language, '下一个项目', 'NEXT PROJECT')}<ArrowUpRight size={17} /></Link></div></div></section>
     </main>
@@ -1886,12 +1853,12 @@ function BilusReferenceDetail({ project }: { project: Project }) {
       <div className="reference-progress" aria-hidden="true" />
       <section className="bilus-reference-hero">
         <div className="reference-hero-top page-padding"><Link className="back-link" to="/work"><ArrowLeft size={16} />{localized(language, '返回作品目录', 'Back to work')}</Link><span>01 / 04</span></div>
-        <div className="bilus-reference-hero-copy page-padding"><span className="eyebrow">BILUS TOOL / AI CREATION PLATFORM</span><h1>毕鲁斯 3.0<small> / IMAGE · VIDEO · 3D WORKSPACE</small></h1><p>{localized(language, '面向 AI 创作者的统一工作台：从提示词和参考图开始，完成生图、生视频与 3D 建模，并把结果继续编辑和交付。', 'A unified workspace for AI creators: start with prompts and references, generate images, videos, and 3D assets, then keep editing and deliver the result.')}</p><div className="reference-meta"><span>{project.year}</span><span>{project.roleEn ?? project.role}</span><span>{localized(language, 'AI 创作平台改版', 'AI CREATION PLATFORM REDESIGN')}</span></div></div>
-        <div className="bilus-reference-art"><ReferenceArtifact project={project} label={localized(language, '毕鲁斯 3.0 / 工作台主视觉', 'BILUS 3.0 / WORKSPACE KEY VISUAL')} /></div>
+        <div className="bilus-reference-hero-copy page-padding"><span className="eyebrow">BILUS TOOL / AI CREATION PLATFORM</span><h1>毕鲁斯2.0<small> / IMAGE · VIDEO · 3D WORKSPACE</small></h1><p>{localized(language, '面向 AI 创作者的统一工作台：从提示词和参考图开始，完成生图、生视频与 3D 建模，并把结果继续编辑和交付。', 'A unified workspace for AI creators: start with prompts and references, generate images, videos, and 3D assets, then keep editing and deliver the result.')}</p><div className="reference-meta"><span>{project.year}</span><span>{project.roleEn ?? project.role}</span><span>{localized(language, 'AI 创作平台改版', 'AI CREATION PLATFORM REDESIGN')}</span></div></div>
+        <div className="bilus-reference-art"><ReferenceArtifact project={project} label={localized(language, '毕鲁斯2.0 / 工作台主视觉', 'BILUS 2.0 / WORKSPACE KEY VISUAL')} /></div>
       </section>
       <div className="bilus-reference-chapters page-padding"><span><b>01</b>{localized(language, '产品定位', 'Product')}</span><span><b>02</b>{localized(language, '创作模式', 'Modes')}</span><span><b>03</b>{localized(language, '生成工作流', 'Workflow')}</span><span><b>04</b>{localized(language, '工作台系统', 'Workspace')}</span><span><b>05</b>{localized(language, '交付结果', 'Delivery')}</span><span><b>06</b>{localized(language, '设计总结', 'Summary')}</span></div>
       <div className="bilus-reference-body">
-        <ReferenceSection number="01" eyebrow="PRODUCT / 产品定位" title="一个面向 AI 创作的统一工作台。" intro={localized(language, '毕鲁斯 3.0 类似即梦一类的 AI 创作平台：用户可以用文字和图片生成视觉内容，也可以继续进入视频和 3D 建模流程。改版重点是把多种创作能力放进同一条可理解、可追踪、可交付的工作流。', 'BILUS 3.0 is an AI creation platform like Jimeng: generate visual content from text and images, then continue into video and 3D workflows. The redesign brings these capabilities into one understandable, traceable, deliverable workflow.')} className="bilus-reference-section">
+        <ReferenceSection number="01" eyebrow="PRODUCT / 产品定位" title="一个面向 AI 创作的统一工作台。" intro={localized(language, '毕鲁斯2.0 类似即梦一类的 AI 创作平台：用户可以用文字和图片生成视觉内容，也可以继续进入视频和 3D 建模流程。改版重点是把多种创作能力放进同一条可理解、可追踪、可交付的工作流。', 'BILUS 2.0 is an AI creation platform like Jimeng: generate visual content from text and images, then continue into video and 3D workflows. The redesign brings these capabilities into one understandable, traceable, deliverable workflow.')} className="bilus-reference-section">
           <div className="reference-intro-grid"><div className="reference-copy-block"><span className="reference-label">项目背景 / CONTEXT</span><p>{localized(language, study.overview, study.overviewEn)}</p></div><div className="reference-copy-block"><span className="reference-label">设计范围 / SCOPE</span><div className="reference-scope-list">{scope.map((item) => <span key={item}>{item}</span>)}</div></div></div>
         </ReferenceSection>
         <ReferenceSection number="02" eyebrow="MODES / 创作模式" title="同一个入口，承接四种 AI 创作任务。" intro={localized(language, '不是把功能堆在导航里，而是让用户从创作目标出发，快速选择适合的生成方式。', 'Rather than stacking features in navigation, start from the creation goal and choose the right generation mode.')} className="bilus-reference-section">
@@ -1914,7 +1881,7 @@ function BilusReferenceDetail({ project }: { project: Project }) {
           <div className="bilus-metric-row">{narrative.metrics.map((metric) => <article key={metric.label.zh}><strong>{t(metric.value)}</strong><span>{t(metric.label)}</span><p>{t(metric.detail)}</p></article>)}</div>
           <div className="bilus-evidence-list">{narrative.evidence.map((row, index) => <article key={row.before.zh}><span>0{index + 1}</span><div><strong>{t(row.before)}</strong><p>{t(row.decision)}</p></div><p>{t(row.signal)}</p></article>)}</div>
         </ReferenceSection>
-        <ReferenceSection number="06" eyebrow="SUMMARY / 设计总结" title="把 AI 能力，组织成可持续创作的产品。" intro={localized(language, '毕鲁斯 3.0 的核心不是增加更多 AI 功能，而是把图像、视频和 3D 能力组织成一套用户能理解、团队能协作、结果能交付的工作台。', 'BILUS 3.0 is not about adding more AI features. It organizes image, video, and 3D capabilities into a workspace users can understand, teams can share, and results can ship.')} className="bilus-reference-section bilus-summary-section">
+        <ReferenceSection number="06" eyebrow="SUMMARY / 设计总结" title="把 AI 能力，组织成可持续创作的产品。" intro={localized(language, '毕鲁斯2.0 的核心不是增加更多 AI 功能，而是把图像、视频和 3D 能力组织成一套用户能理解、团队能协作、结果能交付的工作台。', 'BILUS 2.0 is not about adding more AI features. It organizes image, video, and 3D capabilities into a workspace users can understand, teams can share, and results can ship.')} className="bilus-reference-section bilus-summary-section">
           <div className="bilus-summary-note"><Sparkles size={19} /><p>{language === 'en' ? study.noteEn : study.note}</p></div>
         </ReferenceSection>
       </div>
@@ -1946,8 +1913,8 @@ function BilusAiCaseDetail({ project }: { project: Project }) {
   ]
   return <>
     <main className="bilus-ai-case">
-      <section className="bilus-ai-hero page-padding"><Link className="back-link" to="/work"><ArrowLeft size={16} />{zh ? '返回作品目录' : 'Back to work'}</Link><span className="eyebrow">BILUS 3.0 / AI CREATION PLATFORM</span><h1>毕鲁斯 3.0</h1><p>{zh ? '一个面向 AI 创作者的统一工作台：从提示词和参考图开始，完成生图、生视频与 3D 建模，并把结果继续编辑和交付。' : 'A unified AI creation workspace: start with prompts and references, generate images, videos, and 3D assets, then keep editing and deliver the result.'}</p><div className="bilus-ai-meta"><span>2025—2026</span><span>{zh ? 'UI 设计师 / 项目负责人' : 'UI Designer & Project Lead'}</span><span>CODEX / FIGMA AGENT / AI WORKFLOW</span></div><div className="bilus-ai-hero-media"><ReferenceArtifact project={project} label={zh ? '工作台主视觉' : 'Workspace key visual'} /></div></section>
-      <section className="bilus-ai-intent"><div className="bilus-ai-inner"><span className="eyebrow">THE REAL QUESTION</span><h2>{zh ? '不是“AI 能做什么”，而是用户如何把结果做完。' : 'The question was not what AI can do, but how users finish the work.'}</h2><p>{zh ? '毕鲁斯 3.0 的改版重点，是把生成能力放进真实生产流程：输入、等待、比较、编辑、版本和导出，每一步都有明确的下一步。' : 'The redesign placed generation inside a real production flow: input, wait, compare, edit, version, and export, with a clear next action at every step.'}</p></div></section>
+      <section className="bilus-ai-hero page-padding"><Link className="back-link" to="/work"><ArrowLeft size={16} />{zh ? '返回作品目录' : 'Back to work'}</Link><span className="eyebrow">BILUS 2.0 / AI CREATION PLATFORM</span><h1>毕鲁斯2.0</h1><p>{zh ? '一个面向 AI 创作者的统一工作台：从提示词和参考图开始，完成生图、生视频与 3D 建模，并把结果继续编辑和交付。' : 'A unified AI creation workspace: start with prompts and references, generate images, videos, and 3D assets, then keep editing and deliver the result.'}</p><div className="bilus-ai-meta"><span>2025—2026</span><span>{zh ? 'UI 设计师 / 项目负责人' : 'UI Designer & Project Lead'}</span><span>CODEX / FIGMA AGENT / AI WORKFLOW</span></div><div className="bilus-ai-hero-media"><ReferenceArtifact project={project} label={zh ? '工作台主视觉' : 'Workspace key visual'} /></div></section>
+      <section className="bilus-ai-intent"><div className="bilus-ai-inner"><span className="eyebrow">THE REAL QUESTION</span><h2>{zh ? '不是“AI 能做什么”，而是用户如何把结果做完。' : 'The question was not what AI can do, but how users finish the work.'}</h2><p>{zh ? '毕鲁斯2.0 的改版重点，是把生成能力放进真实生产流程：输入、等待、比较、编辑、版本和导出，每一步都有明确的下一步。' : 'The redesign placed generation inside a real production flow: input, wait, compare, edit, version, and export, with a clear next action at every step.'}</p></div></section>
       <section className="bilus-ai-method"><div className="bilus-ai-inner"><div className="bilus-ai-section-head"><span className="eyebrow">MY AI WORKFLOW / 01—06</span><h2>{zh ? '我如何利用 AI 工具完成设计。' : 'How I used AI tools to do the design.'}</h2><p className="bilus-ai-method-lead">{zh ? '每个工具只承担它最擅长的一段：拆解、原型、视觉、动效和工程交付。' : 'Each tool owns one part it is good at: framing, prototyping, visuals, motion, and delivery.'}</p></div><div className="bilus-ai-tool-grid"><article><div className="bilus-ai-tool-icon"><Code2 size={22} /></div><div><strong>Codex</strong><span>{zh ? '需求拆解 / React 实现 / PNG 序列帧' : 'Brief / React / PNG sequence'}</span></div></article><article><div className="bilus-ai-tool-icon"><Palette size={22} /></div><div><strong>Figma Agent</strong><span>{zh ? '原型骨架 / 交互验证 / 页面结构' : 'Prototype / interaction / structure'}</span></div></article><article><div className="bilus-ai-tool-icon"><ImageIcon size={22} /></div><div><strong>Image 2.5</strong><span>{zh ? '视觉方向 / 首屏氛围 / 结果探索' : 'Visual directions / hero / result'}</span></div></article><article><div className="bilus-ai-tool-icon"><Clapperboard size={22} /></div><div><strong>{zh ? '可灵' : 'Kling'}</strong><span>{zh ? '动效探索 / 节奏测试 / 动画参考' : 'Motion / pacing / animation reference'}</span></div></article></div><div className="bilus-ai-phase-list">{phases.map(([number, title, summary, detail]) => <article key={number}><span className="bilus-ai-phase-number">{number}</span><div><h3>{title}</h3><p>{summary}</p><strong>{detail}</strong></div></article>)}</div></div></section>
       <section className="bilus-ai-screens"><div className="bilus-ai-inner"><div className="bilus-ai-section-head"><span className="eyebrow">PRODUCT STRUCTURE</span><h2>{zh ? '从工具集合，变成可理解的创作路径。' : 'From a tool collection to an understandable creation path.'}</h2></div><div className="bilus-ai-mode-grid"><article><span>01</span><h3>{zh ? '输入与参考' : 'Input & reference'}</h3><p>{zh ? '提示词、参考图、比例、风格和模型选择被组织在同一入口。' : 'Prompts, references, ratio, style, and model choice share one entry.'}</p></article><article><span>02</span><h3>{zh ? '生成与反馈' : 'Generate & feedback'}</h3><p>{zh ? '队列、进度、失败原因和重试路径让等待变得可理解。' : 'Queue, progress, failure cause, and retry make waiting legible.'}</p></article><article><span>03</span><h3>{zh ? '结果与交付' : 'Result & delivery'}</h3><p>{zh ? '版本、对比、继续编辑、导出和分享形成后续工作。' : 'Versions, compare, edit, export, and share carry the work forward.'}</p></article></div><div className="bilus-ai-product-board"><div><span className="eyebrow">WORKSPACE LOGIC</span><strong>PROMPT / IMAGE / VIDEO / 3D</strong></div><div className="bilus-ai-board-lines"><i /><i /><i /><i /></div></div></div></section>
       <section className="bilus-ai-motion"><div className="bilus-ai-inner"><div className="bilus-ai-section-head"><span className="eyebrow">MOTION PIPELINE / KLING → CODEX</span><h2>{zh ? '可灵负责探索，Codex 负责把动效变成可交付资产。' : 'Kling explores the motion. Codex turns it into a shippable asset.'}</h2></div><div className="bilus-ai-motion-flow"><div><span>01</span><strong>KLING</strong><p>{zh ? '探索光束、生成反馈和结果出现的动效节奏。' : 'Explore beam, generation feedback, and result-reveal timing.'}</p></div><ArrowRight size={22} /><div><span>02</span><strong>PNG SEQUENCE</strong><p>{zh ? '把动效拆成稳定的序列帧，控制帧率和文件体积。' : 'Convert the motion into a stable PNG sequence with controlled rate and size.'}</p></div><ArrowRight size={22} /><div><span>03</span><strong>CODEX</strong><p>{zh ? '接入页面时间轴，处理播放、暂停、降级和响应式。' : 'Integrate playback, pause, fallback, and responsive behavior through Codex.'}</p></div></div></div></section>
@@ -1956,10 +1923,19 @@ function BilusAiCaseDetail({ project }: { project: Project }) {
   </>
 }
 
+function QiaxuProjectDetail({ project }: { project: Project }) {
+  usePageTitle(project.title)
+  const { language } = useLanguage()
+  return <>
+    <Suspense fallback={<main className="inner-page page-padding" aria-busy="true"><p role="status">{localized(language, '正在打开恰序 AI…', 'Opening QIA XU AI…')}</p></main>}><QiaxuCaseContent language={language} year={project.year} heroMedia={<ReferenceArtifact project={project} label={localized(language, '恰序 AI / 产品演示', 'QIA XU AI / PRODUCT DEMO')} />} /></Suspense>
+    <SiteFooter />
+  </>
+}
+
 function ProjectDetail({ project }: { project: Project }) {
   if (project.slug === 'bilus-3') return <BilusAiCaseDetail project={project} />
   if (project.slug === 'aojin-ai') return <AojinReferenceDetail project={project} />
-  if (project.slug === 'qiaxu-ai') return <ReferenceCaseDetail project={project} />
+  if (project.slug === 'qiaxu-ai') return <QiaxuProjectDetail project={project} />
   if (project.slug === 'wowo') return <WowoEditorialDetail project={project} />
   return <StandardProjectDetail project={project} />
 }
@@ -1971,6 +1947,7 @@ function StandardProjectDetail({ project }: { project: Project }) {
   const nextProject = projects[(projects.findIndex((item) => item.slug === project.slug) + 1) % projects.length]
   const study = caseStudies[project.slug]
   const narrative = caseNarratives[project.slug]
+  const isQiaxu = project.slug === 'qiaxu-ai'
   const components = narrative.components ?? reusableComponents
   const states = narrative.states ?? stateShowcase
   const scope = language === 'en' ? (project.scopeEn ?? project.scope) : project.scope
@@ -2063,11 +2040,11 @@ function StandardProjectDetail({ project }: { project: Project }) {
         <div className={`case-body ${collapsedClass}`}>
           <Reveal><section className="case-block case-overview case-p-section" id="problem"><span className="eyebrow">01 / PROBLEM · 15%</span><h2>{t(narrative.problemTitle)}</h2><p>{t(narrative.problemBody)}</p><div className="problem-points">{narrative.problemPoints.map((point, index) => <div key={point.zh}><span>0{index + 1}</span><p>{t(point)}</p></div>)}</div><div className="case-hypothesis"><span className="case-hypothesis-mark"><CircleDot size={15} /></span><div><small>{localized(language, '设计假设 / HYPOTHESIS', 'DESIGN HYPOTHESIS')}</small><p>{t(narrative.hypothesis)}</p></div></div></section></Reveal>
 
-          <Reveal delay={80}><section className="case-block case-journey case-p-section" id="process"><span className="eyebrow">02 / PROCESS · 20%</span><div className="case-section-intro"><h2>{localized(language, '用户旅程地图', 'User journey map')}</h2><p>{localized(language, '按“发现需求 → 选方案 → 用产品 → 获反馈 → 分享”串联界面，每个节点都有清晰的设计目标。', 'The interface follows discover → choose → use → feedback → share, with a design goal at every step.')}</p></div><div className="journey-track">{narrative.journey.map((step, index) => <article className="journey-step" key={step.stage.zh}><div className="journey-step-top"><span>0{index + 1}</span><small>{t(step.stage)}</small></div><h3>{t(step.title)}</h3><strong>{t(step.goal)}</strong><p>{t(step.detail)}</p>{index < narrative.journey.length - 1 && <ArrowRight className="journey-arrow" size={16} aria-hidden="true" />}</article>)}</div><div className="process-steps case-process-inline">{process.map(([title, copy], index) => <div key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{copy}</p></div>)}</div></section></Reveal>
+          <Reveal delay={80}><section className="case-block case-journey case-p-section" id="process"><span className="eyebrow">02 / PROCESS · 20%</span><div className="case-section-intro"><h2>{localized(language, isQiaxu ? '从任务入口到结果查看' : '用户旅程地图', isQiaxu ? 'From task entry to result review' : 'User journey map')}</h2><p>{localized(language, isQiaxu ? '按“选择功能 → 准备输入 → AI 处理 → 查看结果”组织交互，让不同任务都有清楚的下一步。' : '按“发现需求 → 选方案 → 用产品 → 获反馈 → 分享”串联界面，每个节点都有清晰的设计目标。', isQiaxu ? 'Organize the flow as choose a feature → provide input → AI processing → review results, with a clear next step for each task.' : 'The interface follows discover → choose → use → feedback → share, with a design goal at every step.')}</p></div><div className="journey-track">{narrative.journey.map((step, index) => <article className="journey-step" key={step.stage.zh}><div className="journey-step-top"><span>0{index + 1}</span><small>{t(step.stage)}</small></div><h3>{t(step.title)}</h3><strong>{t(step.goal)}</strong><p>{t(step.detail)}</p>{index < narrative.journey.length - 1 && <ArrowRight className="journey-arrow" size={16} aria-hidden="true" />}</article>)}</div><div className="process-steps case-process-inline">{process.map(([title, copy], index) => <div key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{copy}</p></div>)}</div></section></Reveal>
 
           <Reveal delay={140}><section className="case-block case-product case-p-section" id="product"><span className="eyebrow">03 / PRODUCT · 50%</span><div className="case-section-intro"><h2>{localized(language, '从原子到页面，建立可复用的系统。', 'From atoms to pages, build a reusable system.')}</h2><p>{t(narrative.systemSummary)}</p></div><div className="scope-grid case-scope-grid">{scope.map((item) => <div key={item}><span className="scope-line" />{item}</div>)}</div><div className="system-layers">{systemLayers.map((layer, index) => <article className="system-layer" key={layer.name.zh}><div className="system-layer-icon"><NarrativeIcon icon={layer.icon} /></div><span>0{index + 1}</span><h3>{t(layer.name)}</h3><p>{t(layer.detail)}</p></article>)}</div><div className="component-matrix"><div className="component-matrix-head"><div><span className="eyebrow">REUSABLE KIT</span><h3>{localized(language, `${components.length} 个项目组件，覆盖关键状态。`, `${components.length} project components, key states covered.`)}</h3></div><span className="component-count">{String(components.length).padStart(2, '0')} / {String(components.length).padStart(2, '0')}</span></div><div className="component-grid">{components.map((item, index) => <div className="component-item" key={item.name.zh}><span>{String(index + 1).padStart(2, '0')}</span><strong>{t(item.name)}</strong><small>{t(item.state)}</small></div>)}</div></div><div className="state-showcase"><div className="state-showcase-head"><span className="eyebrow">STATE COVERAGE</span><p>{localized(language, '只展示当前项目实际需要的首用、日常、异常和完成状态。', 'Show the first-use, daily, error, and completion states this project actually needs.')}</p></div><div className="state-grid">{states.map((item) => <article className={`state-card state-card-${item.tone}`} key={item.label.zh}><div className="state-card-signal">{item.tone === 'danger' ? <CircleAlert size={15} /> : item.tone === 'active' ? <CircleCheck size={15} /> : <CircleDot size={15} />}</div><strong>{t(item.label)}</strong><p>{t(item.note)}</p></article>)}</div></div><div className="scene-section"><div className="scene-section-head"><span className="eyebrow">SCENE STRATEGY</span><p>{localized(language, '场景决定信息密度、字号和反馈方式。', 'Scene determines density, type scale, and feedback.')}</p></div><div className="scene-grid">{narrative.scenes.map((scene) => <article className="scene-card" key={scene.scene.zh}><span>{t(scene.scene)}</span><h3>{t(scene.strategy)}</h3><p>{t(scene.reason)}</p></article>)}</div></div><div className="emotion-section"><div className="emotion-section-head"><span className="eyebrow">EMOTIONAL DESIGN</span><p>{localized(language, '每个视觉和交互决策，都对应一个情感目的。', 'Every visual and interaction decision has an emotional purpose.')}</p></div><div className="emotion-grid">{narrative.emotion.map((item) => <article className="emotion-card" key={item.layer.zh}><span>{t(item.layer)}</span><h3>{t(item.title)}</h3><p><b>{localized(language, '决策', 'Decision')}</b>{t(item.decision)}</p><p><b>{localized(language, '目的', 'Purpose')}</b>{t(item.purpose)}</p></article>)}</div></div></section></Reveal>
 
-          <Reveal delay={200}><section className="case-block case-performance case-p-section" id="performance"><span className="eyebrow">04 / PERFORMANCE · 10%</span><div className="case-section-intro"><h2>{localized(language, '让结果成为证据。', 'Make the result evidence.')}</h2><p>{localized(language, '有数据就追踪上线表现，没有数据就明确测试样本、观察节点和下一轮验证方式。', 'When launch data exists, track it. When it does not, make the sample, observation, and next validation explicit.')}</p></div><div className="metric-grid">{narrative.metrics.map((metric) => <article className="metric-card" key={metric.label.zh}><strong>{t(metric.value)}</strong><span>{t(metric.label)}</span><p>{t(metric.detail)}</p></article>)}</div><div className="evidence-table" role="table" aria-label={localized(language, '设计证据对比', 'Design evidence comparison')}><div className="evidence-row evidence-head" role="row"><span>{localized(language, '问题信号', 'Signal')}</span><span>{localized(language, '设计决策', 'Decision')}</span><span>{localized(language, '验证结果', 'Evidence')}</span></div>{narrative.evidence.map((row) => <div className="evidence-row" role="row" key={row.before.zh}><p>{t(row.before)}</p><p>{t(row.decision)}</p><p>{t(row.signal)}</p></div>)}</div></section></Reveal>
+          <Reveal delay={200}><section className="case-block case-performance case-p-section" id="performance"><span className="eyebrow">04 / {isQiaxu ? 'DELIVERY' : 'PERFORMANCE'} · 10%</span><div className="case-section-intro"><h2>{localized(language, isQiaxu ? '用设计交付说明项目结果。' : '让结果成为证据。', isQiaxu ? 'Show the outcome through design delivery.' : 'Make the result evidence.')}</h2><p>{localized(language, isQiaxu ? '以功能覆盖、关键流程和规范交付呈现项目范围，后续可结合真实使用反馈继续验证。' : '有数据就追踪上线表现，没有数据就明确测试样本、观察节点和下一轮验证方式。', isQiaxu ? 'Delivery focused on feature coverage, core flows, and design rules, with real usage feedback guiding further validation.' : 'When launch data exists, track it. When it does not, make the sample, observation, and next validation explicit.')}</p></div><div className="metric-grid">{narrative.metrics.map((metric) => <article className="metric-card" key={metric.label.zh}><strong>{t(metric.value)}</strong><span>{t(metric.label)}</span><p>{t(metric.detail)}</p></article>)}</div><div className="evidence-table" role="table" aria-label={localized(language, isQiaxu ? '设计决策与交付' : '设计证据对比', isQiaxu ? 'Design decisions and delivery' : 'Design evidence comparison')}><div className="evidence-row evidence-head" role="row"><span>{localized(language, isQiaxu ? '产品需求' : '问题信号', isQiaxu ? 'Product need' : 'Signal')}</span><span>{localized(language, '设计决策', 'Decision')}</span><span>{localized(language, isQiaxu ? '交付内容' : '验证结果', isQiaxu ? 'Delivery' : 'Evidence')}</span></div>{narrative.evidence.map((row) => <div className="evidence-row" role="row" key={row.before.zh}><p>{t(row.before)}</p><p>{t(row.decision)}</p><p>{t(row.signal)}</p></div>)}</div></section></Reveal>
 
           <Reveal delay={260}><section className="case-block case-perspective case-p-section" id="perspective"><span className="eyebrow">05 / PERSPECTIVE · 05%</span><div className="perspective-panel"><Sparkles size={20} strokeWidth={1.4} /><div><h2>{localized(language, '把经验带到下一次。', 'Carry the learning forward.')}</h2><p>{t(narrative.perspective)}</p></div></div><div className="case-note"><span className="eyebrow">A NOTE FROM THE PROJECT</span><p>{language === 'en' ? study.noteEn : study.note}</p></div></section></Reveal>
         </div>
@@ -2084,12 +2061,12 @@ function AboutPage() {
   const { language } = useLanguage()
   const timeline = language === 'en'
     ? [
-        ['2025.11 — NOW', 'Shenzhen Artificial Intelligence Technology Co., Ltd.', 'UI Designer & Project Lead. Independently delivered QIA XU AI and AOJIN AI B2B projects; led the full BILUS Tool 3.0 update across home, workspace, AI features, components, interaction flows, and visual rules.'],
+        ['2025.11 — NOW', 'Shenzhen Artificial Intelligence Technology Co., Ltd.', 'UI Designer & Project Lead. Independently delivered QIA XU AI and AOJIN AI B2B projects; led the full BILUS 2.0 update across home, workspace, AI features, components, interaction flows, and visual rules.'],
         ['2025.07 — 2025.10', 'AI Aesthetic Data Labeling Project', 'Data Labeling Lead. Coordinated a 200+ person team, establishing labeling standards, task scheduling, and review rituals to deliver projects ahead of schedule.'],
         ['2022.01 — 2025.07', 'Miaomen Studio', 'UI Designer. Led end-to-end design for consumer apps, mini programs, and product collaborations, from discovery through high-fidelity delivery and launch QA.'],
       ]
     : [
-        ['2025.11 — 至今', '深圳市人工智能科技有限公司', 'UI 设计师 / 项目负责人。独立完成恰序 AI、奥锦装修 AI 等 B 端项目；全面更新毕鲁斯工具端 3.0，负责首页、工作台、AI 功能、组件系统、交互流程与视觉规范。'],
+        ['2025.11 — 至今', '深圳市人工智能科技有限公司', 'UI 设计师 / 项目负责人。独立完成恰序 AI、奥锦装修 AI 等 B 端项目；全面更新毕鲁斯2.0，负责首页、工作台、AI 功能、组件系统、交互流程与视觉规范。'],
         ['2025.07 — 2025.10', 'AI 美学数据标注项目', '数据标注负责人。统筹超过 200 人团队，建立标注标准、任务调度和复盘机制，推动项目提前交付。'],
         ['2022.01 — 2025.07', '喵们工作室', 'UI 设计师。负责 C 端 APP、小程序和产品协作项目的全流程设计，从需求拆解到高保真交付和上线走查。'],
       ]
@@ -2157,7 +2134,7 @@ function useEnglishTitles(path: string) {
       '/work/bilus-3': 'AOJIN AI',
       '/work/aojin-ai': 'QIA XU AI',
       '/work/qiaxu-ai': 'WOWO',
-      '/work/wowo': 'BILUS 3.0',
+      '/work/wowo': 'BILUS 2.0',
     }
     if (nextTitles[path]) setTitle('.next-project strong', nextTitles[path])
   }, [path])
