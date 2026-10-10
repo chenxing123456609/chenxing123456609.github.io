@@ -159,5 +159,12 @@ Owner: Chen Xing
 - Slow connections, reduced-motion preferences and data-saving mode skip the loader and automatic background video downloads.
 - On normal connections, the first home visit waits at most 800 ms for the poster and exits in 250 ms. Subsequent visits and direct detail routes skip the loader.
 - Offscreen home images request their source within 280 px of the viewport. Offscreen project videos defer their media source until activated.
-- QIA XU detail scripts and styles load on demand. Background playback pauses offscreen and in hidden tabs.
+- Project PDF documents load only after a download action. Background playback pauses offscreen and in hidden tabs.
 - The fluid loader renders at up to 960 px and 30 fps to keep low-powered devices responsive.
+
+## PDF Delivery Override
+
+- All four project detail routes remove former narrative chapters and video previews. Each displays the project title, real cover, complete portfolio download and project-specific PDF download.
+- Keep the existing dark neutral palette, shared navigation, responsive spacing and Lucide download icons.
+- PDF documents remain same-origin assets. Project downloads use Chinese project filenames; the complete document includes all four projects with chapter bookmarks.
+- This user-requested PDF delivery replaces the earlier requirement for in-page case narratives.

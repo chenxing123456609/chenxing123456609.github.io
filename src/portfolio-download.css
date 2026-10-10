@@ -1,0 +1,20 @@
+.portfolio-download-page { min-height: 100svh; padding-top: 136px; padding-bottom: 40px; background: var(--canvas); }
+.portfolio-download-page > .back-link { display: inline-flex; color: var(--muted); font-size: 14px; }
+.portfolio-download-heading { margin-top: 56px; }
+.portfolio-download-heading .eyebrow { color: var(--subtle); letter-spacing: 0; }
+.portfolio-download-heading h1 { margin: 18px 0 32px; font-family: var(--font-sans); font-size: 56px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
+.portfolio-download-actions { display: flex; flex-wrap: wrap; gap: 16px; }
+.portfolio-download-actions .button { min-height: 48px; padding: 12px 20px; font-size: 14px; line-height: 1.4; letter-spacing: 0; white-space: nowrap; }
+.portfolio-download-actions .button svg { flex: 0 0 auto; }
+.portfolio-download-actions a:focus-visible, .portfolio-download-page > .back-link:focus-visible { outline: 2px solid var(--silver); outline-offset: 4px; }
+.portfolio-download-cover { aspect-ratio: 16 / 9; margin-top: 56px; overflow: hidden; }
+.portfolio-download-cover img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.portfolio-download-colophon { display: flex; justify-content: space-between; gap: 16px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--subtle); font-size: 11px; letter-spacing: 0; }
+@media (max-width: 767px) {
+  .portfolio-download-page { padding-top: 104px; padding-bottom: 28px; }
+  .portfolio-download-heading { margin-top: 40px; }
+  .portfolio-download-heading h1 { margin: 16px 0 28px; font-size: 36px; }
+  .portfolio-download-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .portfolio-download-actions .button { width: 100%; padding: 12px 14px; }
+  .portfolio-download-cover { margin-top: 40px; }
+}
